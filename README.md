@@ -1,4 +1,4 @@
-Dash
+dash
 ====
 
 Help system
