@@ -12,8 +12,8 @@
     <div>
         <img src="logo"/>
     </div>
-    <section id="Home"></section>
-        <hr>
+    <section id="Home">
+        <hr></section>
     <section id="HelpDesk">
         <div class="sidebar"></div>
     </section>
@@ -37,7 +37,7 @@
         <h2>Key Sections</h2>
         <ul>
             <% _.each(keySections, function(section) { %>
-                <li><%=section%></li> <!--needs to be a link-->
+                <li><a href="insertLink"><%=section.name%></a></li> <!--needs to be a link-->
             <% }); %>
         </ul>
     </script>

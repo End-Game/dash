@@ -1,7 +1,14 @@
 define(['dash', 'backbone', "jquery", "hoist"], function(Dash, Backbone, $, hoist) {
     'use strict';
 
-    Dash.Product = Backbone.Model.extend ({
+    Dash.Product = Backbone.Model.extend({
+        initialize: function(){
+            console.log(this.keySections);
+            console.log(typeof(this.keySections));
+            this.keySections = new Dash.Sections(this.keySections);
+            console.log(typeof(this.keySections));
+            console.log(this.keySections);
+        },
         defaults: {
             name: "",
             shortDescription: "",
@@ -13,12 +20,12 @@ define(['dash', 'backbone', "jquery", "hoist"], function(Dash, Backbone, $, hois
     });
 
     Dash.Products = Backbone.Collection.extend({
-        model: Product
+        model: Dash.Product
     });
 
     Dash.Section = Backbone.Model.extend({
         defaults: {
-            name: ""
+            name: "",
             type: ""
         }
     });

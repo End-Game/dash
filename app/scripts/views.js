@@ -1,7 +1,7 @@
 define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
     'use strict';
 
-/*
+    /*
     Views needed:
     Product
     Article
@@ -16,7 +16,22 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
     SetupProduct
     PlaceTree  -> Admin when making article
 */
-
+    Dash.testJson = {
+        "products": [{
+            "name": "product1",
+            "shortDescription": "enter a short short description",
+            "description": "long block of text blah blah blah blah blah blah blah blah blah blah blah blah",
+            "helpDeskUrl": "enterUrl",
+            "sections": [],
+            "keySections": [{
+                "name": "article1",
+                "type": "article"
+            }, {
+                "name": "article2",
+                "type": "article"
+            }]
+        }, ]
+    };
 
     Dash.HomeProductView = Backbone.View.extend({
         tagName: "div",
@@ -51,13 +66,13 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
     Dash.View.Home = Dash.View.extend({
         el: "#Home",
 
-        initialize: function(){
+        initialize: function() {
             Dash.View.prototype.initialize.apply(this);
-            this.collection = ""; // products
+            this.collection = new Dash.Products(Dash.testJson.products); // products
             this.render();
         },
 
-        render: function(){
+        render: function() {
             this.$el.find("homeProduct").remove(); // remove stuff from previous render
             // render top row of product and short desc
             var that = this;
@@ -74,11 +89,11 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
             var homeProductView = new Dash.HomeProductView({
                 model: item
             });
-            this.$("hr").prepend(homeProductView.render().el);
+            this.$("hr").before(homeProductView.render().el);
         },
 
         renderKeySections: function(item) {
-            var keySections = new Dash.KeySections({
+            var keySections = new Dash.KeySectionsView({
                 model: item
             });
             this.$el.append(keySections.render().el);
@@ -88,9 +103,7 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
     Dash.View.HelpDesk = Dash.View.extend({
         el: "#HelpDesk",
 
-        initialize: function() {
-            t
-        }
+        initialize: function() {}
     });
 
 
