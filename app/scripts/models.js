@@ -3,30 +3,45 @@ define(['dash', 'backbone', "jquery", "hoist"], function(Dash, Backbone, $, hois
 
     Dash.Product = Backbone.Model.extend ({
         defaults: {
-            name: "";
-            description: "";
-            helpDeskUrl: "";
-            rootSection: "";
-            keySections: [];
+            name: "",
+            shortDescription: "",
+            description: "",
+            helpDeskUrl: "",
+            sections: "", // sections collection
+            keySections: "" // sections collection
         }
     });
 
-    Dash.Article = Backbone.Model.extend({
-        defaults: {
-            name: "";
-            type: "";
-            info: "";
-            tags: "";
-            relevantOthers: [];
-            faqs: [];
-            howDos: [];
-        }
+    Dash.Products = Backbone.Collection.extend({
+        model: Product
     });
 
     Dash.Section = Backbone.Model.extend({
         defaults: {
-            name: "";
-            contents: []; // list of articles and sections
+            name: ""
+            type: ""
         }
+    });
+
+    Dash.Section.Article = Dash.Section.extend({
+        defaults: {
+            date: "",
+            info: "",
+            tags: "",
+            relevantOthers: "", // sections collection
+            faqs: "", // sections collection
+            howDos: "" // sections collection
+        }
+        // when looking for other articles use the collection attribute that automatically gets set
+    });
+
+    Dash.Section.Section = Dash.Section.extend({
+        defaults: {
+            contents: "" // sections collection
+        }
+    });
+
+    Dash.Sections = Backbone.Collection.extend({
+        model: Dash.Section
     });
 });

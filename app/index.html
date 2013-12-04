@@ -13,21 +13,47 @@
         <img src="logo"/>
     </div>
     <section id="Home"></section>
-    <section id="HelpDesk"></section>
+        <hr>
+    <section id="HelpDesk">
         <div class="sidebar"></div>
-    <section id="Article"></section>
+    </section>
+
+    <section id="Article">
         <div class="sidebar"></div>
+    </section>
+
     <section id="Search"></section>
+
     <section id="SiteMap"></section>
 
     <!-- templates-->
+    <script id="homeProductTemplate" type="text/template">
+        <img src="images/productImage.png"/>
+        <h3><%=name%></h3>
+        <p><%=shortDescription%></p>
+    </script>
+
+    <script id="keySectionsTemplate" type="text/template">
+        <h2>Key Sections</h2>
+        <ul>
+            <% _.each(keySections, function(section) { %>
+                <li><%=section%></li> <!--needs to be a link-->
+            <% }); %>
+        </ul>
+    </script>
+
     <script id="articleTemplate" type="text/template">
         <h2><%=name%></h2>
-        <div>
+        <div id="article">
             <p class="SC">published <%=date%></p>
             <p><%=description%></p>
             <hr>
             <h5>Other Relevant Articles</h5>
+            <ul>
+                <% _.each(relevantOthers, function(other) { %>
+                    <li><%=other%></li> <!--needs to be a link-->
+                <% }); %>
+            </ul>
         </div>
     </script>
     <!-- build:js scripts/vendor.js --> 
