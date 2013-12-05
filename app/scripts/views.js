@@ -5,15 +5,15 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
     Views needed:
     Product
     Article
-    Home
+    Home + Admin
     ProductHelpDesk
     SearchResults
         ResultsList
     SiteMap + Admin
         Map
         List
-    NewArticle
-    SetupProduct
+    NewArticle->Admin
+    SetupProduct->Admin
     PlaceTree  -> Admin when making article
 */
     Dash.testJson = {
@@ -27,10 +27,23 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
                 "name": "article1",
                 "type": "article"
             }, {
-                "name": "article2",
-                "type": "article"
+                "name": "section1",
+                "type": "section"
             }]
-        }, ]
+        }, {
+            "name": "product2",
+            "shortDescription": "enter a short short description",
+            "description": "long block of text blah blah blah blah blah blah blah blah blah blah blah blah",
+            "helpDeskUrl": "enterUrl",
+            "sections": [],
+            "keySections": [{
+                "name": "article1",
+                "type": "article"
+            }, {
+                "name": "section1",
+                "type": "section"
+            }]
+        }]
     };
 
     Dash.HomeProductView = Backbone.View.extend({
@@ -106,5 +119,5 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
         initialize: function() {}
     });
 
-
+    return Dash;
 });

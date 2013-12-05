@@ -1,14 +1,11 @@
-define(['dash', 'backbone', "jquery", "hoist"], function(Dash, Backbone, $, hoist) {
+define(['exports', 'dash', 'backbone', "jquery", "hoist", 'relational'], function(exports, Dash, Backbone, $, hoist) {
     'use strict';
 
-    Dash.Product = Backbone.Model.extend({
-        initialize: function(){
-            console.log(this.keySections);
-            console.log(typeof(this.keySections));
-            this.keySections = new Dash.Sections(this.keySections);
-            console.log(typeof(this.keySections));
-            console.log(this.keySections);
+    Dash.Product = Backbone.RelationalModel.extend({
+        initialize: function() {
+            this.keySections = new Dash.Sections(this.toJSON().keySections);
         },
+
         defaults: {
             name: "",
             shortDescription: "",
@@ -20,6 +17,7 @@ define(['dash', 'backbone', "jquery", "hoist"], function(Dash, Backbone, $, hois
     });
 
     Dash.Products = Backbone.Collection.extend({
+        rootUrl: "products",
         model: Dash.Product
     });
 
@@ -49,6 +47,14 @@ define(['dash', 'backbone', "jquery", "hoist"], function(Dash, Backbone, $, hois
     });
 
     Dash.Sections = Backbone.Collection.extend({
-        model: Dash.Section
+        model: function(attrs, options) {
+            if (attrs.type === "section") {
+                return new Dash.Section.Section(attrs, options);
+            } else {
+                return new Dash.Section.Article(attrs, options);
+            }
+        }
     });
+    
+    return Dash;
 });

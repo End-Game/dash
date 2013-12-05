@@ -3,6 +3,7 @@ require.config({
     paths: {
         jquery: '../bower_components/jquery/jquery',
         backbone: '../bower_components/backbone/backbone',
+        relational: '../bower_components/backbone-relational/backbone-relational',
         underscore: '../bower_components/underscore/underscore',
         hoist: './hoist/hoist',
         requirejs: '../bower_components/requirejs/require',
@@ -18,6 +19,9 @@ require.config({
                 'jquery'
             ],
             exports: 'Backbone'
+        },
+        relational: {
+            deps: ['backbone']
         }
     }
 });
