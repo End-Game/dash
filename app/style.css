@@ -1,5 +1,29 @@
-div {
+#Home div {
     display: inline-block;
     width: 30%;
     margin-right: 3%;
+}
+
+.helpDeskProduct {
+    display: inline-block;
+    width: 60%;
+    margin-right: 9%;
+}
+
+.sidebar {
+    display: inline-block;
+    width: 30%;
+    border: 1px solid gray;
+    height: 20px;
+}
+
+div {
+    vertical-align: top;
+}
+
+img {
+    width: 150px;
+    height: 150px;
+    margin-left: auto;
+    margin-right: auto;
 }

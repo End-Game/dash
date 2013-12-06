@@ -10,10 +10,13 @@
 </head>
 <body>
     <div>
-        <img src="logo"/>
+        <img src="images/logo"/>
     </div>
+    
     <section id="Home">
-        <hr></section>
+        <hr>
+    </section>
+    
     <section id="HelpDesk">
         <div class="sidebar"></div>
     </section>
@@ -28,17 +31,14 @@
 
     <!-- templates-->
     <script id="homeProductTemplate" type="text/template">
-        <img src="images/productImage.png"/>
+        <a id="product" href="#"><img src="images/product.jpg"/></a>
         <h3><%=name%></h3>
         <p><%=shortDescription%></p>
     </script>
 
     <script id="keySectionsTemplate" type="text/template">
         <h2>Key Sections</h2>
-        <ul>
-            <% _.each(keySections, function(section) { %>
-                <li><a href="insertLink"><%=section.name%></a></li> <!--needs to be a link-->
-            <% }); %>
+        <ul id="keySections<%=name%>">
         </ul>
     </script>
 
@@ -55,6 +55,27 @@
                 <% }); %>
             </ul>
         </div>
+    </script>
+    
+    <script id="helpDeskTemplate" type="text/template">
+        <h2><%=name%> Help Desk</h2>
+        <hr>
+        <!--insert search box here-->
+        <p><%=description%></p>
+        <hr>
+        <div id="faq">
+            <h3>FAQ&#39;s</h3>
+            <ul id="faqList">
+            </ul>
+        </div>
+        <div id="howDoI">
+            <h3>How Do I&#39;s</h3>
+            <ul id="howDoIList">
+            </ul>
+        </div>
+    </script>
+    <script id="listItemTemplate" type="text/template">
+        <a id="<%=id%>" href="#"><%=name%></a>
     </script>
     <!-- build:js scripts/vendor.js --> 
     <!-- bower:js -->
