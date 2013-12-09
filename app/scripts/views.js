@@ -13,59 +13,11 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
         Map
         List
     NewArticle->Admin
-    SetupProduct->Admin
-    PlaceTree  -> Admin when making article
+    SetupProduct modal ->Admin
+    PlaceTree modal -> Admin when making article
 */
-    
-    Dash.testJson = {
-        "products": [{
-            "name": "product1",
-            "id": 1,
-            "shortDescription": "enter a short short description",
-            "description": "long block of text blah blah blah blah blah blah blah blah blah blah blah blah",
-            "helpDeskUrl": "enterUrl",
-            "sections": [{
-                "name": "article1",
-                "type": "article",
-                "isKey": true,
-                "id": 3
-            },{
-                "name": "faq",
-                "type": "faq",
-                "isKey": true,
-                "id":4
-            },{
-                "name": "section1",
-                "type": "section",
-                "id":5
-            }]
-        }, {
-            "name": "product2",
-            "id": 2,
-            "shortDescription": "enter a short short description",
-            "description": "long block of text blah blah blah blah blah blah blah blah blah blah blah blah",
-            "helpDeskUrl": "enterUrl",
-            "sections": [{
-                "name": "article1",
-                "type": "article",
-                "id": 9
-            },{
-                "name": "section1",
-                "type": "section",
-                "isKey": true,
-                "id": 6 
-            },{
-                "name": "faq1",
-                "type": "faq",
-                "isKey": true,
-                "id": 7 
-            },{
-                "name": "faq2",
-                "type": "faq",
-                "id": 8
-            }]
-        }]
-    };
+
+
 
     Dash.HomeProductView = Backbone.View.extend({
         tagName: "div",
@@ -78,9 +30,9 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
         },
 
         events: {
-            "click #product": "helpDesk"
+            "click .product": "helpDesk"
         },
-        
+
         helpDesk: function() {
             new Dash.View.HelpDesk({
                 model: this.model
@@ -112,16 +64,18 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
 
         initialize: function() {
             Dash.View.prototype.initialize.apply(this);
-            this.collection = new Dash.Products(Dash.testJson.products);
+            this.collection = Dash.products;
             this.render();
         },
 
         render: function() {
-            this.$el.find("#homeProduct").remove(); // remove stuff from previous render
+            this.$el.find(".homeProduct").remove(); // remove stuff from previous render
+            this.$el.find(".keySections").remove();
             var that = this;
             _.each(this.collection.models, function(item) {
-                that.renderProduct(item); // render top row of product and short desc
+                that.renderProduct(item);
             }, this);
+            return this;
         },
 
         renderProduct: function(item) {
@@ -140,12 +94,11 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
             var that = this;
             var keySectionsList = item.getKeySections();
             keySectionsList.each(function(section) {
-                that.renderListItem(section, "#keySections"+item.get('name'));
+                that.renderListItem(section, "#keySections" + item.get('id'));
             }, this);
         },
-        
-        renderListItem: function(item, tag){
-            console.log(tag);
+
+        renderListItem: function(item, tag) {
             var listItem = new Dash.ListItem({
                 model: item
             });
@@ -155,40 +108,50 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
 
     Dash.View.HelpDesk = Dash.View.extend({
         el: "#HelpDesk",
-        
-        tagName: "div",
-        className: "keySections",
-        template: _.template($("#keySectionsTemplate").html()),
 
         initialize: function() {
             Dash.View.prototype.initialize.apply(this);
             this.render();
-           // this.renderSidebar();
+            // this.renderSidebar();
         },
-        
-        render: function(){
-            this.$el.find("#helpDeskProduct").remove();
+
+        render: function() {
+            this.$el.find(".helpDeskProduct").remove();
             var helpDeskProduct = new Dash.HelpDeskProduct({
                 model: this.model
-            });   
-            this.$el.prepend(helpDeskProduct.render().el);
-            var faqs = this.model.getFaqs();
+            });
+            this.$el.append(helpDeskProduct.render().el);
+            this.renderFaqs();
+            this.renderHowDoIs();
+            return this;
+        },
+
+        renderFaqs: function() {
             var that = this;
+            var faqs = this.model.getFaqs();
             faqs.each(function(item) {
                 that.renderListItem(item, "#faqList");
-            }, this);  
+            }, this);
         },
-        
-        renderListItem: function(item, tag){
+
+        renderHowDoIs: function() {
+            var that = this;
+            var howDoIs = this.model.getHowDoIs();
+            howDoIs.each(function(item) {
+                that.renderListItem(item, "#howDoIList");
+            }, this);
+        },
+
+        renderListItem: function(item, tag) {
             var listItem = new Dash.ListItem({
                 model: item
             });
             this.$(tag).append(listItem.render().el);
         }
     });
-    
+
     Dash.HelpDeskProduct = Backbone.View.extend({
-        
+
         tagName: "div",
         className: "helpDeskProduct",
         template: _.template($("#helpDeskTemplate").html()),
@@ -197,17 +160,48 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
             this.$el.html(this.template(this.model.toJSON()));
             return this;
         }
-        
+
     });
-    
+
+    Dash.View.ArticleView = Dash.View.extend({
+        el: "#Article",
+        template: _.template($("#articleTemplate").html()),
+
+        initialize: function() {
+            Dash.View.prototype.initialize.apply(this);
+            this.$el.empty();
+            this.render();
+            // this.renderSidebar();
+        },
+
+        render: function() {
+            this.$el.append(this.template(this.model.toJSON()));
+            return this;
+        }
+    });
+
     Dash.ListItem = Backbone.View.extend({
-        
+
         tagName: "li",
         template: _.template($("#listItemTemplate").html()),
+
+        events: {
+            "click .item": "item"
+        },
 
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
             return this;
+        },
+
+        item: function() {
+            if (this.model.get("type") === "section") {
+                //do something for section
+            } else {
+                new Dash.View.ArticleView({
+                    model: this.model
+                });
+            }
         }
     });
 

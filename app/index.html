@@ -17,13 +17,9 @@
         <hr>
     </section>
     
-    <section id="HelpDesk">
-        <div class="sidebar"></div>
-    </section>
+    <section id="HelpDesk"></section>
 
-    <section id="Article">
-        <div class="sidebar"></div>
-    </section>
+    <section id="Article"></section>
 
     <section id="Search"></section>
 
@@ -31,51 +27,56 @@
 
     <!-- templates-->
     <script id="homeProductTemplate" type="text/template">
-        <a id="product" href="#"><img src="images/product.jpg"/></a>
+        <a class="product" href="#"><img src="images/product.jpg"/></a>
         <h3><%=name%></h3>
         <p><%=shortDescription%></p>
     </script>
 
     <script id="keySectionsTemplate" type="text/template">
         <h2>Key Sections</h2>
-        <ul id="keySections<%=name%>">
+        <ul id="keySections<%=id%>">
         </ul>
-    </script>
-
-    <script id="articleTemplate" type="text/template">
-        <h2><%=name%></h2>
-        <div id="article">
-            <p class="SC">published <%=date%></p>
-            <p><%=description%></p>
-            <hr>
-            <h4>Other Relevant Articles</h4>
-            <ul>
-                <% _.each(relevantOthers, function(other) { %>
-                    <li><%=other%></li> <!--needs to be a link-->
-                <% }); %>
-            </ul>
-        </div>
     </script>
     
     <script id="helpDeskTemplate" type="text/template">
         <h2><%=name%> Help Desk</h2>
-        <hr>
-        <!--insert search box here-->
-        <p><%=description%></p>
-        <hr>
-        <div id="faq">
-            <h3>FAQ&#39;s</h3>
-            <ul id="faqList">
-            </ul>
+        <div class="inlineDiv twoThird">
+            <hr>
+            <!--insert search box here-->
+            <p><%=description%></p>
+            <hr>
+            <div class="inlineDiv half">
+                <h3>FAQ&#39;s</h3>
+                <ul id="faqList">
+                </ul>
+            </div>
+            <div class="inlineDiv half">
+                <h3>How Do I&#39;s</h3>
+                <ul id="howDoIList">
+                </ul>
+            </div>
         </div>
-        <div id="howDoI">
-            <h3>How Do I&#39;s</h3>
-            <ul id="howDoIList">
-            </ul>
-        </div>
+        <div class="sidebar inlineDiv"></div>
     </script>
+
+    <script id="articleTemplate" type="text/template">
+        <h2><%=name%></h2>
+        <div class="inlineDiv twoThird">
+            <hr>
+            <div id="article">
+                <p class="SC">published <%=date%></p>
+                <p><%=content%></p>
+                <hr>
+                <h4>Other Relevant Articles</h4>
+                <ul>
+                </ul>
+            </div>
+        </div>
+        <div class="sidebar inlineDiv"></div>
+    </script>
+    
     <script id="listItemTemplate" type="text/template">
-        <a id="<%=id%>" href="#"><%=name%></a>
+        <a class="item" href="#"><%=name%></a>
     </script>
     <!-- build:js scripts/vendor.js --> 
     <!-- bower:js -->

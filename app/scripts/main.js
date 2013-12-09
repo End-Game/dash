@@ -28,5 +28,5 @@ require.config({
 require(['app', 'jquery', 'hoist'], function(app, $, hoist) {
     'use strict';
     hoist.initialize('apikey');
-    new app.dash.View.Home();
+    //new app.dash.View.Home();
 });
