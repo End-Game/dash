@@ -9,13 +9,14 @@ define(['exports', 'dash', 'backbone', "jquery", "hoist", 'relational'], functio
             "articleType": "article",
             "isKey": true,
             "id": 3,
-            "content": "insert information"
+            "content": "This is the article. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat"
         }, {
             "name": "faq",
             "type": "article",
             "articleType": "faq",
             "isKey": true,
-            "id": 4
+            "id": 4,
+            "content": "This is the article. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat"
         }, {
             "name": "section1",
             "type": "section",
@@ -25,7 +26,8 @@ define(['exports', 'dash', 'backbone', "jquery", "hoist", 'relational'], functio
             "type": "article",
             "articleType": "howDoI",
             "isKey": true,
-            "id": 10
+            "id": 10,
+            "content": "This is the article. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat"
         }, {
             "name": "section1",
             "type": "section",
@@ -36,12 +38,14 @@ define(['exports', 'dash', 'backbone', "jquery", "hoist", 'relational'], functio
             "type": "article",
             "articleType": "faq",
             "isKey": true,
-            "id": 7
+            "id": 7,
+            "content": "This is the article. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat"
         }, {
             "name": "faq2",
             "type": "article",
             "articleType": "faq",
-            "id": 8
+            "id": 8,
+            "content": "This is the article. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat"
         }],
         "products": [{
             "name": "product1",
@@ -121,7 +125,7 @@ define(['exports', 'dash', 'backbone', "jquery", "hoist", 'relational'], functio
             shortDescription: "",
             description: "",
             helpDeskUrl: "",
-            sections: "", // sections collection
+            sectionJoins: "", // sections collection
         },
 
         parse: function(response) {
@@ -165,6 +169,15 @@ define(['exports', 'dash', 'backbone', "jquery", "hoist", 'relational'], functio
                 }
             });
             return howDoIs;
+        },
+
+        findSection: function(path, callback) {
+            this.get("sectionJoins").each(function(sectionJoin) {
+                var section = sectionJoin.get("section").findSection(path);
+                if (section) {
+                    callback(section);
+                }
+            });
         }
     });
 
@@ -172,8 +185,8 @@ define(['exports', 'dash', 'backbone', "jquery", "hoist", 'relational'], functio
         model: Dash.Product,
 
         findProduct: function(name, callback) {
-            this.each(function(product){
-                if (product.get('name').replace(/\s/g, '') == name){
+            this.each(function(product) {
+                if (product.get('name').replace(/\s/g, '') == name) {
                     callback(product);
                 }
             });
@@ -203,6 +216,7 @@ define(['exports', 'dash', 'backbone', "jquery", "hoist", 'relational'], functio
     });
 
     Dash.Section = Backbone.RelationalModel.extend({
+
         initialize: function() {
             Dash.assignId(this);
         },
@@ -216,7 +230,20 @@ define(['exports', 'dash', 'backbone', "jquery", "hoist", 'relational'], functio
 
         defaults: {
             name: "",
-            isKey: false
+            isKey: false,
+            currentProductName: ""
+        },
+
+        findSection: function(path) {
+            if (this.get("name").replace(/\s/g, '') === path[0]) {
+                path.shift();
+                if (path.length === 0) {
+                    return this;
+
+                }
+                //var section = findSection(path);
+            }
+            return null;
         }
     });
 
@@ -261,7 +288,7 @@ define(['exports', 'dash', 'backbone', "jquery", "hoist", 'relational'], functio
     });
 
     Dash.sections = new Dash.Sections(Dash.testJson.sections);
-    
+
     Dash.products = new Dash.Products(Dash.testJson.products, {
         parse: true
     });

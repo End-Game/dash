@@ -3,14 +3,12 @@
 <head>
     <meta charset="utf-8">
     <title>Dash</title>
-    <script type="text/javascript" src="https://use.typekit.net/pnr3zhl.js"></script>
-    <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
     <script src="https://127.0.0.1:35729/livereload.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-    <div>
-        <img src="images/logo"/>
+    <div id="logoDiv">
+        <img id="logo" src="images/logo.jpg"/>
     </div>
     
     <section id="Home">
@@ -24,10 +22,10 @@
     <section id="Search"></section>
 
     <section id="SiteMap"></section>
-
+    <hr>
     <!-- templates-->
     <script id="homeProductTemplate" type="text/template">
-        <a class="product" href="#"><img src="images/product.jpg"/></a>
+        <a class="product" href="#/<%=name%>"><img src="images/product.jpg"/></a>
         <h3><%=name%></h3>
         <p><%=shortDescription%></p>
     </script>
@@ -56,7 +54,6 @@
                 </ul>
             </div>
         </div>
-        <div class="sidebar inlineDiv"></div>
     </script>
 
     <script id="articleTemplate" type="text/template">
@@ -72,12 +69,35 @@
                 </ul>
             </div>
         </div>
-        <div class="sidebar inlineDiv"></div>
     </script>
     
     <script id="listItemTemplate" type="text/template">
-        <a class="item" href="#"><%=name%></a>
+        <a class="item" href="#/<%=currentProductName.replace(/\s/g, '')%>/<%=name.replace(/\s/g, '')%>"><%=name%></a>
     </script>
+    
+    <script id="productSideBarTemplate" type="text/template">
+        <a href="#/insert link">View Site Map</a>
+        <hr>
+        <p>Sections</p>
+        <ul id="sections"></ul>
+        <hr>
+        <a href="">View Other Products</a>
+    </script>
+    
+    <script id="articleSideBarTemplate" type="text/template">
+        <!--insert mini site map-->
+        <hr>
+        <a href="#/insert link"><img src="images/siteMap"/>View Site Map</a>
+        <hr>
+        <p>FAQ&#39;s</p>
+        <ul id="faqs"></ul>
+        <p>How Do I&#39;s</p>
+        <ul id="howDoIs"></ul>
+        <p>Other Articles in this Section</p>
+        <ul id="otherSections"></ul>
+        <button type="button"><img src="images/support"/>Request Support</button>
+    </script>
+    
     <!-- build:js scripts/vendor.js --> 
     <!-- bower:js -->
     <script src="bower_components/jquery/jquery.js"></script>

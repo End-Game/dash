@@ -16,16 +16,29 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                     path = path.substring(0, path.length - 1);
                 }
                 var pathSplit = path.split("/");
-                if (pathSplit.length === 1) {
-                    Dash.products.findProduct(pathSplit[0], function(product) {
-                        var view = new Dash.View.HelpDesk({
+                Dash.products.findProduct(pathSplit[0], function(product) {
+
+                    if (pathSplit.length === 1) {
+                        new Dash.View.HelpDesk({
                             model: product
                         });
-                        loadHome = false;
-                    });
-                }
+                    } else {
+                        pathSplit.shift();
+                        product.findSection(pathSplit, function(section) {
+                            if (section !== null) {
+                                section.set("currentProductName", product.get("name"));
+                                if (section.get("type") === "article") {
+                                    loadHome = false;
+                                    new Dash.View.Article({
+                                        model: section
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
             }
-            if(loadHome){
+            if (loadHome) {
                 new Dash.View.Home();
             }
         }
