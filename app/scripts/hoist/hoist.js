@@ -8,7 +8,6 @@ define(["jquery"], function(jQuery) {
     Hoist.prototype = {
         hoistUserKey: 'hoist-user',
         ajaxOptions: {},
-        ajaxOptionsData: {},
         initialize: function(apiKey) {
             self.ajaxOptions = {
                 headers: {
@@ -70,7 +69,8 @@ define(["jquery"], function(jQuery) {
                 success: function(response) {
                     onSuccess(response);
                 },
-                error: function() {
+                error: function(request, status, error) {
+                    console.log(error);
                     onFailure();
                 }
             }, self.ajaxOptions);
@@ -78,14 +78,15 @@ define(["jquery"], function(jQuery) {
         },
         postData: function(data, onSuccess, onFailure) {
             var options = jQuery.extend({
-                url: "https://data.hoi.io/Dashs/data",
+                url: "https://data.hoi.io/Dash/data",
                 type: "POST",
-                dataType: "json",
-                data: data,
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(data),
                 success: function() {
                     onSuccess();
                 },
-                error: function() {
+                error: function(request, status, error) {
+                    console.log(error);
                     onFailure();
                 }
             }, self.ajaxOptions);

@@ -3,7 +3,7 @@ define(['exports', 'dash', 'backbone', "jquery", "hoist", 'relational'], functio
     Backbone.Relational.store.addModelScope(Dash);
 
     Dash.testJson = {
-        "sections": [{
+        "articles": [{
             "name": "article1",
             "type": "article",
             "articleType": "article",
@@ -18,21 +18,12 @@ define(['exports', 'dash', 'backbone', "jquery", "hoist", 'relational'], functio
             "id": 4,
             "content": "This is the article. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat"
         }, {
-            "name": "section1",
-            "type": "section",
-            "id": 5
-        }, {
             "name": "How Do",
             "type": "article",
             "articleType": "howDoI",
             "isKey": true,
             "id": 10,
             "content": "This is the article. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat"
-        }, {
-            "name": "section1",
-            "type": "section",
-            "isKey": true,
-            "id": 6
         }, {
             "name": "faq1",
             "type": "article",
@@ -47,6 +38,30 @@ define(['exports', 'dash', 'backbone', "jquery", "hoist", 'relational'], functio
             "id": 8,
             "content": "This is the article. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat"
         }],
+
+        "sections": [{
+            "name": "section1",
+            "type": "section",
+            "children": [{
+                "id": 3
+            }, {
+                "id": 4
+            }, {
+                "id": 10
+            }],
+            "id": 5
+        }, {
+            "name": "section1",
+            "type": "section",
+            "isKey": true,
+            "children": [{
+                "id": 7
+            }, {
+                "id": 8
+            }],
+            "id": 6
+        }],
+
         "products": [{
             "name": "product1",
             "id": 1,
@@ -78,8 +93,6 @@ define(['exports', 'dash', 'backbone', "jquery", "hoist", 'relational'], functio
                 "id": 8
             }]
         }]
-
-
     };
 
     Dash.idCount = 1;
@@ -236,12 +249,18 @@ define(['exports', 'dash', 'backbone', "jquery", "hoist", 'relational'], functio
 
         findSection: function(path) {
             if (this.get("name").replace(/\s/g, '') === path[0]) {
-                path.shift();
-                if (path.length === 0) {
+                if (path.length === 1) {
                     return this;
-
                 }
-                //var section = findSection(path);
+                if (this.get("type") === "section"){
+                    var childJoins = this.get("childJoins");
+                    for(var i=0; i<childJoins.length; i++){
+                        var section = childJoins.at(i).get("child").findSection(path.slice(1, path.length));
+                        if(section!==null){
+                            return section;
+                        }
+                    }
+                }
             }
             return null;
         }
@@ -262,7 +281,33 @@ define(['exports', 'dash', 'backbone', "jquery", "hoist", 'relational'], functio
 
     Dash.Section.Section = Dash.Section.extend({
         defaults: {
-            contents: "" // sections collection
+            childJoins: "" // sections collection
+        },
+
+        relations: [{
+            type: Backbone.HasMany,
+            key: 'childJoins',
+            relatedModel: 'SectionSectionJoin',
+            collectionType: 'SectionSectionJoins',
+            keyDestination: 'children',
+            autofetch: false,
+            reverseRelation: {
+                key: 'parent',
+                includeInJSON: true
+            }
+        }],
+
+        parse: function(response) {
+            var children = response.children;
+            if (children) { //backbone-relational sometimes calls parse multiple times
+                response.childJoins = _.map(children, function(child) {
+                    return {
+                        child: child
+                    };
+                });
+                delete response.children;
+            }
+            return response;
         }
     });
 
@@ -274,20 +319,27 @@ define(['exports', 'dash', 'backbone', "jquery", "hoist", 'relational'], functio
 
         relations: [{
             type: Backbone.HasOne,
-            key: 'sectionJoins',
+            key: 'child',
             relatedModel: 'Section',
             reverseRelation: {
-                key: 'sectionJoins',
+                key: 'parentJoins',
                 includeInJSON: false
             }
         }],
 
         toJSON: function() {
-            return this.get('section').id;
+            return this.get('child').id;
         }
     });
 
-    Dash.sections = new Dash.Sections(Dash.testJson.sections);
+    Dash.SectionSectionJoins = Backbone.Collection.extend({
+        model: Dash.SectionSectionJoin
+    });
+
+    Dash.articles = new Dash.Sections(Dash.testJson.articles);
+    Dash.sections = new Dash.Sections(Dash.testJson.sections, {
+        parse: true
+    });
 
     Dash.products = new Dash.Products(Dash.testJson.products, {
         parse: true

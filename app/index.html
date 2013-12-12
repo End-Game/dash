@@ -19,13 +19,16 @@
 
     <section id="Article"></section>
 
-    <section id="Search"></section>
+    <section id="Search">
+        <h2>Search Results</h2>
+        <hr>
+    </section>
 
     <section id="SiteMap"></section>
     <hr>
     <!-- templates-->
     <script id="homeProductTemplate" type="text/template">
-        <a class="product" href="#/<%=name%>"><img src="images/product.jpg"/></a>
+        <a class="product" href="#<%=name%>"><img src="images/product.jpg"/></a>
         <h3><%=name%></h3>
         <p><%=shortDescription%></p>
     </script>
@@ -72,11 +75,11 @@
     </script>
     
     <script id="listItemTemplate" type="text/template">
-        <a class="item" href="#/<%=currentProductName.replace(/\s/g, '')%>/<%=name.replace(/\s/g, '')%>"><%=name%></a>
+        <a class="item" href="#<%=currentProductName.replace(/\s/g, '')%>/<%=name.replace(/\s/g, '')%>"><%=name%></a>
     </script>
     
     <script id="productSideBarTemplate" type="text/template">
-        <a href="#/insert link">View Site Map</a>
+        <a href="#insert link">View Site Map</a>
         <hr>
         <p>Sections</p>
         <ul id="sections"></ul>
@@ -87,7 +90,7 @@
     <script id="articleSideBarTemplate" type="text/template">
         <!--insert mini site map-->
         <hr>
-        <a href="#/insert link"><img src="images/siteMap"/>View Site Map</a>
+        <a href="#sitemap"><img src="images/siteMap"/>View Full Site Map</a>
         <hr>
         <p>FAQ&#39;s</p>
         <ul id="faqs"></ul>
@@ -98,6 +101,10 @@
         <button type="button"><img src="images/support"/>Request Support</button>
     </script>
     
+    <script id="siteMapTemplate" type="text/template">
+        
+    </script>
+
     <!-- build:js scripts/vendor.js --> 
     <!-- bower:js -->
     <script src="bower_components/jquery/jquery.js"></script>
