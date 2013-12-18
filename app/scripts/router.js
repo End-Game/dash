@@ -17,7 +17,6 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                 }
                 var pathSplit = path.split("/");
                 Dash.products.findProduct(pathSplit[0], function(product) {
-                    console.log(window.location);
                     if (pathSplit.length === 1 && product !== null) {
                         loadHome = false;
                         new Dash.View.HelpDesk({
@@ -46,9 +45,6 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
 
     });
 
-    Dash.router = new Dash.Router();
-
-    Backbone.history.start();
 
     return Dash;
 });

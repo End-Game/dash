@@ -1,4 +1,4 @@
-define(['exports', 'dash', 'backbone', "jquery", "hoist", 'relational'], function(exports, Dash, Backbone, $, hoist) {
+define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $) {
     'use strict';
     Backbone.Relational.store.addModelScope(Dash);
 
@@ -51,7 +51,7 @@ define(['exports', 'dash', 'backbone', "jquery", "hoist", 'relational'], functio
             }],
             "id": 5
         }, {
-            "name": "section1",
+            "name": "section3",
             "type": "section",
             "isKey": true,
             "children": [{
@@ -67,7 +67,6 @@ define(['exports', 'dash', 'backbone', "jquery", "hoist", 'relational'], functio
             "id": 1,
             "shortDescription": "enter a short description",
             "description": "long block of text blah blah blah blah blah blah blah blah blah blah blah blah",
-            "helpDeskUrl": "enterUrl",
             "sections": [{
                 "id": 3,
             }, {
@@ -82,7 +81,6 @@ define(['exports', 'dash', 'backbone', "jquery", "hoist", 'relational'], functio
             "id": 2,
             "shortDescription": "enter a short description",
             "description": "long block of text blah blah blah blah blah blah blah blah blah blah blah blah",
-            "helpDeskUrl": "enterUrl",
             "sections": [{
                 "id": 3
             }, {
@@ -95,29 +93,13 @@ define(['exports', 'dash', 'backbone', "jquery", "hoist", 'relational'], functio
         }]
     };
 
-    Dash.idCount = 1;
-
-    Dash.checkIdCount = function(id) {
-        if (id >= Dash.idCount) {
-            Dash.idCount = id + 1;
-        }
-    };
-
-    Dash.assignId = function(model) {
-        if (model.get('id') === undefined) {
-            model.set({
-                "id": Dash.idCount
-            });
-            Dash.idCount++;
-        } else {
-            Dash.checkIdCount(model.get("id"));
-        }
-    };
-
     Dash.Product = Backbone.RelationalModel.extend({
+        idAttribute: '_id',
+
         initialize: function() {
             //this.sections = new Dash.Sections(this.toJSON().sections);
-            Dash.assignId(this);
+            //  Dash.assignId(this);
+
         },
 
         relations: [{
@@ -220,7 +202,7 @@ define(['exports', 'dash', 'backbone', "jquery", "hoist", 'relational'], functio
         }],
 
         toJSON: function() {
-            return this.get('section').id;
+            return this.get('section')._id;
         }
     });
 
@@ -229,9 +211,10 @@ define(['exports', 'dash', 'backbone', "jquery", "hoist", 'relational'], functio
     });
 
     Dash.Section = Backbone.RelationalModel.extend({
+        idAttribute: '_id',
 
         initialize: function() {
-            Dash.assignId(this);
+            //      Dash.assignId(this);
         },
 
         subModelTypes: {
@@ -252,17 +235,73 @@ define(['exports', 'dash', 'backbone', "jquery", "hoist", 'relational'], functio
                 if (path.length === 1) {
                     return this;
                 }
-                if (this.get("type") === "section"){
+                if (this.get("type") === "section") {
                     var childJoins = this.get("childJoins");
-                    for(var i=0; i<childJoins.length; i++){
+                    for (var i = 0; i < childJoins.length; i++) {
                         var section = childJoins.at(i).get("child").findSection(path.slice(1, path.length));
-                        if(section!==null){
+                        if (section !== null) {
                             return section;
                         }
                     }
                 }
             }
             return null;
+        },
+
+        setUrl: function(product) {
+            Dash.count = 0;
+            var url = this.findUrl(product);
+            if (url !== undefined) {
+                this.set('URL', url);
+            }
+            console.log("finished find: " + this.URL);
+            if(this.URL === undefined){
+                console.log(this);
+            }
+            console.log("done finding url from: " + product);
+        },
+
+        findUrl: function(product) {
+            //     console.log(this);
+            console.log(Dash.count);
+            Dash.count = Dash.count + 1;
+            var that = this;
+            var productJoins = this.get("productJoins");
+            var url = "";
+            url = undefined;
+            
+            if (productJoins !== undefined) {
+                // check products for product
+                console.log(productJoins);
+                productJoins.every(function(productJoin) {
+                    if (url === undefined) {
+                        console.log(productJoin.get("product").get("name") + " vs " + product);
+                        if (productJoin.get("product").get("name") === product) {
+                            console.log(Dash.count);
+                            url = product + "/" + that.get("name");
+                            //console.log(url);
+                            return false;
+                        }
+                    }
+                });
+            }
+            var parentJoins = this.get("parentJoins");
+            if (url === undefined && parentJoins !== undefined) {
+                // check parent sections for if they are connected to product
+                parentJoins.every(function(parentJoin) {
+                    if (url === undefined) {
+                        var tempUrl = parentJoin.get("parent").findUrl(product);
+                        console.log("parentJoin: ");
+                        console.log(parentJoin);
+                        console.log("url: " + tempUrl);
+                        if (tempUrl !== undefined) {
+                            url = tempUrl + "/" + that.get('name');
+                            return false;
+                        }
+                    }
+                });
+            }
+            return url;
         }
     });
 
@@ -328,7 +367,7 @@ define(['exports', 'dash', 'backbone', "jquery", "hoist", 'relational'], functio
         }],
 
         toJSON: function() {
-            return this.get('child').id;
+            return this.get('child')._id;
         }
     });
 
@@ -336,14 +375,14 @@ define(['exports', 'dash', 'backbone', "jquery", "hoist", 'relational'], functio
         model: Dash.SectionSectionJoin
     });
 
-    Dash.articles = new Dash.Sections(Dash.testJson.articles);
-    Dash.sections = new Dash.Sections(Dash.testJson.sections, {
-        parse: true
-    });
+    // Dash.articles = new Dash.Sections(Dash.testJson.articles);
+    // Dash.sections = new Dash.Sections(Dash.testJson.sections, {
+    //     parse: true
+    // });
 
-    Dash.products = new Dash.Products(Dash.testJson.products, {
-        parse: true
-    });
+    // Dash.products = new Dash.Products(Dash.testJson.products, {
+    //     parse: true
+    // });
 
     return Dash;
 });
