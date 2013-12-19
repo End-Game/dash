@@ -7,6 +7,7 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
         },
 
         find: function(path) {
+            //console.log(window.location);
             var loadHome = true;
             if (path) {
                 if (path.charAt(0) === "/") {
@@ -17,7 +18,7 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                 }
                 var pathSplit = path.split("/");
                 Dash.products.findProduct(pathSplit[0], function(product) {
-                    if (pathSplit.length === 1 && product !== null) {
+                    if (pathSplit.length === 1 && product !== undefined) {
                         loadHome = false;
                         new Dash.View.HelpDesk({
                             model: product
@@ -25,7 +26,7 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                     } else {
                         pathSplit.shift();
                         product.findSection(pathSplit, function(section) {
-                            if (section !== null) {
+                            if (section !== undefined) {
                                 section.set("currentProductName", product.get("name"));
                                 if (section.get("type") === "article") {
                                     loadHome = false;

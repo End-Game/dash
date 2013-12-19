@@ -29,9 +29,10 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
             return this;
         },
 
-        events: {
-            //       "click .product": "helpDesk"
-        },
+        // handled by router
+        // events: {
+        //           "click .product": "helpDesk"
+        // },
 
         helpDesk: function() {
             new Dash.View.HelpDesk({
@@ -82,6 +83,7 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
             var homeProductView = new Dash.HomeProductView({
                 model: item
             });
+            //console.log(item.get('sectionJoins'));
             this.$("hr").before(homeProductView.render().el);
             this.renderKeySections(item); // render bottom row of key sections
         },
@@ -96,7 +98,6 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
             keySectionsList.each(function(section) {
                 section.set("currentProductName", item.get('name'));
                 section.setUrl(item.get('name'));
-                console.log(section.get("URL"));
                 that.renderListItem(section, "#keySections" + item.get('_id'));
             }, this);
         },
@@ -162,7 +163,6 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
         renderListItem: function(item, tag) {
             item.set("currentProductName", this.model.get('name'));
             item.setUrl(this.model.get('name'));
-            console.log(item.get('URL'));
             var listItem = new Dash.ListItem({
                 model: item
             });
@@ -209,9 +209,10 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
         tagName: "li",
         template: _.template($("#listItemTemplate").html()),
 
-        events: {
-            // "click .item": "item"
-        },
+        // handled by router
+        // events: {
+        //     "click .item": "item"
+        // },
 
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
@@ -232,11 +233,6 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
     Dash.SideBar = Backbone.View.extend({
         tagName: "div",
         className: "sideBar",
-
-        render: function() {
-            this.$el.html(this.template(this.model.toJSON()));
-            return this;
-        }
     });
 
     Dash.SideBar.Product = Dash.SideBar.extend({
@@ -257,7 +253,6 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
         renderListItem: function(item, tag) {
             item.set("currentProductName", this.model.get('name'));
             item.setUrl(this.model.get('name'));
-            console.log(item.get("URL"));
             var listItem = new Dash.ListItem({
                 model: item
             });
@@ -265,8 +260,55 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
         },
     });
 
+    // make a separate one for faq and howDoI
     Dash.SideBar.Article = Dash.SideBar.extend({
-        template: _.template($("#articleSideBarTemplate").html())
+        template: _.template($("#articleSideBarTemplate").html()),
+
+        render: function() {
+            this.$el.html(this.template(this.model.toJSON()));
+            var that = this;
+            // console.log(this.model.getFaqs());
+            //     console.log(window.location.hash);
+            var url = window.location.hash.substring(1);
+            //     console.log(url);
+            if (url.charAt(url.length - 1) === '/') {
+                url = url.substring(0, url.length - 1);
+            }
+            //   console.log(url);
+            this.model.getFaqs().each(function(faq) {
+                faq.set("currentProductName", that.model.get('currentProductName'));
+                faq.set("URL", url + "/" + faq.get('name').replace(/\s/g, ""));
+                //  faq.setUrl(that.model.get('currentProductName'));
+                that.renderListItem(faq, "#faqs");
+            });
+            this.model.getHowDoIs().each(function(howDoI) {
+                howDoI.set("currentProductName", that.model.get('currentProductName'));
+                howDoI.set("URL", url + "/" + howDoI.get('name').replace(/\s/g, ""));
+                that.renderListItem(howDoI, "#howDoIs");
+            });
+            var path = url.split('/');
+            if (path.length > 2) {
+                var section = this.model.getSection(path[path.length - 2]);
+                if (section) {
+                    section.get('childJoins').each(function(childJoin) {
+                        var child = childJoin.get('child');
+                        if (child !== that.model) {
+                            child.set("currentProductName", that.model.get('currentProductName'));
+                            child.set("URL", url.substring(0, url.lastIndexOf('/')+1) + child.get('name').replace(/\s/g, ""));
+                            that.renderListItem(child, "#otherSections");
+                        }
+                    });
+                }
+            }
+            return this;
+        },
+
+        renderListItem: function(item, tag) {
+            var listItem = new Dash.ListItem({
+                model: item
+            });
+            this.$(tag).append(listItem.render().el);
+        },
     });
 
     Dash.View.SiteMap = Dash.View.extend({
