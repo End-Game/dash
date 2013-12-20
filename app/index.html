@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>Dash</title>
-    <script src="https://127.0.0.1:35729/livereload.js"></script>
+    <!-- <script src="https://127.0.0.1:35729/livereload.js"></script> -->
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
@@ -11,22 +11,26 @@
         <img id="logo" src="images/logo.jpg"/>
     </div>
     
-    <section id="Home">
+    <section id="Home" >
         <hr>
+        <div id="products" class="container"></div>
+        <hr>
+        <div id="keySections" class="container"></div>
     </section>
     
-    <section id="HelpDesk"></section>
+    <section id="HelpDesk" class="container"></section>
 
-    <section id="Article"></section>
+    <section id="Article" class="container"></section>
 
-    <section id="Search">
+    <section id="Search" class="container">
     <!--     <h2>Search Results</h2>
         <hr> -->
     </section>
 
-    <section id="SiteMap"></section>
+    <section id="SiteMap" class="container"></section>
     <hr>
     <!-- templates-->
+    
     <script id="homeProductTemplate" type="text/template">
         <a class="product" href="#<%=name%>"><img src="images/product.jpg"/></a>
         <h3><%=name%></h3>
@@ -74,6 +78,15 @@
         </div>
     </script>
     
+    <script id="sectionTemplate" type="text/template">
+        <h2><%=name%></h2>
+        <div class="inlineDiv twoThird">
+            <hr>
+            <ul id="children">
+            </ul>
+        </div>
+    </script>
+    
     <script id="listItemTemplate" type="text/template">
         <a class="item" href="#<%=URL%>"><%=name%></a>
     </script>
@@ -97,13 +110,26 @@
         <p>How Do I&#39;s</p>
         <ul id="howDoIs"></ul>
         <p>Other Articles in this Section</p>
-        <ul id="otherSections"></ul>
+        <ul id="otherArticles"></ul>
         <button type="button"><img src="images/support"/>Request Support</button>
     </script>
     
-    <script id="siteMapTemplate" type="text/template">
-        
+    <script id="articleSideBarTemplate" type="text/template">
+        <h2>Add New Article</h2>
+        <div class="inlineDiv twoThird">
+            <div id="menu">
+                <div><img src="insertLink">Format As Heading</div>
+                <div><img src="insertLink">Format As Sub Heading</div>
+                <div><img src="insertLink">Format As Body Text</div>
+                <div><img src="insertLink">Upload Image</div>
+                <div><img src="insertLink">Add Video</div>
+            </div>
+            <hr>
+            
+        </div>
     </script>
+    
+    <script id="siteMapTemplate" type="text/template"></script>
 
     <!-- build:js scripts/vendor.js --> 
     <!-- bower:js -->

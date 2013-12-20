@@ -261,7 +261,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                 if (path.length === 1) {
                     return this;
                 }
-                var i =0;
+                var i = 0;
                 var section;
                 if (this.get("type") === "section") {
                     var childJoins = this.get("childJoins");
@@ -402,13 +402,24 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             response.id = response._id;
             return response;
         },
-        
-        getSection: function(sectionName){
+
+        getSection: function(sectionName) {
             var parentJoins = this.get('parentJoins');
-            for(var i = 0; i<parentJoins.length; i++){
+            for (var i = 0; i < parentJoins.length; i++) {
                 var section = parentJoins.at(i).get('parent');
-                if(section.get('name')===sectionName){
+                if (section.get('name').replace(/\s/g, "") === sectionName.replace(/\s/g, "")) {
                     return section;
+                }
+            }
+            return undefined;
+        },
+
+        getProduct: function(productName) {
+            var productJoins = this.get('productJoins');
+            for (var i = 0; i < productJoins.length; i++) {
+                var product = productJoins.at(i).get('product');
+                if (product.get('name').replace(/\s/g, "") === ((productName === undefined) ? this.get('currentProductName').replace(/\s/g, "") : productName.replace(/\s/g, ""))) {
+                    return product;
                 }
             }
             return undefined;
@@ -430,6 +441,14 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                 includeInJSON: true
             }
         }],
+
+        getChildren: function() {
+            var children = new Dash.Sections();
+            this.get('childJoins').each(function(childJoin) {
+                children.add(childJoin.get("child"));
+            });
+            return children;
+        },
 
         parse: function(response) {
             var children = response.children;

@@ -28,6 +28,9 @@ require.config({
 require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone) {
     'use strict';
     Hoist.apiKey('TVGDGQGQSETLPLSSKRL[');
+     // put somewhere to show that user is admin, maybe after signup
+    app.dash.admin = true;
+
     Hoist.get("article", function(res) {
             app.dash.articles = new app.dash.Sections(res, {
                 parse: true
@@ -37,13 +40,11 @@ require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone
                 article.get('faqJoins').each(function(faqJoin){
                     faqJoin.set('faq', app.dash.articles.get(faqJoin.get('faq')));
                 });
-              //  console.log(article);
             });
             app.dash.articles.each(function(article){
                 article.get('howDoIJoins').each(function(howDoIJoin){
                     howDoIJoin.set('howDoI', app.dash.articles.get(howDoIJoin.get('howDoI')));
                 });
-              //  console.log(article);
             });
             Hoist.get("section", function(res) {
                 app.dash.sections = new app.dash.Sections(res, {
@@ -67,7 +68,6 @@ require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone
         function(res) {
             console.log('article get unsuccessful: ' + res);
         }, this);
-
 
     //new app.dash.View.Home();
 });

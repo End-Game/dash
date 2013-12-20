@@ -20,9 +20,15 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                 Dash.products.findProduct(pathSplit[0], function(product) {
                     if (pathSplit.length === 1 && product !== undefined) {
                         loadHome = false;
-                        new Dash.View.HelpDesk({
-                            model: product
-                        });
+                        if (Dash.admin) {
+                            new Dash.View.Admin.HelpDesk({
+                                model: product
+                            });
+                        } else {
+                            new Dash.View.HelpDesk({
+                                model: product
+                            });
+                        }
                     } else {
                         pathSplit.shift();
                         product.findSection(pathSplit, function(section) {
@@ -30,17 +36,35 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                                 section.set("currentProductName", product.get("name"));
                                 if (section.get("type") === "article") {
                                     loadHome = false;
-                                    new Dash.View.Article({
-                                        model: section
-                                    });
+                                    if (Dash.admin) {
+                                        new Dash.View.Admin.Article({
+                                            model: section
+                                        });
+                                    } else {
+                                        new Dash.View.Article({
+                                            model: section
+                                        });
+                                    }
+                                } else if (section.get("type") === "section") {
+                                    loadHome = false;
+                                    if (Dash.admin) {
+                                        new Dash.View.Admin.Section({
+                                            model: section
+                                        });
+                                    } else {
+                                        new Dash.View.Section({
+                                            model: section
+                                        });
+                                    }
                                 }
+
                             }
                         });
                     }
                 });
             }
             if (loadHome) {
-                new Dash.View.Home();
+                var view = Dash.admin ? new Dash.View.Admin.Home() : new Dash.View.Home();
             }
         }
 
