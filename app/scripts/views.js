@@ -255,7 +255,7 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
         },
 
         item: function() {
-            if (this.model.get("type") === "section") {
+            if (this.model.get("_type") === "section") {
                 //do something for section
             } else {
                 new Dash.View.Article({
@@ -279,7 +279,7 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
             var that = this;
             this.model.get("sectionJoins").each(function(sectionJoin) {
                 var section = sectionJoin.get("section");
-                if (section.get("type") === "section") {
+                if (section.get("_type") === "section") {
                     that.renderListItem(section, "#sections");
                 }
             });
@@ -318,7 +318,7 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
             this.model.getFaqs().each(function(faq) {
                 faq.set("currentProductName", that.model.get('currentProductName'));
                 faq.setUrl(that.model.get('currentProductName'));
-                if (faq.URL === undefined) {
+                if (faq.get('URL') === undefined) {
                     faq.set("URL", url + "/" + faq.get('name').replace(/\s/g, ""));
                 }
                 //  faq.setUrl(that.model.get('currentProductName'));
@@ -335,7 +335,7 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
             this.model.getHowDoIs().each(function(howDoI) {
                 howDoI.set("currentProductName", that.model.get('currentProductName'));
                 howDoI.setUrl(that.model.get('currentProductName'));
-                if (howDoI.URL === undefined) {
+                if (howDoI.get('URL') === undefined) {
                     howDoI.set("URL", url + "/" + howDoI.get('name').replace(/\s/g, ""));
                 }
                 that.renderListItem(howDoI, "#howDoIList");
@@ -354,7 +354,7 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
                 if (section) {
                     section.get('childJoins').each(function(childJoin) {
                         var child = childJoin.get('child');
-                        if (child !== that.model && child.get('type') === "article") {
+                        if (child !== that.model && child.get('_type') === "article") {
                             toRender.push(child);
                         }
                     });
@@ -364,7 +364,7 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
                 if (product) {
                     product.get('sectionJoins').each(function(sectionJoin) {
                         var section = sectionJoin.get('section');
-                        if (section !== that.model && section.get('type') === "article") {
+                        if (section !== that.model && section.get('_type') === "article") {
                             toRender.push(section);
                         }
                     });
@@ -390,20 +390,97 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
     });
 
     Dash.SideBar.Section = Dash.SideBar.extend({
+    });
 
+    Dash.SideBar.SiteMap = Dash.SideBar.Product.extend({
+        template: _.template($("#siteMapSideBarTemplate").html()),
     });
 
     Dash.View.SiteMap = Dash.View.extend({
+        el: "#SiteMap",
+        template: _.template($("#siteMapTemplate").html()),
         // sitemap - map or list
         // sidebar
+        render: function() {
+            this.$el.html(this.template(this.model.toJSON()));
+            var map = this.isList ? new Dash.SiteMap.List({
+                model: this.model
+            }) : new Dash.SiteMap.Map({
+                model: this.model
+            });
+            this.$('#map').append(map.render().el);
+            this.renderSidebar();
+            return this;
+        },
+
+        renderSidebar: function() {
+            this.$('.sideBar').empty();
+            var sideBar = new Dash.SideBar.SiteMap({
+                model: this.model,
+            });
+            this.$el.append(sideBar.render().el);
+        }
     });
 
-    Dash.MapList = Backbone.View.extend({
-        tagName: "ul",
-        
-        render: function(){
-            
+    Dash.SiteMap = Backbone.View.extend({
+        render: function() {
+            var sections = new Dash.Sections();
+            if (this.model.get('_type') === 'product') {
+                sections = this.model.getSections();
+            } else if (this.model.get('_type') === 'section') {
+                sections = this.model.getChildren();
+            }
+            var that = this;
+            sections.each(function(section) {
+                that.renderSection(section);
+            });
+            return this;
         },
+    });
+
+    Dash.SiteMap.Map = Dash.SiteMap.extend({
+        tagName: "ul",
+
+        renderSection: function(section) {
+            if (this.model.get('_type') === 'product') {
+                section.set('currentProductName', this.model.get('name'));
+            } else {
+                section.set('currentProductName', this.model.get('currentProductName'));
+            }
+            var url = this.model.get('URL');
+            if (url.charAt(url.length - 1) === '/') {
+                url = url.substring(0, url.length - 1);
+            }
+            url = url + "/" + section.get("name");
+            url.replace(/\s/g, "");
+            section.set('URL', url);
+            if (section.get('_type') === 'section') {
+                this.renderListItem(section);
+                var map = new Dash.SiteMap.Map({
+                    model: section
+                });
+                this.$el.append(map.render().el);
+            } else {
+                this.renderListItem(section);
+            }
+        },
+
+        renderListItem: function(item) {
+            var listItem = new Dash.ListItem({
+                model: item
+            });
+            if (item.get("_type") === "section") {
+                listItem = new Dash.ListItem({
+                    model: item,
+                    className: 'bold'
+                });
+            }
+            this.$el.append(listItem.render().el);
+        },
+    });
+
+    Dash.SiteMap.List = Dash.SiteMap.extend({
+
     });
     return Dash;
 });

@@ -5,8 +5,9 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
     Dash.Product = Backbone.RelationalModel.extend({
         idAttribute: '_id',
 
-        // initialize: function() {
-        // },
+        initialize: function() {
+            this.set("URL", this.get('name'));
+        },
 
         relations: [{
             type: Backbone.HasMany,
@@ -56,13 +57,16 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             return response;
         },
 
+        getSections: function() {
+            var sections = new Dash.Sections();
+            this.get('sectionJoins').each(function(sectionJoin) {
+                sections.add(sectionJoin.get('section'));
+            });
+            return sections;
+        },
+
         getKeySections: function() {
             var keySections = new Dash.Sections();
-            // this.get('sectionJoins').each(function(sectionJoin) {
-            //     if (sectionJoin.get("section").get("isKey")) {
-            //         keySections.push(sectionJoin.get("section"));
-            //     }
-            // });
             this.get('keySectionJoins').each(function(sectionJoin) {
                 keySections.push(sectionJoin.get("keySection"));
             });
@@ -73,7 +77,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             var articles = new Dash.Sections();
             this.get('sectionJoins').each(function(sectionJoin) {
                 var section = sectionJoin.get('section');
-                if (section.get('type') === "section") {
+                if (section.get('_type') === "section") {
                     articles.add(section.getDecendents().models);
                 } else {
                     articles.add(section);
@@ -161,7 +165,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
 
     Dash.Section = Backbone.RelationalModel.extend({
         idAttribute: '_id',
-
+        subModelTypeAttribute: '_type',
         // initialize: function() {
         // },
 
@@ -185,7 +189,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                 }
                 var i = 0;
                 var section;
-                if (this.get("type") === "section") {
+                if (this.get("_type") === "section") {
                     var childJoins = this.get("childJoins");
                     for (i = 0; i < childJoins.length; i++) {
                         section = childJoins.at(i).get("child").findSection(path.slice(1, path.length));
@@ -193,7 +197,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                             return section;
                         }
                     }
-                } else if (this.get("type") === "article") {
+                } else if (this.get("_type") === "article") {
                     var faqJoins = this.get("faqJoins");
                     for (i = 0; i < faqJoins.length; i++) {
                         section = faqJoins.at(i).get("faq").findSection(path.slice(1, path.length));
@@ -215,6 +219,9 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
 
         setUrl: function(product) {
             //Dash.count = 0;
+            if(product===undefined){
+                product = this.get("currentProductName");
+            }
             var url = this.findUrl(product);
             if (url !== undefined) {
                 url = url.replace(/\s/g, '');
@@ -239,9 +246,9 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                 // check products for product
                 productJoins.every(function(productJoin) {
                     if (url === undefined) {
-                        //        console.log(productJoin.get("product").get("name") + " vs " + product);
+                        // console.log(productJoin.get("product").get("name") + " vs " + product);
                         if (productJoin.get("product").get("name") === product) {
-                            //          console.log(Dash.count);
+                            // console.log(Dash.count);
                             url = product + "/" + that.get("name");
                             //console.log(url);
                             return false;
@@ -386,7 +393,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             var children = new Dash.Sections();
             this.get('childJoins').each(function(childJoin) {
                 var child = childJoin.get("child");
-                if (child.get("type") === "article") {
+                if (child.get("_type") === "article") {
                     children.add(child);
                 } else {
                     children.add(child.getDecendents().get('models'));

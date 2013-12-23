@@ -34,7 +34,7 @@
     <!-- templates-->
     
     <script id="homeProductTemplate" type="text/template">
-        <a class="product" href="#<%=name%>"><img src="images/product.jpg"/></a>
+        <a class="product" href="#<%=URL%>"><img src="images/product.jpg"/></a>
         <h3><%=name%></h3>
         <p><%=shortDescription%></p>
     </script>
@@ -90,7 +90,7 @@
     </script>
     
     <script id="listItemTemplate" type="text/template">
-        <a class="item" href="#<%=URL%>"><%=name%></a>
+        <a href="#<%=URL%>"><%=name%></a>
     </script>
     
     <script id="productSideBarTemplate" type="text/template">
@@ -124,6 +124,15 @@
         <button type="button"><img src="images/support.png"/>Request Support</button>
     </script>
     
+    <script id="siteMapSideBarTemplate" type="text/template">
+        <div>
+            <h4>Sections</h4>
+            <ul id="sections"></ul>
+        </div>
+        <hr>
+        <a href="#"><img src="images/sitemap.png"/>View Other Products</a>
+    </script>
+    
     <script id="newArticleSideBarTemplate" type="text/template">
         <h1>Add New Article</h1>
         <div class="inlineDiv twoThird">
@@ -135,19 +144,19 @@
                 <div><img src="insertLink">Add Video</div>
             </div>
             <hr>
-            
         </div>
     </script>
     
     <script id="siteMapTemplate" type="text/template">
         <h1><%=name%></h1>
-        <div class="inlineDiv twoThird">        
-            <ul class="sections"></ul>
+        <div id='map' class="inlineDiv twoThird"></div>
     </script>
     
     <script id="mapTemplate" type="text/template">
         <ul class="sections"></ul>
     </script>
+    
+    
 
     <!-- build:js scripts/vendor.js --> 
     <!-- bower:js -->

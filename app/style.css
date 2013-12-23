@@ -1,6 +1,7 @@
 * {
     font-family: sans-serif;
     color: gray;
+    font-weight: 200;
 }
 
 h1, h2, h3, h4, h5, h6{
@@ -35,9 +36,10 @@ h1, h2, h3, h4, h5, h6{
 .sideBar {
     display: inline-block;
     border: 2px solid #d0d0d0;
-    width: 33%;
+    width: 30%;
     margin-top: 7px;
     border-radius: 5px;
+    margin-left: 3%;
     background-color: #f9f9f9;
 }
 
@@ -66,7 +68,7 @@ div {
 }
 
 .twoThird {
-    width: 66%;
+    width: 65%;
 }
 
 hr {
@@ -100,5 +102,21 @@ ul {
 }
 
 .sideBar div{
+    margin-left: 10px;
+}
+
+.bold a{
+    font-weight: normal;
+    color: #555555;
+}
+
+#map {
+    display: inline-block;
+    border: 2px solid #d0d0d0;
+    margin-top: 7px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+#map ul{
     margin-left: 10px;
 }

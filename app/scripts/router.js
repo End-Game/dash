@@ -33,11 +33,12 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                         pathSplit.shift();
                         if(pathSplit[0]==="sitemap"){
                             new Dash.View.SiteMap({model: product});
+                            loadHome = false;
                         }else{
                         product.findSection(pathSplit, function(section) {
                             if (section !== undefined) {
                                 section.set("currentProductName", product.get("name"));
-                                if (section.get("type") === "article") {
+                                if (section.get("_type") === "article") {
                                     loadHome = false;
                                     if (Dash.admin) {
                                         new Dash.View.Admin.Article({
@@ -48,7 +49,7 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                                             model: section
                                         });
                                     }
-                                } else if (section.get("type") === "section") {
+                                } else if (section.get("_type") === "section") {
                                     loadHome = false;
                                     if (Dash.admin) {
                                         new Dash.View.Admin.Section({
