@@ -1,5 +1,11 @@
 * {
     font-family: sans-serif;
+    color: gray;
+}
+
+h1, h2, h3, h4, h5, h6{
+    color: #77BB22;
+    font-weight: normal;
 }
 
 .container {
@@ -80,10 +86,19 @@ ul {
     border-right: 2px solid #d0d0d0;
 }
 
-.SC {
-    font-variant: small-caps;
+.small {
+    font-size: 10px;
+    font-weight: bold;
 }
 
 .theme-colour{}
 
 .theme-colour-text{}
+
+.sideBar img{
+    height: 20px;
+}
+
+.sideBar div{
+    margin-left: 10px;
+}

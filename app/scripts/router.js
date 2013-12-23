@@ -31,6 +31,9 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                         }
                     } else {
                         pathSplit.shift();
+                        if(pathSplit[0]==="sitemap"){
+                            new Dash.View.SiteMap({model: product});
+                        }else{
                         product.findSection(pathSplit, function(section) {
                             if (section !== undefined) {
                                 section.set("currentProductName", product.get("name"));
@@ -59,7 +62,7 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                                 }
 
                             }
-                        });
+                        });}
                     }
                 });
             }

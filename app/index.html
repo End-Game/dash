@@ -8,7 +8,9 @@
 </head>
 <body>
     <div id="logoDiv">
-        <img id="logo" src="images/logo.jpg"/>
+        <a href="#">
+            <img id="logo" src="images/logo.jpg"/>
+        </a>
     </div>
     
     <section id="Home" >
@@ -23,7 +25,7 @@
     <section id="Article" class="container"></section>
 
     <section id="Search" class="container">
-    <!--     <h2>Search Results</h2>
+    <!--     <h1>Search Results</h1>
         <hr> -->
     </section>
 
@@ -38,24 +40,24 @@
     </script>
 
     <script id="keySectionsTemplate" type="text/template">
-        <h2>Key Sections</h2>
+        <h1>Key Sections</h1>
         <ul id="keySections<%=_id%>">
         </ul>
     </script>
     
     <script id="helpDeskTemplate" type="text/template">
-        <h2><%=name%> Help Desk</h2>
+        <h1><%=name%> Help Desk</h1>
         <div class="inlineDiv twoThird">
             <hr>
             <!--insert search box here-->
             <p><%=description%></p>
             <hr>
-            <div class="inlineDiv half">
+            <div class="inlineDiv half" id='faqs'>
                 <h3>FAQ&#39;s</h3>
                 <ul id="faqList">
                 </ul>
             </div>
-            <div class="inlineDiv half">
+            <div class="inlineDiv half" id="howDoIs">
                 <h3>How Do I&#39;s</h3>
                 <ul id="howDoIList">
                 </ul>
@@ -64,22 +66,22 @@
     </script>
 
     <script id="articleTemplate" type="text/template">
-        <h2><%=name%></h2>
+        <h1><%=name%></h1>
         <div class="inlineDiv twoThird">
             <hr>
             <div id="article">
-                <p class="SC">published <%=date%></p>
+                <p class='small'>PUBLISHED <%=date%></p>
                 <p><%=content%></p>
                 <hr>
-                <h4>Other Relevant Articles</h4>
-                <ul>
-                </ul>
+                <!--<h4>Other Relevant Articles</h4>
+                <ul id="otherRelevantArticles">
+                </ul>-->
             </div>
         </div>
     </script>
     
     <script id="sectionTemplate" type="text/template">
-        <h2><%=name%></h2>
+        <h1><%=name%></h1>
         <div class="inlineDiv twoThird">
             <hr>
             <ul id="children">
@@ -92,30 +94,38 @@
     </script>
     
     <script id="productSideBarTemplate" type="text/template">
-        <a href="#insert link">View Site Map</a>
+        <a href="#<%=name%>/sitemap"><img src="images/sitemap.png"/>View Site Map</a>
         <hr>
-        <p>Sections</p>
-        <ul id="sections"></ul>
+        <div>
+            <h4>Sections</h4>
+            <ul id="sections"></ul>
+        </div>
         <hr>
-        <a href="#">View Other Products</a>
+        <a href="#"><img src="images/sitemap.png"/>View Other Products</a>
     </script>
     
     <script id="articleSideBarTemplate" type="text/template">
         <!--insert mini site map-->
         <hr>
-        <a href="#sitemap"><img src="images/siteMap"/>View Full Site Map</a>
+        <a href="#<%=currentProductName%>/sitemap"><img src="images/sitemap.png"/>View Full Site Map</a>
         <hr>
-        <p>FAQ&#39;s</p>
-        <ul id="faqs"></ul>
-        <p>How Do I&#39;s</p>
-        <ul id="howDoIs"></ul>
-        <p>Other Articles in this Section</p>
-        <ul id="otherArticles"></ul>
-        <button type="button"><img src="images/support"/>Request Support</button>
+        <div id='faqs'>
+            <h4>FAQ&#39;s</h4>
+            <ul id="faqList"></ul>
+        </div>
+        <div id="howDoIs">
+            <h4>How Do I&#39;s</h4>
+            <ul id="howDoIList"></ul>
+        </div>
+        <div id="otherArticles">
+            <h4>Other Articles in this Section</h4>
+            <ul id="otherArticleList"></ul>
+        </div>
+        <button type="button"><img src="images/support.png"/>Request Support</button>
     </script>
     
-    <script id="articleSideBarTemplate" type="text/template">
-        <h2>Add New Article</h2>
+    <script id="newArticleSideBarTemplate" type="text/template">
+        <h1>Add New Article</h1>
         <div class="inlineDiv twoThird">
             <div id="menu">
                 <div><img src="insertLink">Format As Heading</div>
@@ -129,7 +139,15 @@
         </div>
     </script>
     
-    <script id="siteMapTemplate" type="text/template"></script>
+    <script id="siteMapTemplate" type="text/template">
+        <h1><%=name%></h1>
+        <div class="inlineDiv twoThird">        
+            <ul class="sections"></ul>
+    </script>
+    
+    <script id="mapTemplate" type="text/template">
+        <ul class="sections"></ul>
+    </script>
 
     <!-- build:js scripts/vendor.js --> 
     <!-- bower:js -->

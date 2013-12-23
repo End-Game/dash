@@ -2,97 +2,6 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
     'use strict';
     Backbone.Relational.store.addModelScope(Dash);
 
-    Dash.testJson = {
-        "articles": [{
-            "name": "article1",
-            "type": "article",
-            "articleType": "article",
-            "isKey": true,
-            "id": 3,
-            "content": "This is the article. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat"
-        }, {
-            "name": "faq",
-            "type": "article",
-            "articleType": "faq",
-            "isKey": true,
-            "id": 4,
-            "content": "This is the article. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat"
-        }, {
-            "name": "How Do",
-            "type": "article",
-            "articleType": "howDoI",
-            "isKey": true,
-            "id": 10,
-            "content": "This is the article. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat"
-        }, {
-            "name": "faq1",
-            "type": "article",
-            "articleType": "faq",
-            "isKey": true,
-            "id": 7,
-            "content": "This is the article. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat"
-        }, {
-            "name": "faq2",
-            "type": "article",
-            "articleType": "faq",
-            "id": 8,
-            "content": "This is the article. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat"
-        }],
-
-        "sections": [{
-            "name": "section1",
-            "type": "section",
-            "children": [{
-                "id": 3
-            }, {
-                "id": 4
-            }, {
-                "id": 10
-            }],
-            "id": 5
-        }, {
-            "name": "section3",
-            "type": "section",
-            "isKey": true,
-            "children": [{
-                "id": 7
-            }, {
-                "id": 8
-            }],
-            "id": 6
-        }],
-
-        "products": [{
-            "name": "product1",
-            "id": 1,
-            "shortDescription": "enter a short description",
-            "description": "long block of text blah blah blah blah blah blah blah blah blah blah blah blah",
-            "sections": [{
-                "id": 3,
-            }, {
-                "id": 4
-            }, {
-                "id": 5
-            }, {
-                "id": 10
-            }]
-        }, {
-            "name": "product2",
-            "id": 2,
-            "shortDescription": "enter a short description",
-            "description": "long block of text blah blah blah blah blah blah blah blah blah blah blah blah",
-            "sections": [{
-                "id": 3
-            }, {
-                "id": 6
-            }, {
-                "id": 7
-            }, {
-                "id": 8
-            }]
-        }]
-    };
-
     Dash.Product = Backbone.RelationalModel.extend({
         idAttribute: '_id',
 
@@ -160,11 +69,24 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             return keySections;
         },
 
+        getAllArticles: function() {
+            var articles = new Dash.Sections();
+            this.get('sectionJoins').each(function(sectionJoin) {
+                var section = sectionJoin.get('section');
+                if (section.get('type') === "section") {
+                    articles.add(section.getDecendents().models);
+                } else {
+                    articles.add(section);
+                }
+            });
+            return articles;
+        },
+
         getFaqs: function() {
             var faqs = new Dash.Sections();
-            this.get('sectionJoins').each(function(sectionJoin) {
-                if (sectionJoin.get("section").get("articleType") === "faq") {
-                    faqs.add(sectionJoin.get("section"));
+            this.getAllArticles().each(function(article) {
+                if (article.get("articleType") === "faq") {
+                    faqs.add(article);
                 }
             });
             return faqs;
@@ -172,9 +94,9 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
 
         getHowDoIs: function() {
             var howDoIs = new Dash.Sections();
-            this.get('sectionJoins').each(function(sectionJoin) {
-                if (sectionJoin.get("section").get("articleType") === "howDoI") {
-                    howDoIs.add(sectionJoin.get("section"));
+            this.getAllArticles().each(function(article) {
+                if (article.get("articleType") === "howDoI") {
+                    howDoIs.add(article);
                 }
             });
             return howDoIs;
@@ -293,8 +215,9 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
 
         setUrl: function(product) {
             //Dash.count = 0;
-            var url = this.findUrl(product).replace(/\s/g, '');
+            var url = this.findUrl(product);
             if (url !== undefined) {
+                url = url.replace(/\s/g, '');
                 this.set('URL', url);
             }
             //console.log("finished find: " + this.get('URL'));
@@ -399,6 +322,15 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                 });
                 delete response.faqs;
             }
+            var howDoIs = response.howDoIs;
+            if (howDoIs) { //backbone-relational sometimes calls parse multiple times
+                response.howDoIJoins = _.map(howDoIs, function(howDoI) {
+                    return {
+                        howDoI: howDoI
+                    };
+                });
+                delete response.howDoIs;
+            }
             response.id = response._id;
             return response;
         },
@@ -446,6 +378,19 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             var children = new Dash.Sections();
             this.get('childJoins').each(function(childJoin) {
                 children.add(childJoin.get("child"));
+            });
+            return children;
+        },
+
+        getDecendents: function() {
+            var children = new Dash.Sections();
+            this.get('childJoins').each(function(childJoin) {
+                var child = childJoin.get("child");
+                if (child.get("type") === "article") {
+                    children.add(child);
+                } else {
+                    children.add(child.getDecendents().get('models'));
+                }
             });
             return children;
         },
