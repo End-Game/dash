@@ -307,10 +307,15 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
             if (url.charAt(url.length - 1) === '/') {
                 url = url.substring(0, url.length - 1);
             }
+            this.renderSiteMap();
             this.renderFaqs(url);
             this.renderHowDoIs(url);
             this.renderOtherArticles(url);
             return this;
+        },
+
+        renderSiteMap: function(){
+            
         },
 
         renderFaqs: function(url) {
@@ -459,7 +464,7 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
                 var map = new Dash.SiteMap.Map({
                     model: section
                 });
-                this.$el.append(map.render().el);
+                this.$("li").last().append(map.render().el);
             } else {
                 this.renderListItem(section);
             }
@@ -480,7 +485,9 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
     });
 
     Dash.SiteMap.List = Dash.SiteMap.extend({
-
+        render: function(){
+            
+        }
     });
     return Dash;
 });

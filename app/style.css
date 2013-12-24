@@ -6,7 +6,7 @@
 
 h1, h2, h3, h4, h5, h6{
     color: #77BB22;
-    font-weight: normal;
+    /*font-weight: normal;*/
 }
 
 .container {
@@ -102,12 +102,22 @@ ul {
 }
 
 .sideBar div{
-    margin-left: 10px;
+    margin-left: 20px;
 }
 
-.bold a{
+.sideBar > a div {
+    width:auto;
+    text-align: center;
+}
+
+.bold > a{
     font-weight: normal;
-    color: #555555;
+    /*color: #555555;*/
+}
+
+.bold {
+    font-weight: 600;
+    display: inline;
 }
 
 #map {
@@ -117,6 +127,17 @@ ul {
     border-radius: 5px;
     background-color: #f9f9f9;
 }
+    
 #map ul{
-    margin-left: 10px;
+    margin-left: 20px;
 }
+
+#map > ul > li {
+    width: 50%;
+    float: left;
+}
+
+/*#map > ul > li:nth-child(even){
+    float: right;
+}*/
+

@@ -94,20 +94,29 @@
     </script>
     
     <script id="productSideBarTemplate" type="text/template">
-        <a href="#<%=name%>/sitemap"><img src="images/sitemap.png"/>View Site Map</a>
-        <hr>
+        <a href="#<%=name%>/sitemap">
+            <div>
+                <img src="images/sitemap.png"/>
+                <h4 class="bold">View Site Map</h4>
+            </div>
+        </a>
         <div>
             <h4>Sections</h4>
             <ul id="sections"></ul>
         </div>
         <hr>
-        <a href="#"><img src="images/sitemap.png"/>View Other Products</a>
+        <a class="bold" href="#"><img src="images/sitemap.png"/>View Other Products</a>
     </script>
     
     <script id="articleSideBarTemplate" type="text/template">
         <!--insert mini site map-->
         <hr>
-        <a href="#<%=currentProductName%>/sitemap"><img src="images/sitemap.png"/>View Full Site Map</a>
+        <a href="#<%=currentProductName%>/sitemap">
+            <div>
+                <img src="images/sitemap.png"/>
+                <h4 class="bold">View Full Site Map</h4>
+            </div>
+        </a>
         <hr>
         <div id='faqs'>
             <h4>FAQ&#39;s</h4>
