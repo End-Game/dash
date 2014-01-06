@@ -65,14 +65,14 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
 
     Dash.View.Home = Dash.View.extend({
         el: "#Home",
-
+        template: _.template($("#homeTemplate").html()),
+        
         start: function() {
             this.model = Dash.products;
         },
 
         render: function() {
-            this.$el.find("#products").empty(); // remove stuff from previous render
-            this.$el.find("#keySections").empty();
+            this.$el.html(this.template());
             var that = this;
             this.model.each(function(item) {
                 that.renderProduct(item);
@@ -112,23 +112,6 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
 
     Dash.View.HelpDesk = Dash.View.extend({
         el: "#HelpDesk",
-
-        render: function() {
-            this.$el.find(".helpDeskProduct").remove();
-            var helpDeskProduct = new Dash.HelpDeskProduct({
-                model: this.model
-            });
-            this.$el.append(helpDeskProduct.render().el);
-            // this.renderSidebar();
-            return this;
-        },
-
-    });
-
-    Dash.HelpDeskProduct = Backbone.View.extend({
-
-        tagName: "div",
-        className: "helpDeskProduct",
         template: _.template($("#helpDeskTemplate").html()),
 
         render: function() {
@@ -204,7 +187,6 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
         template: _.template($("#sectionTemplate").html()),
 
         render: function() {
-            this.$el.empty();
             this.$el.html(this.template(this.model.toJSON()));
             this.renderSections();
             return this;
@@ -274,7 +256,6 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
         template: _.template($("#productSideBarTemplate").html()),
 
         render: function() {
-            this.$el.empty();
             this.$el.html(this.template(this.model.toJSON()));
             var that = this;
             this.model.get("sectionJoins").each(function(sectionJoin) {
@@ -326,7 +307,6 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
                 if (faq.get('URL') === undefined) {
                     faq.set("URL", url + "/" + faq.get('name').replace(/\s/g, ""));
                 }
-                //  faq.setUrl(that.model.get('currentProductName'));
                 that.renderListItem(faq, "#faqList");
             });
             if (this.$("#faqList li").length === 0) {

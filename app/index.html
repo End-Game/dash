@@ -14,24 +14,28 @@
     </div>
     
     <section id="Home" >
-        <hr>
-        <div id="products" class="container"></div>
-        <hr>
-        <div id="keySections" class="container"></div>
     </section>
     
     <section id="HelpDesk" class="container"></section>
 
     <section id="Article" class="container"></section>
 
-    <section id="Search" class="container">
-    <!--     <h1>Search Results</h1>
-        <hr> -->
-    </section>
+    <section id="Search" class="container"></section>
 
     <section id="SiteMap" class="container"></section>
+    
+    <section id="Modal" class="modal"></section>
+    
     <hr>
+    
     <!-- templates-->
+    
+    <script id="homeTemplate" type="text/template">
+        <hr>
+        <div id="products" class="container"></div>
+        <hr>
+        <div id="keySections" class="container"></div>
+    </script>
     
     <script id="homeProductTemplate" type="text/template">
         <a class="product" href="#<%=URL%>"><img src="images/product.jpg"/></a>
@@ -130,7 +134,7 @@
             <h4>Other Articles in this Section</h4>
             <ul id="otherArticleList"></ul>
         </div>
-        <button type="button"><img src="images/support.png"/>Request Support</button>
+        <button type="button"><img src="images/support.png"/> Request Support</button>
     </script>
     
     <script id="siteMapSideBarTemplate" type="text/template">
@@ -139,21 +143,7 @@
             <ul id="sections"></ul>
         </div>
         <hr>
-        <a href="#"><img src="images/sitemap.png"/>View Other Products</a>
-    </script>
-    
-    <script id="newArticleSideBarTemplate" type="text/template">
-        <h1>Add New Article</h1>
-        <div class="inlineDiv twoThird">
-            <div id="menu">
-                <div><img src="insertLink">Format As Heading</div>
-                <div><img src="insertLink">Format As Sub Heading</div>
-                <div><img src="insertLink">Format As Body Text</div>
-                <div><img src="insertLink">Upload Image</div>
-                <div><img src="insertLink">Add Video</div>
-            </div>
-            <hr>
-        </div>
+        <a href="#" class="bold"><img src="images/sitemap.png"/>View Other Products</a>
     </script>
     
     <script id="siteMapTemplate" type="text/template">
@@ -165,6 +155,87 @@
         <ul class="sections"></ul>
     </script>
     
+    <!-- admin templates -->
+    
+    <script id="adminHomeTemplate" type="text/template">
+        <div class="buttonContainer">
+            <button class="themeButton" type="button">
+                <img src="images/support.png"/>
+                Add New Product
+            </button>
+        </div>
+        <hr>
+        <div id="products" class="container"></div>
+    </script>
+    
+    <script id="productSetupTemplate" type="text/template">
+        <div class="content">
+            <h1>Set Up Product</h1>
+            <hr>
+            <input type="text" id="name" class="topField" placeholder="Name of Product..." />
+            <input type="text" id="description" class="bottomField" placeholder="Description of Product..." />
+            <hr>
+            <h4 class="bold">Upload Logo</h4>
+            <hr>
+            <button type="button" id="save">
+                Save Product
+            </button>
+        <div class="content">
+    </script>
+    
+    <script id="newArticleTemplate" type="text/template">
+        <h1>Add New Article</h1>
+        <div class="inlineDiv twoThird">
+            <hr>
+            <div id="menu">
+                <div><img src="images/sitemap.png"><p>Format As Heading</p></div>
+                <div><img src="images/sitemap.png"><p>Format As Sub Heading</p></div>
+                <div><img src="images/sitemap.png"><p>Format As Body Text</p></div>
+                <div><img src="images/sitemap.png"><p>Upload Image</p></div>
+                <div><img src="images/sitemap.png"><p>Add Video</p></div>
+            </div>
+            <hr>
+            <input type="text" id="title" class="topField" placeholder="Enter Title of Article..." />
+            <textarea id="content" class="bottomField" placeholder="Enter Article Content..."></textarea>
+            <hr>
+            <h3>Preview<h3>
+            <!-- insert Preview here -->
+        </div>
+    </script>
+    
+    <script id="newArticleSideBarTemplate" type="text/template">
+        <div>
+            <h4>Products This Article Relates To</h4>
+            <ul class="checkboxList" id="productList"></ul>
+        </div>
+        <hr>
+        <div>
+            <ul id="articleTypeList" class="checkboxList">
+                <li><label><input class="checkbox" type="checkbox"> Article is a "FAQ"</label></li>
+                <li><label><input class="checkbox" type="checkbox"> Article is a "How To"</label></li>
+            </ul>
+        </div>
+        <hr>
+        <div>
+            <h4>Tags<h4>
+            <input type="text" id="tagName" placeholder="Enter Tag"/>
+        </div>
+    </script>
+    
+    <script id="adminProductSideBarTemplate" type="text/template">
+            <button class="themeButton " type="button" id="newSection"> Add New Section
+            </button>
+            <hr>
+            <button type="button" id="newArticle">
+                 Add New Article
+            </button>
+            <button type="button" id="productSettings">
+                 Product Settings
+            </button>
+            <button type="button" id="personalise">
+                 Personalise
+            </button>
+    </script>
     
 
     <!-- build:js scripts/vendor.js --> 
