@@ -296,6 +296,12 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             relatedModel: 'HowDoIJoin',
             keyDestination: 'howDoIs',
             autofetch: false,
+        }, {
+            type: Backbone.HasMany,
+            key: 'tagJoins',
+            relatedModel: 'TagJoin',
+            keyDestination: 'tags',
+            autofetch: false,
         }],
 
         getFaqs: function() {
@@ -337,6 +343,15 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                     };
                 });
                 delete response.howDoIs;
+            }
+            var tags = response.tags;
+            if (tags) { //backbone-relational sometimes calls parse multiple times
+                response.tagJoins = _.map(tags, function(tag) {
+                    return {
+                        tag: tag
+                    };
+                });
+                delete response.tags;
             }
             response.id = response._id;
             return response;
@@ -467,6 +482,25 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
         model: Dash.SectionSectionJoin
     });
 
+    Dash.Tag = Backbone.RelationalModel.extend({
+        idAttribute: '_id',
+    });
+    
+    Dash.TagJoin = Backbone.RelationalModel.extend({
+        relations: [{
+            type: Backbone.HasOne,
+            key: 'tag',
+            relatedModel: 'Tag',
+            reverseRelation: {
+                key: 'articleJoins',
+                includeInJSON: false
+            }
+        }],
+
+        toJSON: function() {
+            return this.get('tag')._id;
+        }
+    });
     // Dash.articles = new Dash.Sections(Dash.testJson.articles);
     // Dash.sections = new Dash.Sections(Dash.testJson.sections, {
     //     parse: true

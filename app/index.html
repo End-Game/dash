@@ -13,8 +13,7 @@
         </a>
     </div>
     
-    <section id="Home" >
-    </section>
+    <section id="Home"></section>
     
     <section id="HelpDesk" class="container"></section>
 
@@ -143,12 +142,16 @@
             <ul id="sections"></ul>
         </div>
         <hr>
-        <a href="#" class="bold"><img src="images/sitemap.png"/>View Other Products</a>
+        <a href="#">
+            <div><img src="images/sitemap.png"/>
+                <p class="bold">View Other Products</p>
+            </div>
+        </a>
     </script>
     
     <script id="siteMapTemplate" type="text/template">
         <h1><%=name%></h1>
-        <div id='map' class="inlineDiv twoThird"></div>
+        <div class="map inlineDiv twoThird"></div>
     </script>
     
     <script id="mapTemplate" type="text/template">
@@ -177,10 +180,8 @@
             <hr>
             <h4 class="bold">Upload Logo</h4>
             <hr>
-            <button type="button" id="save">
-                Save Product
-            </button>
-        <div class="content">
+            <button class="themeButton save" type="button">Save Product</button>
+        </div>
     </script>
     
     <script id="newArticleTemplate" type="text/template">
@@ -203,6 +204,31 @@
         </div>
     </script>
     
+    <script id="checkboxItemTemplate" type="text/template">
+        <label><input class="checkbox" type="checkbox"><%=name%></label>
+    </script>
+    
+    <script id="checkboxProductTemplate" type="text/template">
+        <label><input class="checkbox" type="checkbox"><%=name%></label>
+        <div>
+            <button type="button">Place in Tree</button>
+        </div>
+    </script>
+    
+    <script id="treePlaceTemplate" type="text/template">
+        <div class="content big">
+            <h1>Place Article in Tree</h1>
+            <hr>
+            <div class="map"></div>
+            <button class="themeButton inlineDiv half" type="button" class="save">
+                Save
+            </button>
+            <button class="themeButton inlineDiv half" type="button" class="cancel">
+                Save
+            </button>
+        </div>
+    </script>
+    
     <script id="newArticleSideBarTemplate" type="text/template">
         <div>
             <h4>Products This Article Relates To</h4>
@@ -211,30 +237,34 @@
         <hr>
         <div>
             <ul id="articleTypeList" class="checkboxList">
-                <li><label><input class="checkbox" type="checkbox"> Article is a "FAQ"</label></li>
-                <li><label><input class="checkbox" type="checkbox"> Article is a "How To"</label></li>
+                <li>
+                    <label><input class="checkbox" type="checkbox">Article is a "FAQ"</label>
+                </li>
+                <li>
+                    <label><input class="checkbox" type="checkbox">Article is a "How To"</label>
+                </li>
             </ul>
         </div>
         <hr>
         <div>
-            <h4>Tags<h4>
+            <h4>Tags</h4>
             <input type="text" id="tagName" placeholder="Enter Tag"/>
         </div>
+        <hr>
+        <div>
+            <h4>Article Status</h4>
+            <!-- drop down box -->
+        </div>
+        <button type="button" class="save">Save</button>
     </script>
     
     <script id="adminProductSideBarTemplate" type="text/template">
             <button class="themeButton " type="button" id="newSection"> Add New Section
             </button>
             <hr>
-            <button type="button" id="newArticle">
-                 Add New Article
-            </button>
-            <button type="button" id="productSettings">
-                 Product Settings
-            </button>
-            <button type="button" id="personalise">
-                 Personalise
-            </button>
+            <button type="button" id="newArticle"> Add New Article</button>
+            <button type="button" id="productSettings"> Product Settings</button>
+            <button type="button" id="personalise"> Personalise</button>
     </script>
     
 

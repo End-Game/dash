@@ -53,22 +53,56 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
 
     Dash.View = Backbone.View.extend({
         initialize: function() {
+            var view = this.$el.data('view');
+
+            if (view && view.trash) {
+                view.trash();
+            }
+
+            if (!this.$el.hasClass('modal')) {
+                $('section').hide();
+            }
+
+            this.$el.data('view', this);
+
             if (this.start) {
                 this.start();
             }
-            $('section').hide();
+
             this.render();
+
+            if (this.model) {
+                this.listenTo(this.model, 'change', this.render);
+            }
+
             this.$el.show();
-            // this.model.on('change', this.render, this);
         },
+
+        swallow: function(e) {
+            e.stopPropagation();
+        },
+
+        trash: function() {
+            this.stopListening();
+            this.undelegateEvents();
+            this.off();
+
+            this.$el.off();
+            this.$el.removeData('view').hide();
+
+            if (this.end) {
+                this.end();
+            }
+        }
     });
 
     Dash.View.Home = Dash.View.extend({
         el: "#Home",
         template: _.template($("#homeTemplate").html()),
-        
+
         start: function() {
             this.model = Dash.products;
+            this.productCount = 0;
         },
 
         render: function() {
@@ -84,15 +118,25 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
             var homeProductView = new Dash.HomeProductView({
                 model: item
             });
-            this.$("#products").append(homeProductView.render().el);
+            if (this.productCount < 3) {
+                this.$("#products").append(homeProductView.render().el);
+            } else {
+                this.$("#products").after(homeProductView.render().el);
+            }
             this.renderKeySections(item); // render bottom row of key sections
+            this.productCount++;
+            console.log(this.productCount);
         },
 
         renderKeySections: function(item) {
             var keySections = new Dash.KeySectionsView({
                 model: item
             });
-            this.$("#keySections").append(keySections.render().el);
+            if (this.productCount < 3) {
+                this.$("#keySections").append(keySections.render().el);
+            } else {
+                this.$("#keySections").after(keySections.render().el);
+            }
             var that = this;
             var keySectionsList = item.getKeySections();
             keySectionsList.each(function(section) {
@@ -236,15 +280,15 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
             return this;
         },
 
-        item: function() {
-            if (this.model.get("_type") === "section") {
-                //do something for section
-            } else {
-                new Dash.View.Article({
-                    model: this.model
-                });
-            }
-        }
+        // item: function() {
+        //     if (this.model.get("_type") === "section") {
+        //         //do something for section
+        //     } else {
+        //         new Dash.View.Article({
+        //             model: this.model
+        //         });
+        //     }
+        // }
     });
 
     Dash.SideBar = Backbone.View.extend({
@@ -295,8 +339,8 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
             return this;
         },
 
-        renderSiteMap: function(){
-            
+        renderSiteMap: function() {
+
         },
 
         renderFaqs: function(url) {
@@ -374,8 +418,7 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
         },
     });
 
-    Dash.SideBar.Section = Dash.SideBar.extend({
-    });
+    Dash.SideBar.Section = Dash.SideBar.extend({});
 
     Dash.SideBar.SiteMap = Dash.SideBar.Product.extend({
         template: _.template($("#siteMapSideBarTemplate").html()),
@@ -436,8 +479,7 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
             if (url.charAt(url.length - 1) === '/') {
                 url = url.substring(0, url.length - 1);
             }
-            url = url + "/" + section.get("name");
-            url.replace(/\s/g, "");
+            url = url + "/" + section.get("name").replace(/\s/g, "");
             section.set('URL', url);
             if (section.get('_type') === 'section') {
                 this.renderListItem(section);
@@ -465,8 +507,8 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
     });
 
     Dash.SiteMap.List = Dash.SiteMap.extend({
-        render: function(){
-            
+        render: function() {
+
         }
     });
     return Dash;
