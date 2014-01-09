@@ -164,6 +164,12 @@ ul {
    /* border: 1px solid #d0d0d0;*/
 }
 
+button img {
+    height: 20px;
+    width: auto;
+    display: inline-block;
+}
+
 #Home button img {
     height: 20px;
     width: auto;
@@ -185,7 +191,7 @@ button {
     font-size: 16px;
     font-weight: normal;
     border-radius: 5px;
-    border: 1px solid #d0d0d0;
+    border: 2px solid #d0d0d0;
     padding: 10px 10px 10px 10px;
     width: 100%;
     background: #d0d0d0;
@@ -218,29 +224,32 @@ button {
     width: 640px;
 }
 
-.modal > .content input {
-    width: 92%;
-}
-
 .modal > .content{
     text-align: left;
 }
 
 input, textarea {
-    border: 1px solid #d0d0d0;
+    border: 2px solid #d0d0d0;
     font-size: 16px;
     background-color: #f9f9f9;
     padding: 2% 4% 2% 4%;
+    width: 92%;
 }
 
 .topField {
     border-radius: 5px 5px 0px 0px;
-    margin-bottom: -1px;
+    margin-bottom: 0px;
 }
 
 .bottomField {
     border-radius: 0px 0px 5px 5px;
-    margin-top: 0px;
+    margin-top: 1px;
+    resize: none;
+    border-top: none;
+}
+
+.content .bottomField {
+    height: 200px;
 }
 
 .themeButton {
@@ -255,14 +264,9 @@ input, textarea {
     margin-left: 2%;
 }
 
-#Article input, #Article textarea {
-    width: 92%;
-    border-width: 2px;
-}
 
 #Article .bottomField {
     height: 300px;
-    resize: none;
 }
 
 #menu div {
@@ -299,4 +303,55 @@ input, textarea {
     width: 90%;
     border-radius: 5px;
     background-color: white;
+}
+
+.uploadLogo {
+    text-align: center;
+}
+
+.uploadLogo img {
+    height: 24px;
+}
+
+.offwhite {
+    background: #f9f9f9;
+}
+
+#Article .treePlace > img {
+    border-left: 2px solid #d0d0d0;
+    height: 100%;
+    margin-top: 0px;
+    width:auto;
+    float:right;
+    vertical-align: top;
+}
+
+div.treePlace {
+    width: 99%;
+    border-radius: 5px;
+    background-color: white;
+    display: block;
+    vertical-align: top;
+    border: 2px solid #d0d0d0;
+    height: 42px;
+    margin-left: 0px;
+    margin bottom:5px;
+}
+
+div.treePlace > p {
+    float:left;
+    vertical-align: center;
+    margin-left: 10px;
+    font-size: 14px;
+}
+
+#Article li > div {
+    margin-left: 2px;
+    margin-right: 2px;
+    margin-bottom: 16px;
+}
+
+.errorText {
+    color: red;
+    font-size: 14px;
 }

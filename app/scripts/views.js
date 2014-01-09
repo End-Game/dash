@@ -1,4 +1,4 @@
-define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
+define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hoist) {
     'use strict';
 
     /*
@@ -20,7 +20,7 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
     Dash.HomeProductView = Backbone.View.extend({
         tagName: "div",
         className: "homeProduct",
-        template: _.template($("#homeProductTemplate").html()),
+        template: Dash.Template.homeProduct,
 
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
@@ -42,7 +42,7 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
     Dash.KeySectionsView = Backbone.View.extend({
         tagName: "div",
         className: "keySections",
-        template: _.template($("#keySectionsTemplate").html()),
+        template: Dash.Template.keySections,
 
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
@@ -98,11 +98,11 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
 
     Dash.View.Home = Dash.View.extend({
         el: "#Home",
-        template: _.template($("#homeTemplate").html()),
+        template: Dash.Template.home,
 
         start: function() {
             this.model = Dash.products;
-            this.productCount = 0;
+            this.productCount = 0; // possibly use for rendering products > 3
         },
 
         render: function() {
@@ -121,7 +121,7 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
             if (this.productCount < 3) {
                 this.$("#products").append(homeProductView.render().el);
             } else {
-                this.$("#products").after(homeProductView.render().el);
+                //this.$("#products").after(homeProductView.render().el);
             }
             this.renderKeySections(item); // render bottom row of key sections
             this.productCount++;
@@ -135,7 +135,7 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
             if (this.productCount < 3) {
                 this.$("#keySections").append(keySections.render().el);
             } else {
-                this.$("#keySections").after(keySections.render().el);
+              //  this.$("#keySections").after(keySections.render().el);
             }
             var that = this;
             var keySectionsList = item.getKeySections();
@@ -156,7 +156,7 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
 
     Dash.View.HelpDesk = Dash.View.extend({
         el: "#HelpDesk",
-        template: _.template($("#helpDeskTemplate").html()),
+        template: Dash.Template.helpDesk,
 
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
@@ -208,7 +208,7 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
 
     Dash.View.Article = Dash.View.extend({
         el: "#Article",
-        template: _.template($("#articleTemplate").html()),
+        template: Dash.Template.article,
 
         render: function() {
             this.$el.empty();
@@ -228,7 +228,7 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
 
     Dash.View.Section = Dash.View.extend({
         el: "#Article",
-        template: _.template($("#sectionTemplate").html()),
+        template: Dash.Template.section,
 
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
@@ -268,7 +268,7 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
     Dash.ListItem = Backbone.View.extend({
 
         tagName: "li",
-        template: _.template($("#listItemTemplate").html()),
+        template: Dash.Template.listItem,
 
         // handled by router
         // events: {
@@ -297,7 +297,7 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
     });
 
     Dash.SideBar.Product = Dash.SideBar.extend({
-        template: _.template($("#productSideBarTemplate").html()),
+        template: Dash.Template.productSideBar,
 
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
@@ -323,7 +323,7 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
 
     // make a separate one for faq and howDoI?
     Dash.SideBar.Article = Dash.SideBar.extend({
-        template: _.template($("#articleSideBarTemplate").html()),
+        template: Dash.Template.articleSideBar,
 
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
@@ -421,12 +421,12 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
     Dash.SideBar.Section = Dash.SideBar.extend({});
 
     Dash.SideBar.SiteMap = Dash.SideBar.Product.extend({
-        template: _.template($("#siteMapSideBarTemplate").html()),
+        template: Dash.Template.siteMapSideBar,
     });
 
     Dash.View.SiteMap = Dash.View.extend({
         el: "#SiteMap",
-        template: _.template($("#siteMapTemplate").html()),
+        template: Dash.Template.siteMap,
         // sitemap - map or list
         // sidebar
         render: function() {
@@ -436,7 +436,7 @@ define(['dash', 'backbone', 'hoist'], function(Dash, Backbone, hoist) {
             }) : new Dash.SiteMap.Map({
                 model: this.model
             });
-            this.$('#map').append(map.render().el);
+            this.$('.map').append(map.render().el);
             this.renderSidebar();
             return this;
         },

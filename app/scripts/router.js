@@ -21,58 +21,57 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                     loadHome = false;
                     new Dash.View.Admin.NewArticle();
                 } else {
-                    Dash.products.findProduct(pathSplit[0], function(product) {
-                        if (pathSplit.length === 1 && product !== undefined) {
-                            loadHome = false;
-                            if (Dash.admin) {
-                                new Dash.View.Admin.HelpDesk({
-                                    model: product
-                                });
-                            } else {
-                                new Dash.View.HelpDesk({
-                                    model: product
-                                });
-                            }
+                    var product = Dash.products.findProduct(pathSplit[0]);
+                    if (pathSplit.length === 1 && product) {
+                        loadHome = false;
+                        if (Dash.admin) {
+                            new Dash.View.Admin.HelpDesk({
+                                model: product
+                            });
                         } else {
-                            pathSplit.shift();
-                            if (pathSplit[0] === "sitemap") {
-                                new Dash.View.SiteMap({
-                                    model: product
-                                });
-                                loadHome = false;
-                            } else {
-                                product.findSection(pathSplit, function(section) {
-                                    if (section !== undefined) {
-                                        section.set("currentProductName", product.get("name"));
-                                        if (section.get("_type") === "article") {
-                                            loadHome = false;
-                                            if (Dash.admin) {
-                                                new Dash.View.Admin.Article({
-                                                    model: section
-                                                });
-                                            } else {
-                                                new Dash.View.Article({
-                                                    model: section
-                                                });
-                                            }
-                                        } else if (section.get("_type") === "section") {
-                                            loadHome = false;
-                                            if (Dash.admin) {
-                                                new Dash.View.Admin.Section({
-                                                    model: section
-                                                });
-                                            } else {
-                                                new Dash.View.Section({
-                                                    model: section
-                                                });
-                                            }
-                                        }
-
-                                    }
-                                });
-                            }
+                            new Dash.View.HelpDesk({
+                                model: product
+                            });
                         }
-                    });
+                    } else if (product) {
+                        pathSplit.shift();
+                        if (pathSplit[0] === "sitemap") {
+                            new Dash.View.SiteMap({
+                                model: product
+                            });
+                            loadHome = false;
+                        } else {
+                            var section = product.findSection(pathSplit);
+                            if (section) {
+                                section.set("currentProductName", product.get("name"));
+                                if (section.get("_type") === "article") {
+                                    loadHome = false;
+                                    if (Dash.admin) {
+                                        new Dash.View.Admin.Article({
+                                            model: section
+                                        });
+                                    } else {
+                                        new Dash.View.Article({
+                                            model: section
+                                        });
+                                    }
+                                } else if (section.get("_type") === "section") {
+                                    loadHome = false;
+                                    if (Dash.admin) {
+                                        new Dash.View.Admin.Section({
+                                            model: section
+                                        });
+                                    } else {
+                                        new Dash.View.Section({
+                                            model: section
+                                        });
+                                    }
+                                }
+
+                            }
+
+                        }
+                    }
                 }
             }
             if (loadHome) {

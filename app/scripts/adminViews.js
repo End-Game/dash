@@ -1,4 +1,4 @@
-define(['dash', 'backbone', 'hoist', 'views'], function(Dash, Backbone, hoist) {
+define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backbone, hoist) {
     'use strict';
     /*
     views needed:
@@ -11,8 +11,77 @@ define(['dash', 'backbone', 'hoist', 'views'], function(Dash, Backbone, hoist) {
     place tree - modal - when making an article
 */
 
+    Dash.TreePlaces = function() {
+        this.products = [];
+        this.sectionUrls = [];
+        this.sections = [];
+
+        this.addPlace = function(product, sectionUrl, section) {
+            var index = this.products.indexOf(product);
+            if (index < 0) {
+                this.products.push(product);
+                this.sectionUrls.push(sectionUrl);
+                this.sections.push(section);
+            } else {
+                this.sectionUrls[index] = sectionUrl;
+                this.sections[index] = section;
+            }
+        };
+
+        this.length = function() {
+            return this.products.length;
+        };
+
+        this.remove = function(product) {
+            var index = this.products.indexOf(product);
+            if (index < 0) {
+                return false;
+            }
+            this.products.splice(index, 1);
+            this.sectionUrls.splice(index, 1);
+            this.sections.splice(index, 1);
+            return true;
+        };
+    };
+
+    Dash.getDateString = function() {
+        var date = new Date();
+        var day = date.getDate();
+        var month = date.getMonth() + 1; //starts from 0
+        var year = date.getFullYear().toString();
+        year = year.substring(year.length - 2);
+        if (day < 10) {
+            day = '0' + day;
+        }
+        if (month < 10) {
+            month = '0' + month;
+        }
+        return day + '/' + month + '/' + year;
+    };
+
+    Dash.postModel = function(type, model, success, error, context) {
+        if (typeof error !== "function") {
+            context = error;
+            error = null;
+        }
+        Hoist.post(type, model, function(res) {
+            model.set('_rev', res[0]._rev);
+            if (!model.get("_id")) {
+                model.set("_id", res[0]._id);
+            }
+            if (success) {
+                success.call(context, res);
+            }
+        }, function(res) {
+            console.log(type + " post unsuccessful: " + res);
+            if (error) {
+                error.call(context, res);
+            }
+        }, context);
+    };
+
     Dash.CheckboxItem = Dash.ListItem.extend({
-        template: _.template($("#checkboxProductTemplate").html()),
+        template: Dash.Template.checkboxProduct,
     });
 
     Dash.View.Admin = Dash.View.extend({
@@ -20,7 +89,13 @@ define(['dash', 'backbone', 'hoist', 'views'], function(Dash, Backbone, hoist) {
     });
 
     Dash.View.Admin.Home = Dash.View.Home.extend({
-        template: _.template($("#adminHomeTemplate").html()),
+        template: Dash.Template.adminHome,
+
+        start: function() {
+            this.model = Dash.products;
+            this.productCount = 0; // possibly use for rendering products when > 3
+            Dash.products.on("add", 'render', this);
+        },
 
         events: {
             "click button": "addProduct",
@@ -36,7 +111,6 @@ define(['dash', 'backbone', 'hoist', 'views'], function(Dash, Backbone, hoist) {
                 // this.$("#products").after(homeProductView.render().el);
             }
             this.productCount++;
-            console.log(this.productCount);
         },
 
         addProduct: function() {
@@ -65,7 +139,7 @@ define(['dash', 'backbone', 'hoist', 'views'], function(Dash, Backbone, hoist) {
 
     Dash.View.Admin.NewArticle = Dash.View.Admin.extend({
         el: "#Article",
-        template: _.template($("#newArticleTemplate").html()),
+        template: Dash.Template.newArticle,
 
         events: {
             'click button.save': 'save'
@@ -79,30 +153,135 @@ define(['dash', 'backbone', 'hoist', 'views'], function(Dash, Backbone, hoist) {
 
         renderSidebar: function() {
             this.$('.sideBar').empty();
-            var sideBar = new Dash.SideBar.NewArticle();
-            this.$el.append(sideBar.render().el);
+            this.sideBar = new Dash.SideBar.NewArticle();
+            this.$el.append(this.sideBar.render().el);
         },
 
         save: function() {
-            var article = new Dash.Article();
+            $('.errorText').remove();
+            var error;
+            var errorText = "";
+            var treePlaces = this.sideBar.treePlaces;
+            if (!(treePlaces && treePlaces.length())) {
+                $('#productList').before(_.template(Dash.Template.errorText({
+                    errorText: "Article must be placed in the tree of at least one product."
+                })));
+                error = true;
+            }
+            var type = this.getType();
+            if (!type) {
+                error = true;
+            }
+            var name = $('#title').val();
+            var content = $('#content').val();
+            if (!(name && content)) {
+                errorText += "Article must have title and contents.";
+                $('#title').before(_.template(Dash.Template.errorText({
+                    errorText: errorText
+                })));
+                error = true;
+            }
+            if (error) {
+                return;
+            }
+            var date = Dash.getDateString();
 
+            var article = new Dash.Section.Article({
+                name: name,
+                content: content,
+                type: type,
+                _type: 'article',
+                date: date
+            });
+
+            var tags = this.getTags();
+
+            console.log(article);
+            if (tags) {
+                tags.each(function(tag) {
+                    article.addTag(tag);
+                });
+            }
+            this.addToSections(article);
+            console.log(article);
+            // TODO post article to hoist
+            //new Dash.View.Admin.Article
+
+        },
+
+        getType: function() {
+            if ($('#isFaq').is(':checked')) {
+                if ($('#isHowTo').is(':checked')) {
+                    $('#isFaq').before(_.template(Dash.Template.errorText({
+                        errorText: "Cannot have more than one article type"
+                    })));
+                    return null;
+                }
+                return 'faq';
+            } else if ($('#isHowTo').is(':checked')) {
+                return 'howDoI';
+            } else {
+                return "article";
+            }
+        },
+
+        getTags: function() {
+            var tagNames = this.sideBar.tagNamess;
+            if (!tagNames) {
+                return;
+            }
+            var tags = new Dash.Tags();
+            console.log(tagNames);
+            for (var i = 0; i < tagNames.length; i++) {
+                var tag = Dash.tags.findWhere({
+                    name: tagNames[i]
+                });
+                if (!tag) {
+                    tag = new Dash.Tag({
+                        name: tagNames[i]
+                    });
+                    Dash.tags.add(tag);
+                    // TODO post tag to hoist
+                }
+                tags.add(tag);
+            }
+            return tags;
+        },
+
+        addToSections: function(article) {
+            var treePlaces = this.sideBar.treePlaces;
+            for (var i = 0; i < treePlaces.length(); i++) {
+                var section = treePlaces.sections[i];
+                if (section.get('_type') === 'section') {
+                    section.addArticle(article);
+                } else {
+                    var addBefore = section;
+                    var path = treePlaces.sectionUrls[i].split('/');
+                    var sectionName = path[path.length - 2];
+                    section = addBefore.getSection(sectionName);
+                    var index = section.indexOfSection(addBefore);
+                    section.addArticle(article, index);
+                    // should add to collection at index
+                }
+                // TODO post section to hoist
+            }
         }
     });
 
     Dash.SideBar.NewArticle = Dash.SideBar.extend({
-        template: _.template($("#newArticleSideBarTemplate").html()),
+        template: Dash.Template.newArticleSideBar,
         id: "newArticleSideBar",
 
         events: {
             'keydown #tagName': 'keydown',
             'click #productList input': 'checkProduct',
-            'click #productList button': 'treePlace',
+            'click .treePlace': 'treePlace',
         },
 
         render: function() {
             this.$el.html(this.template());
             this.renderProducts();
-            this.$('li div').hide();
+            this.$('li > div').hide();
             return this;
         },
 
@@ -133,29 +312,58 @@ define(['dash', 'backbone', 'hoist', 'views'], function(Dash, Backbone, hoist) {
             var productName = input.nextSibling.textContent;
             var li = input.parentElement.parentElement;
             this.$(li).find('div').toggle();
-        },
-        
-        treePlace: function(e){
-            var productName = $(e.target.parentElement.parentElement).find('label')[0].innerText;
-            var product = Dash.products.findWhere({name: productName});
-            console.log(product);
-            // pop up modal
-            new Dash.View.Modal.TreePlace({
-                model: product
+            var product = Dash.products.findWhere({
+                name: productName
             });
+            if (this.treePlaces) {
+                var removed = this.treePlaces.remove(product);
+                if (removed) {
+                    this.$(li).find('.treePlace').toggle();
+                }
+            }
+        },
+
+        treePlace: function(e) {
+            console.log(e);
+            var productName = $(e.currentTarget.parentElement.parentElement).find('label')[0].innerText;
+            var product = Dash.products.findWhere({
+                name: productName
+            });
+            var that = this;
+            // pop up modal
+            var treePlaceView = new Dash.View.Modal.TreePlace({
+                model: product,
+            });
+            treePlaceView.callback = this.treePlaceCallback;
+            treePlaceView.callbackContext = this;
+        },
+
+        treePlaceCallback: function(hash, product) {
+            if (!this.treePlaces) {
+                this.treePlaces = new Dash.TreePlaces();
+            }
+            hash = hash.substring(1);
+            var pathSplit = hash.split("/");
+            var section = product.findSection(pathSplit.slice(1));
+            this.treePlaces.addPlace(product, hash, section);
+            console.log(this.treePlaces);
+            var label = this.$("#_" + product.get('_id') + " div.treePlace");
+            label.find('p').html(section.get('name'));
+            label.show();
+            this.$("#_" + product.get('_id') + " button.treePlace").hide();
         },
 
         addTag: function() {
             var input = this.$('#tagName');
-            var tag = new Dash.Tag({
-                name: input.val()
-            });
+            var name = input.val();
             input.val('');
-            if (!this.tags) {
-                this.tags = [];
+            if (!this.tagNames) {
+                this.tagNames = [];
             }
-            this.tags.push(tag);
-            console.log(this.tags);
+            if (this.tagNames.indexOf(name) < 0) {
+                this.tagNames.push(name);
+            }
+            console.log(this.tagNames);
         },
     });
 
@@ -164,7 +372,7 @@ define(['dash', 'backbone', 'hoist', 'views'], function(Dash, Backbone, hoist) {
     });
 
     Dash.AdminSideBar.Product = Dash.AdminSideBar.extend({
-        template: _.template($("#adminProductSideBarTemplate").html()),
+        template: Dash.Template.adminProductSideBar,
 
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
@@ -197,7 +405,7 @@ define(['dash', 'backbone', 'hoist', 'views'], function(Dash, Backbone, hoist) {
     });
 
     Dash.View.Modal.ProductSetup = Dash.View.Modal.extend({
-        template: _.template($("#productSetupTemplate").html()),
+        template: Dash.Template.productSetup,
 
         events: {
             'click button.save': 'save',
@@ -215,52 +423,57 @@ define(['dash', 'backbone', 'hoist', 'views'], function(Dash, Backbone, hoist) {
                 name: this.$('#name').val(),
                 description: this.$('#description').val(),
                 shortDescription: this.$('#description').val(),
+                _type: 'product'
             });
-            Hoist.post("product", product.toJSON(), function(res) {
-                product.set("_id", res[0]._id);
+            Dash.postModel("product", product, function(res) {
                 Dash.products.add(product);
                 this.trash();
-            }, function(res) {
-                console.log('product post unsuccessful: ' + res);
             }, this);
         },
 
     });
-    
+
     Dash.View.Modal.TreePlace = Dash.View.Modal.extend({
-        template: _.template($("#treePlaceTemplate").html()),
-        
+        template: Dash.Template.treePlace,
+
         events: {
             'click button.save': 'save',
+            'click button.cancel': 'trash',
             'click .content': 'swallow',
             'click': 'trash',
             'click .map a': 'select',
         },
-        
+
         render: function() {
             this.$el.html(this.template());
             this.renderTree();
             return this;
         },
-        
-        renderTree: function(){
+
+        renderTree: function() {
             var map = new Dash.SiteMap.Map({
                 model: this.model
             });
             this.$('.map').append(map.render().el);
             return this;
         },
-        
-        save: function(){
-            
+
+        save: function() {
+            var selected = this.$(".map .themeText");
+            console.log(selected);
+            if (selected[0]) {
+                var hash = selected[0].hash;
+                if (this.callback) {
+                    this.callback.call(this.callbackContext, hash, this.model);
+                }
+                this.trash();
+            }
         },
-        
-        select: function(e){
+
+        select: function(e) {
             e.preventDefault();
-            console.log(e);
             var link = e.target;
-            console.log(link);
-            this.$('a').removeClass('themeText');
+            this.$('a.themeText').removeClass('themeText');
             this.$(link).addClass('themeText');
         },
     });

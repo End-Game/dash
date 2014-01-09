@@ -6,6 +6,7 @@ require.config({
         relational: '../bower_components/backbone-relational/backbone-relational',
         underscore: '../bower_components/underscore/underscore',
         hoist: './hoist/hoist',
+        templates: './templates/templates',
         requirejs: '../bower_components/requirejs/require',
         "jquery.cookie": "../bower_components/jquery.cookie/jquery.cookie"
     },
@@ -29,20 +30,22 @@ require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone
     'use strict';
     $('section').hide();
     Hoist.apiKey('TVGDGQGQSETLPLSSKRL[');
-     // put somewhere to show that user is admin, maybe after login
+    // put somewhere to show that user is admin, maybe after login
+    // maybe makae a link to a login page
     app.dash.admin = true;
+    app.dash.tags = new app.dash.Tags(); // TODO make hoist call for tags
     Hoist.get("article", function(res) {
             app.dash.articles = new app.dash.Sections(res, {
                 parse: true
             });
             console.log(app.dash.articles);
-            app.dash.articles.each(function(article){
-                article.get('faqJoins').each(function(faqJoin){
+            app.dash.articles.each(function(article) {
+                article.get('faqJoins').each(function(faqJoin) {
                     faqJoin.set('faq', app.dash.articles.get(faqJoin.get('faq')));
                 });
             });
-            app.dash.articles.each(function(article){
-                article.get('howDoIJoins').each(function(howDoIJoin){
+            app.dash.articles.each(function(article) {
+                article.get('howDoIJoins').each(function(howDoIJoin) {
                     howDoIJoin.set('howDoI', app.dash.articles.get(howDoIJoin.get('howDoI')));
                 });
             });
@@ -68,6 +71,7 @@ require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone
         function(res) {
             console.log('article get unsuccessful: ' + res);
         }, this);
+
 
     //new app.dash.View.Home();
 });
