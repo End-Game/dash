@@ -93,6 +93,8 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
 
             if (!this.$el.hasClass('modal')) {
                 $('section').hide();
+            } else {
+                $('section.modal').hide();
             }
 
             this.$el.data('view', this);
@@ -558,6 +560,55 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
         render: function() {
 
         }
+    });
+    
+     Dash.SiteMap.SectionMap = Dash.SiteMap.Map.extend({
+        tagName: "ul",
+
+        render: function() {
+            var sections = new Dash.Sections();
+            if (this.model.get('_type') === 'product') {
+                sections = this.model.getSections();
+                this.renderProduct();
+            } else if (this.model.get('_type') === 'section') {
+                sections = this.model.getChildren();
+            }
+            var that = this;
+            sections.each(function(section) {
+                that.renderSection(section);
+            });
+            return this;
+        },
+        
+        renderProduct: function(){
+            this.$el.wrap("<ul><li></li></ul>");
+            var that = this;
+            var listItem = new Dash.ListItem({
+                model: that.model
+            });
+            this.$el.before(Dash.Template.listItem(this.model.toJSON()));
+        },
+        
+        renderSection: function(section) {
+            if (this.model.get('_type') === 'product') {
+                section.set('currentProductName', this.model.get('name'));
+            } else {
+                section.set('currentProductName', this.model.get('currentProductName'));
+            }
+            var url = this.model.get('URL');
+            if (url.charAt(url.length - 1) === '/') {
+                url = url.substring(0, url.length - 1);
+            }
+            url = url + "/" + section.get("name").replace(/\s/g, "");
+            section.set('URL', url);
+            if (section.get('_type') === 'section') {
+                this.renderListItem(section);
+                var map = new Dash.SiteMap.SectionMap({
+                    model: section
+                });
+                this.$("li").last().append(map.render().el);
+            }
+        },
     });
     return Dash;
 });

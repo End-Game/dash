@@ -279,14 +279,14 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             for (var i = 0; i < treePlaces.length(); i++) {
                 var section = treePlaces.sections[i];
                 if (section.get('_type') === 'section') {
-                    section.addArticle(article);
+                    section.addChild(article);
                 } else {
                     var addBefore = section;
                     var path = treePlaces.sectionUrls[i].split('/');
                     var sectionName = path[path.length - 2];
                     section = addBefore.getSection(sectionName);
                     var index = section.indexOfSection(addBefore);
-                    section.addArticle(article, index);
+                    section.addChild(article, index);
                     // should add to collection at index but
                 }
                 Dash.postModel('section', section);
@@ -434,7 +434,12 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             'click button#personalise': 'personalise',
         },
 
-        newSection: function() {},
+        newSection: function() {
+            var that = this;
+            new Dash.View.Modal.NewSection({
+                model: that.model
+            });
+        },
 
         newArticle: function() {
             Dash.router.navigate("newArticle");
@@ -481,6 +486,72 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
     });
 
+    Dash.View.Modal.NewSection = Dash.View.Modal.extend({
+        template: Dash.Template.newSection,
+
+        events: {
+            'click button.save': 'save',
+            'click .treePlace': 'treePlace',
+            'click .content': 'swallow',
+            'click': 'trash',
+        },
+
+        render: function() {
+            this.$el.html(this.template());
+            this.$el.find('div.treePlace').hide();
+            return this;
+        },
+
+        save: function() {
+            var that = this;
+            var section = new Dash.Section.Section({
+                name: this.$('#name').val(),
+                _type: 'section'
+            });
+            console.log(section);
+            //   this.treePlace.addChild(section);
+            Dash.postModel("section", section, function(res) {
+                // add to the product/section and post to hoist
+                this.treePlace.addChild(section);
+                Dash.postModel(this.treePlace.get('_type'), this.treePlace, function(res) {
+                    this.trash();
+                }, this);
+            }, this);
+        },
+
+        treePlace: function(e) {
+            // console.log(e);
+            var that = this;
+            // pop up modal
+            var treePlaceView = new Dash.View.Modal.SectionTreePlace({
+                model: that.model,
+            });
+            treePlaceView.callback = this.treePlaceCallback;
+            treePlaceView.trashCallback = this.treePlaceTrashCallback;
+            treePlaceView.callbackContext = this;
+        },
+
+        treePlaceCallback: function(hash, product) {
+            hash = hash.substring(1);
+            var pathSplit = hash.split("/");
+            if (pathSplit.length > 1) {
+                var section = product.findSection(pathSplit.slice(1));
+                this.treePlace = section;
+            } else {
+                this.treePlace = this.model;
+            }
+            // console.log(this.treePlaces);
+            var label = this.$("div.treePlace");
+            label.find('p').text(this.treePlace.get('name'));
+            label.show();
+            this.$("button.treePlace").hide();
+        },
+
+        treePlaceTrashCallback: function(hash, product) {
+            this.$el.show();
+        }
+    });
+
     Dash.View.Modal.TreePlace = Dash.View.Modal.extend({
         template: Dash.Template.treePlace,
 
@@ -525,4 +596,23 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             this.$(link).addClass('themeText');
         },
     });
+
+    Dash.View.Modal.SectionTreePlace = Dash.View.Modal.TreePlace.extend({
+        el: "#TreePlace",
+
+        renderTree: function() {
+            var map = new Dash.SiteMap.SectionMap({
+                model: this.model
+            });
+            this.$('.map').append(map.render().$el.parents('ul'));
+            return this;
+        },
+
+        end: function() {
+            if (this.trashCallback) {
+                this.trashCallback.call(this.callbackContext);
+            }
+        }
+    });
+
 });

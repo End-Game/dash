@@ -297,4 +297,19 @@ define(['dash', 'underscore'], function(Dash, _) {
         "<p class='smallText'><%=name%></p>"
     );
     
+    Dash.Template.newSection = _.template(
+        "<div class='content'>" +
+            "<h1>Add Section</h1>" +
+            "<hr>" +
+            "<input type='text' id='name' placeholder='Name of Section...' />" +
+            "<hr>" +
+            "<button class='treePlace' type='button'>Place in Tree</button>" +
+            "<div class='treePlace'>" +
+                "<p></p>" +
+                "<img src='images/sitemap.png'>" +
+            "</div>" +
+            "<hr>" +
+            "<button class='themeButton save' type='button'>Save Section</button>" +
+        "</div>"
+    );
 });

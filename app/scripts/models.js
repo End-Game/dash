@@ -113,7 +113,29 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                     return section;
                 }
             }
-        }
+        },
+        
+        addChild: function(child, index) {
+            var sectionJoins = this.get('sectionJoins');
+            for (var i = 0; i < sectionJoins.length; i++) {
+                if (child === sectionJoins.at(i).get('section')) {
+                    return;
+                }
+            }
+            var that = this;
+            var sectionJoin = new Dash.ProductSectionJoin({
+                section: child,
+                product: that
+            });
+            if (index === undefined) {
+                index = sectionJoins.length;
+            }
+            sectionJoins.add(sectionJoin, {
+                at: index
+            }); // this should add it to the collection at the given index, but it doesn't
+            console.log(index);
+            console.log(sectionJoins);
+        },
     });
 
     Dash.Products = Backbone.Collection.extend({
@@ -458,16 +480,16 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             return children;
         },
 
-        addArticle: function(article, index) {
+        addChild: function(child, index) {
             var childJoins = this.get('childJoins');
             for (var i = 0; i < childJoins.length; i++) {
-                if (article === childJoins.at(i).get('child')) {
+                if (child === childJoins.at(i).get('child')) {
                     return;
                 }
             }
             var that = this;
             var childJoin = new Dash.SectionSectionJoin({
-                child: article,
+                child: child,
                 parent: this
             });
             if (index === undefined) {
