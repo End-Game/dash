@@ -1,7 +1,7 @@
 * {
     font-family: sans-serif;
     color: gray;
-    font-weight: 100;}
+    font-weight: 200;}
 
 h1, h2, h3, h4, h5, h6{
     color: #77BB22;
@@ -111,7 +111,7 @@ ul {
     height: 20px;
 }
 
-.sideBar div {
+.sideBar > div {
     margin-left: 20px;
     margin-right: 20px;
 }
@@ -153,7 +153,6 @@ ul {
 
 .sideBar > button {
     width: 101%;
-    font-size: 16px;
     border-radius: 0px 0px 5px 5px;
     color: white;
     background: #77BB22;
@@ -257,6 +256,10 @@ input, textarea {
     background: #77BB22;
 }
 
+.themeButton p {
+    color: white;
+}
+
 .adminSideBar {
     display: inline-block;
     width: 32%;
@@ -354,4 +357,71 @@ div.treePlace > p {
 .errorText {
     color: red;
     font-size: 14px;
+}
+
+.newTag{
+    border: 2px solid #d0d0d0;
+    background-color: #ffffff;
+    border-radius: 5px;
+    width: 116px;
+    display: inline-block;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 20px;
+    height: 32px;
+}
+
+.newTag:nth-of-type(2n){
+    margin-left: 15px;
+}
+
+.newTag > div {
+    display: inline-block;
+    width: 28px;
+    text-align: center;
+    height: 100%;
+    border-radius: 5px 0px 0px 5px;
+    margin-left: -2px;
+    margin-top:  -2px;
+    border: 2px solid;
+    border-right: none;
+}
+
+.newTag > p {
+    display: inline-block;
+    width: 66px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.newTag p {
+    margin-top: 9px;
+    margin-bottom: 9px;
+}
+
+.smallText {
+    font-size: 14px;
+}
+
+div.themeBorder {
+    border-color: #77BB22;
+}
+
+.tag {
+    float: right;
+    border: 2px solid;
+    border-radius: 5px;
+    margin-left: 10px;
+}
+
+#tags > p {
+    display: inline-block;
+    font-size: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.tag > p {
+    font-size: 10px;
+    margin: 3px 5px 3px 5px;
 }

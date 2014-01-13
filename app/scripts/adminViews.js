@@ -64,6 +64,19 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             context = error;
             error = null;
         }
+        if (typeof success !== "function") {
+            context = success;
+            success = null;
+        }
+        // console.log(model);
+        // if (!model.get("_id")) {
+        //     model.set('_id', 'model' + model.get('name') + Math.floor(Math.random()*100000));
+        // }
+        console.log(model.toJSON());
+        // if( success ){ success.call(context);}
+
+
+
         Hoist.post(type, model, function(res) {
             model.set('_rev', res[0]._rev);
             if (!model.get("_id")) {
@@ -84,9 +97,18 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         template: Dash.Template.checkboxProduct,
     });
 
-    Dash.View.Admin = Dash.View.extend({
+    Dash.NewTagView = Backbone.View.extend({
+        tagName: "div",
+        template: Dash.Template.newTag,
+        className: "newTag",
 
+        render: function() {
+            this.$el.html(this.template(this.model));
+            return this;
+        },
     });
+
+    Dash.View.Admin = Dash.View.extend({});
 
     Dash.View.Admin.Home = Dash.View.Home.extend({
         template: Dash.Template.adminHome,
@@ -109,6 +131,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 this.$("#products").append(homeProductView.render().el);
             } else {
                 // this.$("#products").after(homeProductView.render().el);
+                this.$("#products").append(homeProductView.render().el);
             }
             this.productCount++;
         },
@@ -196,15 +219,17 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
             var tags = this.getTags();
 
-            console.log(article);
+            //console.log(article);
             if (tags) {
                 tags.each(function(tag) {
                     article.addTag(tag);
                 });
             }
-            this.addToSections(article);
             console.log(article);
-            // TODO post article to hoist
+            Dash.postModel('article', article, function(res) {
+                this.addToSections(article);
+            }, this);
+            console.log(article);
             //new Dash.View.Admin.Article
 
         },
@@ -226,7 +251,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         },
 
         getTags: function() {
-            var tagNames = this.sideBar.tagNamess;
+            var tagNames = this.sideBar.tagNames;
             if (!tagNames) {
                 return;
             }
@@ -237,11 +262,12 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                     name: tagNames[i]
                 });
                 if (!tag) {
+                    console.log('here');
                     tag = new Dash.Tag({
                         name: tagNames[i]
                     });
+                    Dash.postModel('tag', tag);
                     Dash.tags.add(tag);
-                    // TODO post tag to hoist
                 }
                 tags.add(tag);
             }
@@ -261,21 +287,23 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                     section = addBefore.getSection(sectionName);
                     var index = section.indexOfSection(addBefore);
                     section.addArticle(article, index);
-                    // should add to collection at index
+                    // should add to collection at index but
                 }
-                // TODO post section to hoist
+                Dash.postModel('section', section);
             }
         }
     });
 
     Dash.SideBar.NewArticle = Dash.SideBar.extend({
         template: Dash.Template.newArticleSideBar,
+        tagTemplate: Dash.Template.newTag,
         id: "newArticleSideBar",
 
         events: {
             'keydown #tagName': 'keydown',
             'click #productList input': 'checkProduct',
             'click .treePlace': 'treePlace',
+            'click .delete': 'removeTag'
         },
 
         render: function() {
@@ -324,7 +352,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         },
 
         treePlace: function(e) {
-            console.log(e);
+            // console.log(e);
             var productName = $(e.currentTarget.parentElement.parentElement).find('label')[0].innerText;
             var product = Dash.products.findWhere({
                 name: productName
@@ -346,9 +374,9 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             var pathSplit = hash.split("/");
             var section = product.findSection(pathSplit.slice(1));
             this.treePlaces.addPlace(product, hash, section);
-            console.log(this.treePlaces);
+            // console.log(this.treePlaces);
             var label = this.$("#_" + product.get('_id') + " div.treePlace");
-            label.find('p').html(section.get('name'));
+            label.find('p').text(section.get('name'));
             label.show();
             this.$("#_" + product.get('_id') + " button.treePlace").hide();
         },
@@ -356,15 +384,35 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         addTag: function() {
             var input = this.$('#tagName');
             var name = input.val();
+            if (!name) {
+                return;
+            }
             input.val('');
             if (!this.tagNames) {
                 this.tagNames = [];
             }
             if (this.tagNames.indexOf(name) < 0) {
                 this.tagNames.push(name);
+                var tagView = new Dash.NewTagView({
+                    model: {
+                        name: name
+                    }
+                });
+                this.$('#tagsList').append(tagView.render().el);
             }
             console.log(this.tagNames);
         },
+
+        removeTag: function(e) {
+            // console.log(e);
+            var tag = e.currentTarget.parentElement;
+            var tag$ = this.$(tag);
+            var tagName = tag$.find('> p')[0].innerText;
+            // console.log(tagName);
+            this.tagNames.splice(this.tagNames.indexOf(tagName), 1);
+            console.log(this.tagNames);
+            tag$.remove();
+        }
     });
 
     Dash.AdminSideBar = Dash.SideBar.extend({
@@ -460,7 +508,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
         save: function() {
             var selected = this.$(".map .themeText");
-            console.log(selected);
+            // console.log(selected);
             if (selected[0]) {
                 var hash = selected[0].hash;
                 if (this.callback) {

@@ -51,14 +51,22 @@ define(['dash', 'underscore'], function(Dash, _) {
         "<div class='inlineDiv twoThird'>" +
             "<hr>" +
             "<div id='article'>" +
-                "<p class='small'>PUBLISHED <%=date%></p>" +
+                "<div id='tags'>" +
+                    "<p class='bold'>PUBLISHED <%=date%></p>" +
+                "</div>" +
                 "<p><%=content%></p>" +
                 "<hr>" +
-                "<h4>Other Relevant Articles</h4>" +
-                "<ul id='otherRelevantArticles'>" +
-                "</ul>" +
+                "<div id='relevantArticles'>" +
+                    "<h4>Other Relevant Articles</h4>" +
+                    "<ul id='relevantArticleList'>" +
+                    "</ul>" +
+                "</div>" +
             "</div>" +
         "</div>"
+    );
+    
+    Dash.Template.tag = _.template(
+        "<p class='themeText'><%=name%></p>"
     );
 
     Dash.Template.section = _.template(
@@ -260,9 +268,9 @@ define(['dash', 'underscore'], function(Dash, _) {
             "</ul>" +
         "</div>" +
         "<hr>" +
-        "<div>" +
+        "<div id='tagsList'>" +
             "<h4>Tags</h4>" +
-            "<input type='text' id='tagName' placeholder='Enter Tag'/>" +
+            "<input class='smallText' type='text' id='tagName' placeholder='Enter Tag'/>" +
         "</div>" +
         "<hr>" +
         "<div>" +
@@ -273,7 +281,7 @@ define(['dash', 'underscore'], function(Dash, _) {
     );
 
     Dash.Template.adminProductSideBar = _.template(
-        "<button class='themeButton ' type='button' id='newSection'> Add New Section</button>" +
+        "<button class='themeButton' type='button' id='newSection'> Add New Section</button>" +
         "<hr>" +
         "<button type='button' id='newArticle'> Add New Article</button>" +
         "<button type='button' id='productSettings'> Product Settings</button>" +
@@ -283,5 +291,10 @@ define(['dash', 'underscore'], function(Dash, _) {
     Dash.Template.errorText = _.template(
         "<p class='errorText'>* <%=errorText%></p>"
     );
-
+    
+    Dash.Template.newTag = _.template(
+        "<div class='delete themeBorder themeButton'><p>&times;</p></div>" +
+        "<p class='smallText'><%=name%></p>"
+    );
+    
 });

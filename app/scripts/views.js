@@ -17,6 +17,38 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
     PlaceTree modal -> Admin when making article
 */
 
+    Dash.ListItem = Backbone.View.extend({
+
+        tagName: "li",
+        template: Dash.Template.listItem,
+
+        // handled by router
+        // events: {
+        //     "click .item": "item"
+        // },
+
+        render: function() {
+            this.$el.html(this.template(this.model.toJSON()));
+            return this;
+        },
+
+        // item: function() {
+        //     if (this.model.get("_type") === "section") {
+        //         //do something for section
+        //     } else {
+        //         new Dash.View.Article({
+        //             model: this.model
+        //         });
+        //     }
+        // }
+    });
+    
+    Dash.TagView = Dash.ListItem.extend({
+        template: Dash.Template.tag,
+        tagName: "div",
+        className: 'tag themeBorder'
+    });
+
     Dash.HomeProductView = Backbone.View.extend({
         tagName: "div",
         className: "homeProduct",
@@ -135,7 +167,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             if (this.productCount < 3) {
                 this.$("#keySections").append(keySections.render().el);
             } else {
-              //  this.$("#keySections").after(keySections.render().el);
+                //  this.$("#keySections").after(keySections.render().el);
             }
             var that = this;
             var keySectionsList = item.getKeySections();
@@ -214,6 +246,8 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             this.$el.empty();
             this.$el.html(this.template(this.model.toJSON()));
             this.renderSidebar();
+            this.renderTags();
+            this.renderRelevantArticles();
             return this;
         },
 
@@ -222,7 +256,46 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                 model: this.model
             });
             this.$el.append(sideBar.render().el);
-        }
+        },
+
+        renderTags: function() {
+            var that = this;
+            this.model.get('tagJoins').each(function(tagJoin) {
+                var tag = tagJoin.get('tag');
+                var tagListItem = new Dash.TagView({
+                    model: tag
+                });
+                that.$('#tags').append(tagListItem.render().el);
+            });
+        },
+        
+        renderRelevantArticles: function(){
+            var articles = new Dash.Sections();
+            var that = this;
+            this.model.get("tagJoins").each(function(tagJoin){
+                var tag = tagJoin.get('tag');
+                tag.set('currentProductName', that.model.get('currentProductName'));
+                articles.add(tag.getArticlesFromProduct(that.model.get('currentProductName')).models);
+            });
+            articles.remove(this.model);
+            articles.each(function(article) {
+                that.renderListItem(article, "#relevantArticleList");
+            });
+            
+            if (this.$("#relevantArticleList li").length === 0) {
+                this.$("#relevantArticles").empty();
+            }
+        },
+        
+        renderListItem: function(item, tag) {
+            item.set("currentProductName", this.model.get('currentProductName'));
+            item.setUrl(this.model.get('currentProductName'));
+            var listItem = new Dash.ListItem({
+                model: item
+            });
+            this.$(tag).append(listItem.render().el);
+        },
+        
     });
 
 
@@ -263,32 +336,6 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             // });
             // this.$el.append(sideBar.render().el);
         }
-    });
-
-    Dash.ListItem = Backbone.View.extend({
-
-        tagName: "li",
-        template: Dash.Template.listItem,
-
-        // handled by router
-        // events: {
-        //     "click .item": "item"
-        // },
-
-        render: function() {
-            this.$el.html(this.template(this.model.toJSON()));
-            return this;
-        },
-
-        // item: function() {
-        //     if (this.model.get("_type") === "section") {
-        //         //do something for section
-        //     } else {
-        //         new Dash.View.Article({
-        //             model: this.model
-        //         });
-        //     }
-        // }
     });
 
     Dash.SideBar = Backbone.View.extend({
@@ -377,13 +424,13 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
         renderOtherArticles: function(url) {
             var that = this;
             var path = url.split('/');
-            var toRender = [];
+            var toRender = new Dash.Sections();
             if (path.length > 2) {
                 var section = this.model.getSection(path[path.length - 2]);
                 if (section) {
                     section.get('childJoins').each(function(childJoin) {
                         var child = childJoin.get('child');
-                        if (child !== that.model && child.get('_type') === "article") {
+                        if (child.get('_type') === "article") {
                             toRender.push(child);
                         }
                     });
@@ -393,13 +440,14 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                 if (product) {
                     product.get('sectionJoins').each(function(sectionJoin) {
                         var section = sectionJoin.get('section');
-                        if (section !== that.model && section.get('_type') === "article") {
+                        if (section.get('_type') === "article") {
                             toRender.push(section);
                         }
                     });
                 }
             }
-            _.each(toRender, function(article) {
+            toRender.remove(this.model);
+            toRender.each(function(article) {
                 article.set("currentProductName", that.model.get('currentProductName'));
                 article.set("URL", url.substring(0, url.lastIndexOf('/') + 1) + article.get('name').replace(/\s/g, ""));
                 that.renderListItem(article, "#otherArticleList");
