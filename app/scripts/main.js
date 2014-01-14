@@ -41,17 +41,6 @@ require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone
                     parse: true
                 });
                 console.log(app.dash.articles);
-                app.dash.articles.each(function(article) {
-                    article.get('faqJoins').each(function(faqJoin) {
-                        faqJoin.set('faq', app.dash.articles.get(faqJoin.get('faq')));
-                    });
-                    article.get('howDoIJoins').each(function(howDoIJoin) {
-                        howDoIJoin.set('howDoI', app.dash.articles.get(howDoIJoin.get('howDoI')));
-                    });
-                    // article.get('tagJoins').each(function(tagJoin) {
-                    //     tagJoin.set('tag', app.dash.tags.get(tagJoin.get('tag')));
-                    // });
-                });
                 Hoist.get("section", function(res) {
                     app.dash.sections = new app.dash.Sections(res, {
                         parse: true
@@ -64,27 +53,27 @@ require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone
                         console.log(app.dash.products);
                         app.dash.router = new app.dash.Router();
                         Backbone.history.start();
-                        app.dash.sections.each(function(section){
-                            if(section.get('parentJoins').length === 0 && section.get('productJoins').length === 0) {
-                                Hoist.remove("section", section.get('_id'));
-                                app.dash.sections.remove(section);
-                                console.log(app.dash.sections);
-                            }
-                        });
-                        app.dash.articles.each(function(article){
-                            if(article.get('parentJoins').length === 0 && article.get('productJoins').length === 0) {
-                                Hoist.remove("article", article.get('_id'));
-                                app.dash.articles.remove(article);
-                                console.log(app.dash.articles);
-                            }
-                        });
-                        app.dash.tags.each(function(tag){
-                            if(tag.getArticles().length === 0) {
-                                Hoist.remove("tag", tag.get('_id'));
-                                app.dash.tags.remove(tag);
-                                console.log(app.dash.tags);
-                            }
-                        });
+                        // app.dash.sections.each(function(section){
+                        //     if(section.get('parentJoins').length === 0 && section.get('productJoins').length === 0) {
+                        //         Hoist.remove("section", section.get('_id'));
+                        //         app.dash.sections.remove(section);
+                        //         console.log(app.dash.sections);
+                        //     }
+                        // });
+                        // app.dash.articles.each(function(article){
+                        //     if(article.get('parentJoins').length === 0 && article.get('productJoins').length === 0) {
+                        //         Hoist.remove("article", article.get('_id'));
+                        //         app.dash.articles.remove(article);
+                        //         console.log(app.dash.articles);
+                        //     }
+                        // });
+                        // app.dash.tags.each(function(tag){
+                        //     if(tag.getArticles().length === 0) {
+                        //         Hoist.remove("tag", tag.get('_id'));
+                        //         app.dash.tags.remove(tag);
+                        //         console.log(app.dash.tags);
+                        //     }
+                        // });
                     }, function(res) {
                         console.log('product get unsuccessful: ' + res);
                     }, this);

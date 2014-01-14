@@ -193,31 +193,19 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
 
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
-            this.renderFaqs();
-            this.renderHowDoIs();
+            this.renderList(this.model.getFaqs(), "#faqList", "#faqs");
+            this.renderList(this.model.getHowDoIs(), "#howDoIList", "#howDoIs");
             this.renderSidebar();
             return this;
         },
 
-        renderFaqs: function() {
+        renderList: function(list, listTag, divTag) {
             var that = this;
-            var faqs = this.model.getFaqs();
-            faqs.each(function(item) {
-                that.renderListItem(item, "#faqList");
-            }, this);
-            if (this.$("#faqList li").length === 0) {
-                this.$("#faqs").empty();
-            }
-        },
-
-        renderHowDoIs: function() {
-            var that = this;
-            var howDoIs = this.model.getHowDoIs();
-            howDoIs.each(function(item) {
-                that.renderListItem(item, "#howDoIList");
-            }, this);
-            if (this.$("#howDoIList li").length === 0) {
-                this.$("#howDoIs").empty();
+            list.each(function(item) {
+                that.renderListItem(item, listTag);
+            });
+            if (this.$(listTag+" li").length === 0) {
+                this.$(divTag).empty();
             }
         },
 
@@ -271,15 +259,10 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
         },
 
         renderRelevantArticles: function() {
-            var articles = new Dash.Sections();
+            var articles = this.model.getTaggedArticles().where({type:'article'});
             var that = this;
-            this.model.get("tagJoins").each(function(tagJoin) {
-                var tag = tagJoin.get('tag');
-                tag.set('currentProductName', that.model.get('currentProductName'));
-                articles.add(tag.getArticlesFromProduct(that.model.get('currentProductName')).models);
-            });
-            articles.remove(this.model);
-            articles.each(function(article) {
+            console.log(articles);
+            _.each(articles,function(article) {
                 that.renderListItem(article, "#relevantArticleList");
             });
 
@@ -289,8 +272,11 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
         },
 
         renderListItem: function(item, tag) {
+            console.log(this.model.get('currentProductName'));
+            console.log(item.hasProduct(this.model.get('currentProductName')));
             item.set("currentProductName", this.model.get('currentProductName'));
             item.setUrl(this.model.get('currentProductName'));
+            console.log(item.get('URL'));
             var listItem = new Dash.ListItem({
                 model: item
             });
@@ -386,8 +372,8 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                 url = url.substring(0, url.length - 1);
             }
             this.renderSiteMap();
-            this.renderFaqs(url);
-            this.renderHowDoIs(url);
+            this.renderList(url, this.model.getTaggedArticles().where({type:'faq'}), "#faqList", "#faqs");
+            this.renderList(url, this.model.getTaggedArticles().where({type:'howDoI'}), "#howDoIList", "#howDoIs");
             this.renderOtherArticles(url);
             return this;
         },
@@ -395,37 +381,22 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
         renderSiteMap: function() {
 
         },
-
-        renderFaqs: function(url) {
+        
+        renderList: function(url, list, listTag, divTag) {
             var that = this;
-            this.model.getFaqs().each(function(faq) {
-                faq.set("currentProductName", that.model.get('currentProductName'));
-                faq.setUrl(that.model.get('currentProductName'));
-                if (faq.get('URL') === undefined) {
-                    faq.set("URL", url + "/" + faq.get('name').replace(/\s/g, ""));
+            _.each(list, function(item) {
+                item.set("currentProductName", that.model.get('currentProductName'));
+                item.setUrl(that.model.get('currentProductName'));
+                if (item.get('URL') === undefined) {
+                    item.set("URL", url + "/" + item.get('name').replace(/\s/g, ""));
                 }
-                that.renderListItem(faq, "#faqList");
+                that.renderListItem(item, listTag);
             });
-            if (this.$("#faqList li").length === 0) {
-                this.$("#faqs").empty();
-            }
-
-        },
-
-        renderHowDoIs: function(url) {
-            var that = this;
-            this.model.getHowDoIs().each(function(howDoI) {
-                howDoI.set("currentProductName", that.model.get('currentProductName'));
-                howDoI.setUrl(that.model.get('currentProductName'));
-                if (howDoI.get('URL') === undefined) {
-                    howDoI.set("URL", url + "/" + howDoI.get('name').replace(/\s/g, ""));
-                }
-                that.renderListItem(howDoI, "#howDoIList");
-            });
-            if (this.$("#howDoIList li").length === 0) {
-                this.$("#howDoIs").empty();
+            if (this.$(listTag+" li").length === 0) {
+                this.$(divTag).empty();
             }
         },
+
 
         renderOtherArticles: function(url) {
             var that = this;
@@ -434,22 +405,12 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             if (path.length > 2) {
                 var section = this.model.getSection(path[path.length - 2]);
                 if (section) {
-                    section.get('childJoins').each(function(childJoin) {
-                        var child = childJoin.get('child');
-                        if (child.get('_type') === "article") {
-                            toRender.push(child);
-                        }
-                    });
+                    toRender.add(section.getChildren().where({type:'article'}));
                 }
             } else {
                 var product = this.model.getProduct(path[0]);
                 if (product) {
-                    product.get('sectionJoins').each(function(sectionJoin) {
-                        var section = sectionJoin.get('section');
-                        if (section.get('_type') === "article") {
-                            toRender.push(section);
-                        }
-                    });
+                    toRender.add(product.getSections().where({type:'article'}));
                 }
             }
             toRender.remove(this.model);
@@ -613,6 +574,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                 this.$("li").last().append(map.render().el);
             }
         },
+        
     });
     return Dash;
 });

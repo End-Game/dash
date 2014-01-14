@@ -251,24 +251,9 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                             console.log(this);
                         } else {
                             section = child.findSection(path.slice(1, path.length));
-                            if (section !== undefined) {
+                            if (section) {
                                 return section;
                             }
-                        }
-                    }
-                } else if (this.get("_type") === "article") {
-                    var faqJoins = this.get("faqJoins");
-                    for (i = 0; i < faqJoins.length; i++) {
-                        section = faqJoins.at(i).get("faq").findSection(path.slice(1, path.length));
-                        if (section !== undefined) {
-                            return section;
-                        }
-                    }
-                    var howDoIJoins = this.get("howDoIJoins");
-                    for (i = 0; i < howDoIJoins.length; i++) {
-                        section = howDoIJoins.at(i).get("howDoI").findSection(path.slice(1, path.length));
-                        if (section !== undefined) {
-                            return section;
                         }
                     }
                 }
@@ -277,56 +262,54 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
         },
 
         setUrl: function(product) {
-            //Dash.count = 0;
             if (product === undefined) {
                 product = this.get("currentProductName");
             }
             var url = this.findUrl(product);
-            if (url !== undefined) {
+            if (url) {
                 url = url.replace(/\s/g, '');
                 this.set('URL', url);
             }
-            //console.log("finished find: " + this.get('URL'));
-            // if(this.get('URL') === undefined){
-            //     console.log(this);
-            // }
-            //console.log("done finding url from: " + product);
+            console.log("finished find: " + this.get('URL'));
+            if(!  this.get('URL')){
+                console.log(this);
+            }
+            console.log("done finding url from: " + product);
         },
 
         findUrl: function(product) {
             //     console.log(this);
-            //console.log(Dash.count);
-            Dash.count = Dash.count + 1;
             var that = this;
             var url = "";
-            url = undefined;
             var productJoins = this.get("productJoins");
-            if (productJoins !== undefined) {
+            if (productJoins) {
                 // check products for product
                 productJoins.every(function(productJoin) {
-                    if (url === undefined) {
-                        // console.log(productJoin.get("product").get("name") + " vs " + product);
+                    if (!url) {
+                        console.log(productJoin.get("product").get("name") + " vs " + product);
                         if (productJoin.get("product").get("name") === product) {
-                            // console.log(Dash.count);
                             url = product + "/" + that.get("name");
-                            //console.log(url);
+                            console.log(url);
                             return false;
                         }
                     }
+                    return true;
                 });
             }
             var parentJoins = this.get("parentJoins");
-            if (url === undefined && parentJoins !== undefined) {
+            if (!url && parentJoins) {
                 // check parent sections for if they are connected to product
                 parentJoins.every(function(parentJoin) {
-                    if (url === undefined) {
+                    if (!url) {
                         var tempUrl = parentJoin.get("parent").findUrl(product);
-                        // console.log("url: " + tempUrl);
-                        if (tempUrl !== undefined) {
+                        console.log(parentJoin.get('parent'));
+                        console.log(tempUrl);
+                        if (tempUrl) {
                             url = tempUrl + "/" + that.get('name');
                             return false;
                         }
                     }
+                    return true;
                 });
             }
             return url;
@@ -336,18 +319,6 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
     Dash.Section.Article = Dash.Section.extend({
 
         relations: [{
-            type: Backbone.HasMany,
-            key: 'faqJoins',
-            relatedModel: 'FaqJoin',
-            keyDestination: 'faqs',
-            autofetch: false,
-        }, {
-            type: Backbone.HasMany,
-            key: 'howDoIJoins',
-            relatedModel: 'HowDoIJoin',
-            keyDestination: 'howDoIs',
-            autofetch: false,
-        }, {
             type: Backbone.HasMany,
             key: 'tagJoins',
             relatedModel: 'TagJoin',
@@ -364,46 +335,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             _type: "article"
         },
         
-        getFaqs: function() {
-            //console.log('here');
-            var faqs = new Dash.Sections();
-            if (this.get('faqJoins')) {
-                this.get('faqJoins').each(function(faqJoin) {
-                    faqs.push(faqJoin.get("faq"));
-                });
-            }
-            return faqs;
-        },
-
-        getHowDoIs: function() {
-            var howDoIs = new Dash.Sections();
-            if (this.get('howDoIJoins')) {
-                this.get('howDoIJoins').each(function(howDoIJoin) {
-                    howDoIs.push(howDoIJoin.get("howDoI"));
-                });
-            }
-            return howDoIs;
-        },
-
         parse: function(response) {
-            var faqs = response.faqs;
-            if (faqs) { //backbone-relational sometimes calls parse multiple times
-                response.faqJoins = _.map(faqs, function(faq) {
-                    return {
-                        faq: faq
-                    };
-                });
-                delete response.faqs;
-            }
-            var howDoIs = response.howDoIs;
-            if (howDoIs) { //backbone-relational sometimes calls parse multiple times
-                response.howDoIJoins = _.map(howDoIs, function(howDoI) {
-                    return {
-                        howDoI: howDoI
-                    };
-                });
-                delete response.howDoIs;
-            }
             var tags = response.tags;
             if (tags) { //backbone-relational sometimes calls parse multiple times
                 response.tagJoins = _.map(tags, function(tag) {
@@ -457,6 +389,18 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                 article: this
             });
             tagJoins.add(tagJoin);
+        },
+        
+        getTaggedArticles: function(){
+            var articles = new Dash.Sections();
+            var that = this;
+            this.get("tagJoins").each(function(tagJoin) {
+                var tag = tagJoin.get('tag');
+                tag.set('currentProductName', that.get('currentProductName'));
+                articles.add(tag.getArticlesFromProduct(that.get('currentProductName')).models);
+            });
+            articles.remove(this);
+            return articles;
         }
 
     });
@@ -495,7 +439,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                 if (child.get("_type") === "article") {
                     children.add(child);
                 } else {
-                    children.add(child.getDecendents().get('models'));
+                    children.add(child.getDecendents().models);
                 }
             });
             return children;
@@ -579,32 +523,6 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                 console.log(this);
             }
             return this.get('child').get('_id');
-        }
-    });
-
-    Dash.FaqJoin = Backbone.RelationalModel.extend({
-        relations: [{
-            type: Backbone.HasOne,
-            key: 'howDoI',
-            relatedModel: 'Section.Article',
-        }],
-
-        toJSON: function() {
-            if (this.get('faq')) {
-                return this.get('faq').get('_id');
-            }
-        }
-    });
-
-    Dash.HowDoIJoin = Backbone.RelationalModel.extend({
-        relations: [{
-            type: Backbone.HasOne,
-            key: 'howDoI',
-            relatedModel: 'Section.Article',
-        }],
-
-        toJSON: function() {
-            return this.get('howDoI').get('_id');
         }
     });
 

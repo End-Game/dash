@@ -209,9 +209,9 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             var errorText = "";
             var treePlaces = this.sideBar.treePlaces;
             if (!(treePlaces && treePlaces.length())) {
-                $('#productList').before(_.template(Dash.Template.errorText({
+                $('#productList').before(Dash.Template.errorText({
                     errorText: "Article must be placed in the tree of at least one product."
-                })));
+                }));
                 error = true;
             }
             var type = this.getType();
@@ -222,9 +222,9 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             var content = $('#content').val();
             if (!(name && content)) {
                 errorText += "Article must have title and contents.";
-                $('#title').before(_.template(Dash.Template.errorText({
+                $('#title').before(Dash.Template.errorText({
                     errorText: errorText
-                })));
+                }));
                 error = true;
             }
             if (error) {
@@ -241,8 +241,6 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             });
 
             this.addTags(article, function() {
-                //console.log(article);
-                console.log(article);
                 Dash.postModel('article', article, function(res) {
                     this.addToSections(article);
                 }, this);
@@ -255,9 +253,9 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         getType: function() {
             if ($('#isFaq').is(':checked')) {
                 if ($('#isHowTo').is(':checked')) {
-                    $('#isFaq').before(_.template(Dash.Template.errorText({
+                    $('#isFaq').before(Dash.Template.errorText({
                         errorText: "Cannot have more than one article type"
-                    })));
+                    }));
                     return null;
                 }
                 return 'faq';
@@ -282,7 +280,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                     callback.call(that, res);
                 }
             };
-            var toPost = new Dash.Tags();
+         //   var toPost = new Dash.Tags();
             for (var i = 0; i < tagNames.length; i++) {
                 var tag = Dash.tags.findWhere({
                     name: tagNames[i]
@@ -299,15 +297,16 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                     tagCount++;
                     article.addTag(tag);
                     if (tagCount === tagNames.length) {
-                        //callback.call(this);
+                        callback.call(this);
                     }
                 }
             }
-            if (toPost.length) {
-                //Dash.postModel('tag', toPost.models, callbackFunction, this);
-            } else {
-                // callback.call(this);
-            }
+            //for sending array
+            // if (toPost.length) {
+            //     //Dash.postModel('tag', toPost.models, callbackFunction, this);
+            // } else {
+            //     // callback.call(this);
+            // }
 
         },
 
@@ -389,7 +388,6 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         },
 
         treePlace: function(e) {
-            // console.log(e);
             var productName = $(e.currentTarget.parentElement.parentElement).find('label')[0].innerText;
             var product = Dash.products.findWhere({
                 name: productName
@@ -411,7 +409,6 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             var pathSplit = hash.split("/");
             var section = product.findSection(pathSplit.slice(1));
             this.treePlaces.addPlace(product, hash, section);
-            // console.log(this.treePlaces);
             var label = this.$("#_" + product.get('_id') + " div.treePlace");
             label.find('p').text(section.get('name'));
             label.show();
@@ -441,11 +438,9 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         },
 
         removeTag: function(e) {
-            // console.log(e);
             var tag = e.currentTarget.parentElement;
             var tag$ = this.$(tag);
             var tagName = tag$.find('> p')[0].innerText;
-            // console.log(tagName);
             this.tagNames.splice(this.tagNames.indexOf(tagName), 1);
             console.log(this.tagNames);
             tag$.remove();
@@ -509,7 +504,6 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 this.$('#name').val(this.model.get('name'));
                 this.$('#description').val(this.model.get('description'));
             }
-            console.log(this.model);
             return this;
         },
 
@@ -521,13 +515,11 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 _type: 'product'
             };
             var product;
-            console.log(this.model);
             if (this.model) {
                 product = this.model.set(attributes);
             } else {
                 product = new Dash.Product(attributes);
             }
-            console.log(product);
             Dash.postModel("product", product, function(res) {
                 Dash.products.add(product);
                 this.trash();
@@ -558,10 +550,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 name: this.$('#name').val(),
                 _type: 'section'
             });
-            console.log(section);
-            //   this.treePlace.addChild(section);
             Dash.postModel("section", section, function(res) {
-                // add to the product/section and post to hoist
                 this.treePlace.addChild(section);
                 Dash.postModel(this.treePlace.get('_type'), this.treePlace);
             }, this);
@@ -569,7 +558,6 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         },
 
         treePlace: function(e) {
-            // console.log(e);
             var that = this;
             // pop up modal
             var treePlaceView = new Dash.View.Modal.SectionTreePlace({
@@ -589,7 +577,6 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             } else {
                 this.treePlace = this.model;
             }
-            // console.log(this.treePlaces);
             var label = this.$("div.treePlace");
             label.find('p').text(this.treePlace.get('name'));
             label.show();
@@ -628,7 +615,6 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
         save: function() {
             var selected = this.$(".map .themeText");
-            // console.log(selected);
             if (selected[0]) {
                 var hash = selected[0].hash;
                 if (this.callback) {

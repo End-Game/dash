@@ -430,12 +430,12 @@ div.themeBorder {
     margin: 3px 5px 3px 5px;
 }
 
-#Modal div.treePlace{
+.modal div.treePlace{
     background-color: #f9f9f9;
     height: 36px;
 }
 
-#Modal div.treePlace > p {
+.modal div.treePlace > p {
     margin-top: 10px;
     margin-bottom: 10px;
 }
