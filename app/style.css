@@ -125,10 +125,14 @@ ul {
     font-weight: normal;
 }
 
-.bold {
-    font-weight: 600;
+div > .bold {
     display: inline;
 }
+
+.bold {
+    font-weight: 600;
+}
+
 
 #SiteMap .map {
     display: inline-block;

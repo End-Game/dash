@@ -1,26 +1,53 @@
-var Hoist = (function() {
+var Hoist = (function () {
     var configs = {},
         user,
         toString = Object.prototype.toString,
+        splice = Array.prototype.splice,
         u;
+        
+    // helpers
 
     function extend(into, from) {
         for (var x in from) into[x] = from[x];
     }
-
+        
+    function get(obj, key, nothing) {
+         if (key.indexOf('.') == -1) {
+            return obj[key];
+         } else {
+            key = key.split('.');
+            
+            for (var i = 0; i < key.length - 1; i++) {
+                obj = obj[key[i]];
+                if (!obj) return "";
+            }
+            
+            return obj[key[i]];
+         }
+    }
+    
     function classOf(data) {
         return toString.call(data).slice(8, -1);
     }
-
+    
+    function asyncError(error, context) {
+        if (typeof error !== "function") return;
+        
+        var args = splice.call(arguments, 2);
+        
+        setTimeout(function () {
+            error.apply(context, args);
+        }, 0);
+    }
+    
     // ajax helper
-
+    
     function request(opts, success, error, context) {
-        var method,
-            contentType;
+        var method, contentType, responseType;
 
         if ("data" in opts) {
             var type = classOf(opts.data);
-
+        
             if (type === "String") {
                 contentType = "application/json";
             } else if (type === "FormData") {
@@ -31,36 +58,33 @@ var Hoist = (function() {
                 opts.data = JSON.stringify(opts.data);
             }
         } else {
-            method = "GET";
+            method = opts.method || "GET";
         }
-
+        
         if (typeof error !== "function") {
-            context = error;
+            if (!context) context = error;
             error = null;
         }
-
+        
         if (!configs.apikey) {
-            error && setTimeout(function() {
-                error.call(context, "API key not set", null);
-            }, 0);
+            return asyncError(error, context, "API key not set", null);
         }
-
+        
         var xhr = new XMLHttpRequest();
-
+        
         xhr.open(method, opts.url);
         
-        var responseType = opts.responseType || "json";
-        xhr.responseType = responseType;
-
+        xhr.responseType = responseType = opts.responseType || "json";
+        
         contentType && xhr.setRequestHeader("Content-Type", contentType);
-
+        
         xhr.setRequestHeader("Authorization", "Hoist " + configs.apikey);
-
+        
         xhr.withCredentials = true;
-
-        xhr.onreadystatechange = function() {
+        
+        xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
-                if (xhr.status >= 200 && xhr.status < 300) {
+                if (xhr.status >= 200 && xhr.status < 400) {
                     if (typeof xhr.response === "string" && responseType === "json") {
                         success && success.call(context, JSON.parse(xhr.response), xhr);
                     } else {
@@ -71,80 +95,188 @@ var Hoist = (function() {
                 }
             }
         };
-
+        
         xhr.send(opts.data);
     }
-
+    
     var managers = {};
-
+    
+    // simple data manager
+    
     function DataManager(type) {
         this.type = type;
         this.url = "https://data.hoi.io/" + type;
     }
-
+    
     extend(DataManager.prototype, {
-        get: function(id, success, error, context) {
+        get: function (id, success, error, context) {
             if (typeof id === "function" || id === undefined) {
                 context = error;
                 error = success;
                 success = id;
-
-                request({
-                    url: this.url
-                }, success, error, context);
+                
+                request({ url: this.url }, success, error, context);
             } else {
-                request({
-                    url: this.url + "/" + id
-                }, success, error, context);
+                request({ url: this.url + "/" + id }, success, error, context);
             }
         },
-
-        post: function(id, data, success, error, context) {
+        
+        post: function (id, data, success, error, context) {
             if (typeof id === "object") {
                 context = error;
                 error = success;
                 success = data;
                 data = id;
-
+                
                 if (data._id) {
                     id = data._id;
                 } else {
-                    request({
-                        url: this.url,
-                        data: data
-                    }, success, error, context);
+                    request({ url: this.url, data: data }, success && function (resp, xhr) {
+                        success.call(this, resp[0], xhr);
+                    }, error, context);
+                    
                     return;
                 }
             }
+            
+            request({ url: this.url + "/" + id, data: data }, success, error, context);
+        },
+        
+        clear: function (success, error, context) {
+            request({ url: this.url, method: "DELETE" }, success, error, context);
+        },
+        
+        remove: function (id, success, error, context) {
+            if (!id) {
+                return asyncError(error, context, "Cannot remove model with empty id", null);
+            }
+        
+            request({ url: this.url + "/" + id, method: "DELETE" }, success, error, context);
+        }
+    });
+    
+    // complex data manager
+    
+    var tagRegex = /\[([^\]]+)\]/g;
 
-            request({
-                url: this.url + "/" + id,
-                data: data
-            }, success, error, context);
+    function ObjectDataManager(hash) {
+        var items = this.items = {};
+
+        for (var x in hash) {
+            var item = { key: x, path: hash[x], requires: [] },
+                match;
+        
+            while (match = tagRegex.exec(item.path)) {
+                var dot = match[1].indexOf('.');
+            
+                if (dot == -1) {
+                    throw "Malformed tag " + match[0];
+                } else {
+                    item.requires.push(match[1].slice(0, dot));
+                }
+            }
+    
+            items[x] = item;
+        }
+    }
+    
+    extend(ObjectDataManager.prototype, {
+        get: function (success, error, context) {
+            var items = {},
+                result = {},
+                managers = {},
+                failed;
+            
+            extend(items, this.items);
+            
+            if (typeof error !== "function") {
+                if (!context) context = error;
+                error = null;
+            }
+        
+            function succeed(key) {
+                return function (data) {
+                    result[key] = data;
+                    delete items[key];
+                    advance();
+                };
+            }
+            
+            function fail(key) {
+                return function (msg, xhr) {
+                    failed = true;
+                    error && error.call(context, key + ": " + msg, xhr);
+                };
+            }
+    
+            function advance() {
+                if (failed) return;
+            
+                var loading = 0;
+                
+                out: for (var x in items) {
+                    var item = items[x];
+            
+                    if (!managers[x]) {
+                        for (var i = 0; i < item.requires.length; i++) {
+                            if (item.requires[i] in items) {
+                                continue out;
+                            }
+                        }
+                
+                        var path = item.path.replace(tagRegex, function (a, b) { return get(result, b); }),
+                            space = path.indexOf(' ');
+
+                        if (space > -1) {
+                            (managers[item.key] = Hoist(path.slice(0, space))).get(path.slice(space + 1), succeed(item.key), fail(item.key));
+                        } else {
+                            (managers[item.key] = Hoist(path)).get(succeed(item.key), fail(item.key));
+                        }
+                    }
+                    
+                    loading++;
+                }
+            
+                if (!loading) success.call(context, result, managers);
+            }
+            
+            advance();
         }
     });
 
-    Hoist = function(type) {
-        return managers[type] || (managers[type] = new DataManager(type));
+    Hoist = function (type) {
+        if (classOf(type) === "Object") {
+            return new ObjectDataManager(type);
+        } else {
+            return managers[type] || (managers[type] = new DataManager(type));
+        }
     };
-
+    
     extend(Hoist, {
-        apiKey: function(v) {
+        apiKey: function (v) {
             return this.config("apikey", v);
         },
-
-        get: function(type, id, success, error, context) {
+        
+        get: function (type, id, success, error, context) {
             Hoist(type).get(id, success, error, context);
         },
-
-        post: function(type, id, data, success, error, context) {
+        
+        post: function (type, id, data, success, error, context) {
             Hoist(type).post(id, data, success, error, context);
         },
-
-        config: function(a, b) {
+        
+        clear: function (type, success, error, context) {
+            Hoist(type).clear(success, error, context);
+        },
+        
+        remove: function (type, id, success, error, context) {
+            Hoist(type).remove(id, success, error, context);
+        },
+    
+        config: function (a, b) {
             if (b === u) {
                 var type = typeof a;
-
+            
                 if (type === "string") {
                     return configs[a];
                 } else if (type === "object") {
@@ -156,45 +288,41 @@ var Hoist = (function() {
                 configs[a.toLowerCase()] = b;
             }
         },
-
-        status: function(success, error, context) {
-            request({
-                url: "https://auth.hoi.io/status"
-            }, function(resp) {
+        
+        status: function (success, error, context) {
+            request({ url: "https://auth.hoi.io/status" }, function (resp) {
                 user = resp;
                 success && success.apply(this, arguments);
             }, error, context);
         },
-
-        signup: function(member, success, error, context) {
+        
+        signup: function (member, success, error, context) {
             if (typeof member === "object") {
-                request({
-                    url: "https://auth.hoi.io/user",
-                    data: member
-                }, function(resp) {
+                request({ url: "https://auth.hoi.io/user", data: member }, function (resp) {
                     user = resp;
                     success && success.apply(this, arguments);
                 }, error, context);
             }
         },
-
-        login: function(member, success, error, context) {
+        
+        login: function (member, success, error, context) {
             if (typeof member === "object") {
-                request({
-                    url: "https://auth.hoi.io/login",
-                    data: member
-                }, function(resp) {
+                request({ url: "https://auth.hoi.io/login", data: member }, function (resp) {
                     user = resp;
                     success && success.apply(this, arguments);
                 }, error, context);
             }
         },
-
-        user: function() {
+        
+        logout: function (success, error, context) {
+            request({ url: "https://auth.hoi.io/logout", method: "POST" }, success, error, context);
+        },
+        
+        user: function () {
             return user;
         },
-
-        notify: function(id, data, success, error, context) {
+        
+        notify: function (id, data, success, error, context) {
             if (typeof id === "object") {
                 context = error;
                 error = success;
@@ -202,21 +330,18 @@ var Hoist = (function() {
                 data = id.data;
                 id = id.id;
             }
-
+            
             if (typeof data === "object") {
-                request({
-                    url: "https://notify.hoi.io/notification/" + id,
-                    data: data
-                }, success, error, context);
+                request({ url: "https://notify.hoi.io/notification/" + id, data: data }, success, error, context);
             }
         },
-
-        file: function(key, file, success, error, context) {
+        
+        file: function (key, file, success, error, context) {
             if (file.jQuery) file = file[0];
-
+        
             var type = classOf(file),
                 data;
-
+            
             if (type === "File") {
                 data = new FormData();
                 data.append("file", file);
@@ -224,9 +349,9 @@ var Hoist = (function() {
                 data = file;
             } else if (type === "HTMLInputElement") {
                 file = file.files && file.files[0];
-
+                
                 if (!file) return false;
-
+            
                 data = new FormData();
                 data.append("file", file);
             } else if (type === "Function") {
@@ -234,30 +359,21 @@ var Hoist = (function() {
                 error = success;
                 success = file;
 
-                request({
-                    url: "https://file.hoi.io/" + key,
-                    responseType: "blob"
-                }, success, error, context);
+                request({ url: "https://file.hoi.io/" + key, responseType: "blob" }, success, error, context);
                 return;
             } else if (type === "Undefined") {
-                request({
-                    url: "https://file.hoi.io/" + key,
-                    responseType: "blob"
-                }, success, error, context);
+                request({ url: "https://file.hoi.io/" + key, responseType: "blob" }, success, error, context);
                 return;
             } else {
                 return;
             }
-
-            request({
-                url: "https://file.hoi.io/" + key,
-                data: data
-            }, success, error, context);
+            
+            request({ url: "https://file.hoi.io/" + key, data: data }, success, error, context);
         }
     });
-
+    
     Hoist.clone = arguments.callee;
-
+    
     return Hoist;
 })();
 

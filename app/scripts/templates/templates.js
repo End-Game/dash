@@ -84,25 +84,30 @@ define(['dash', 'underscore'], function(Dash, _) {
 
     Dash.Template.productSideBar = _.template(
         "<a href='#<%=URL%>/sitemap'>" +
-        "<div>" +
-            "<img src='images/sitemap.png'/>" +
-            "<h4 class='bold'>View Site Map</h4>" +
-        "</div>" +
+            "<div>" +
+                "<img src='images/sitemap.png'/>" +
+                "<h4 class='bold'>View Site Map</h4>" +
+            "</div>" +
         "</a>" +
+        "<hr>" +
         "<div>" +
             "<h4>Sections</h4>" +
             "<ul id='sections'>" +
             "</ul>" +
         "</div>" +
         "<hr>" +
-        "<a class='bold' href='#'>" +
-        "<img src='images/sitemap.png'/>View Other Products</a>"
+        "<a href='#'>" +
+            "<div>" +
+                "<img src='images/sitemap.png'/>" +
+                "<p class='bold'>View Other Products</p>" +
+            "</div>" +
+        "</a>"
     );
 
     Dash.Template.articleSideBar = _.template(
         "<!--insert mini site map-->" +
         "<hr>" +
-        "<a href='#<%=currentProductName.replace(/\s/g,'')%>/sitemap'>" +
+        "<a href='#<%=currentProductName%>/sitemap'>" +
             "<div>" +
                 "<img src='images/sitemap.png'/>" +
                 "<h4 class='bold'>View Full Site Map</h4>" +

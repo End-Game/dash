@@ -64,6 +64,27 @@ require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone
                         console.log(app.dash.products);
                         app.dash.router = new app.dash.Router();
                         Backbone.history.start();
+                        app.dash.sections.each(function(section){
+                            if(section.get('parentJoins').length === 0 && section.get('productJoins').length === 0) {
+                                Hoist.remove("section", section.get('_id'));
+                                app.dash.sections.remove(section);
+                                console.log(app.dash.sections);
+                            }
+                        });
+                        app.dash.articles.each(function(article){
+                            if(article.get('parentJoins').length === 0 && article.get('productJoins').length === 0) {
+                                Hoist.remove("article", article.get('_id'));
+                                app.dash.articles.remove(article);
+                                console.log(app.dash.articles);
+                            }
+                        });
+                        app.dash.tags.each(function(tag){
+                            if(tag.getArticles().length === 0) {
+                                Hoist.remove("tag", tag.get('_id'));
+                                app.dash.tags.remove(tag);
+                                console.log(app.dash.tags);
+                            }
+                        });
                     }, function(res) {
                         console.log('product get unsuccessful: ' + res);
                     }, this);

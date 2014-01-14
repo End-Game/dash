@@ -72,21 +72,44 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         // if (!model.get("_id")) {
         //     model.set('_id', 'model' + model.get('name') + Math.floor(Math.random()*100000));
         // }
-        console.log(model.toJSON());
-        // if( success ){ success.call(context);}
-
-
-
-        Hoist.post(type, model, function(res) {
-            model.set('_rev', res[0]._rev);
-            if (!model.get("_id")) {
-                model.set("_id", res[0]._id);
+        // if (success) {
+        //     success.call(context);
+        // }
+        console.log('before post');
+        var toSend;
+        if (model instanceof Array) {
+            toSend = [];
+            for (var i = 0; i < model.length; i++) {
+                toSend[i] = model[i].toJSON();
             }
+            console.log(model);
+        } else {
+            console.log(model.toJSON());
+            toSend = model.toJSON();
+        }
+        Hoist.post(type, model, function(res) {
+            console.log(res);
+            if (model instanceof Array) {
+                for (var i = 0; i < model.length; i++) {
+                    model[i].set('_rev', res[i]._rev);
+                    if (!model[i].get("_id")) {
+                        model[i].set("_id", res[i]._id);
+                    }
+                }
+                console.log(model);
+            } else {    // might change to need res[0]._id etc
+                model.set('_rev', res._rev);
+                if (!model.get("_id")) {
+                    model.set("_id", res._id);
+                }
+            }
+
             if (success) {
                 success.call(context, res);
             }
         }, function(res) {
             console.log(type + " post unsuccessful: " + res);
+            console.log(model);
             if (error) {
                 error.call(context, res);
             }
@@ -116,7 +139,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         start: function() {
             this.model = Dash.products;
             this.productCount = 0; // possibly use for rendering products when > 3
-            Dash.products.on("add", 'render', this);
+            Dash.products.on("add", this.render, this);
         },
 
         events: {
@@ -217,19 +240,14 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 date: date
             });
 
-            var tags = this.getTags();
-
-            //console.log(article);
-            if (tags) {
-                tags.each(function(tag) {
-                    article.addTag(tag);
-                });
-            }
-            console.log(article);
-            Dash.postModel('article', article, function(res) {
-                this.addToSections(article);
-            }, this);
-            console.log(article);
+            this.addTags(article, function() {
+                //console.log(article);
+                console.log(article);
+                Dash.postModel('article', article, function(res) {
+                    this.addToSections(article);
+                }, this);
+                console.log(article);
+            });
             //new Dash.View.Admin.Article
 
         },
@@ -250,28 +268,47 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             }
         },
 
-        getTags: function() {
+        addTags: function(article, callback) {
             var tagNames = this.sideBar.tagNames;
             if (!tagNames) {
                 return;
             }
             var tags = new Dash.Tags();
-            console.log(tagNames);
+            var tagCount = 0;
+            var that = this;
+            var callbackFunction = function(res) {
+                tagCount++;
+                if (tagCount === tagNames.length) {
+                    callback.call(that, res);
+                }
+            };
+            var toPost = new Dash.Tags();
             for (var i = 0; i < tagNames.length; i++) {
                 var tag = Dash.tags.findWhere({
                     name: tagNames[i]
                 });
                 if (!tag) {
-                    console.log('here');
                     tag = new Dash.Tag({
                         name: tagNames[i]
                     });
-                    Dash.postModel('tag', tag);
                     Dash.tags.add(tag);
+                    article.addTag(tag);
+                    //toPost.push(tag);
+                    Dash.postModel('tag', tag, callbackFunction, this);
+                } else {
+                    tagCount++;
+                    article.addTag(tag);
+                    if (tagCount === tagNames.length) {
+                        //callback.call(this);
+                    }
                 }
-                tags.add(tag);
             }
-            return tags;
+            if (toPost.length) {
+                //Dash.postModel('tag', toPost.models, callbackFunction, this);
+            } else {
+                // callback.call(this);
+            }
+
         },
 
         addToSections: function(article) {
@@ -468,16 +505,29 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
         render: function() {
             this.$el.html(this.template());
+            if (this.model) {
+                this.$('#name').val(this.model.get('name'));
+                this.$('#description').val(this.model.get('description'));
+            }
+            console.log(this.model);
             return this;
         },
 
         save: function() {
-            var product = new Dash.Product({
+            var attributes = {
                 name: this.$('#name').val(),
                 description: this.$('#description').val(),
                 shortDescription: this.$('#description').val(),
                 _type: 'product'
-            });
+            };
+            var product;
+            console.log(this.model);
+            if (this.model) {
+                product = this.model.set(attributes);
+            } else {
+                product = new Dash.Product(attributes);
+            }
+            console.log(product);
             Dash.postModel("product", product, function(res) {
                 Dash.products.add(product);
                 this.trash();
@@ -513,10 +563,9 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             Dash.postModel("section", section, function(res) {
                 // add to the product/section and post to hoist
                 this.treePlace.addChild(section);
-                Dash.postModel(this.treePlace.get('_type'), this.treePlace, function(res) {
-                    this.trash();
-                }, this);
+                Dash.postModel(this.treePlace.get('_type'), this.treePlace);
             }, this);
+            this.trash();
         },
 
         treePlace: function(e) {

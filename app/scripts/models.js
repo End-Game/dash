@@ -32,6 +32,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             name: "",
             shortDescription: "",
             description: "",
+            _type: "product"
         },
 
         parse: function(response) {
@@ -64,6 +65,18 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             return sections;
         },
 
+        getAllSections: function() {
+            var sections = new Dash.Sections();
+            this.get('sectionJoins').each(function(sectionJoin) {
+                var section = sectionJoin.get('section');
+                if(section.get('_type') === 'section'){
+                    sections.add(section);
+                    sections.add(section.getSections().models);
+                }
+            });
+            return sections;
+        },
+        
         getKeySections: function() {
             var keySections = new Dash.Sections();
             this.get('keySectionJoins').each(function(sectionJoin) {
@@ -88,7 +101,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
         getFaqs: function() {
             var faqs = new Dash.Sections();
             this.getAllArticles().each(function(article) {
-                if (article.get("type") === "faq" || article.get("articleType") === "faq") {
+                if (article.get("type") === "faq") {
                     faqs.add(article);
                 }
             });
@@ -98,7 +111,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
         getHowDoIs: function() {
             var howDoIs = new Dash.Sections();
             this.getAllArticles().each(function(article) {
-                if (article.get("type") === "howDoI" || article.get("articleType") === "howDoI") {
+                if (article.get("type") === "howDoI") {
                     howDoIs.add(article);
                 }
             });
@@ -114,7 +127,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                 }
             }
         },
-        
+
         addChild: function(child, index) {
             var sectionJoins = this.get('sectionJoins');
             for (var i = 0; i < sectionJoins.length; i++) {
@@ -347,6 +360,10 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
 
         }],
 
+        defaults: {
+            _type: "article"
+        },
+        
         getFaqs: function() {
             //console.log('here');
             var faqs = new Dash.Sections();
@@ -458,7 +475,11 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                 includeInJSON: true
             }
         }],
-
+        
+        defaults: {
+            _type: "section"
+        },
+        
         getChildren: function() {
             var children = new Dash.Sections();
             this.get('childJoins').each(function(childJoin) {
@@ -478,6 +499,18 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                 }
             });
             return children;
+        },
+
+        getSections: function() {
+            var sections = new Dash.Sections();
+            this.get('childJoins').each(function(childJoin) {
+                var child = childJoin.get("child");
+                if (child.get("_type") === "section") {
+                    sections.add(child);
+                    sections.add(child.getSections().get('models'));
+                }
+            });
+            return sections;
         },
 
         addChild: function(child, index) {
@@ -541,6 +574,10 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
         }],
 
         toJSON: function() {
+            var child = this.get('child');
+            if(!child){
+                console.log(this);
+            }
             return this.get('child').get('_id');
         }
     });
@@ -578,7 +615,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
     Dash.Tag = Backbone.RelationalModel.extend({
         idAttribute: '_id',
 
-        getArticles: function(productName) {
+        getArticles: function() {
             var articles = new Dash.Sections();
             this.get('articleJoins').each(function(articleJoin) {
                 articles.add(articleJoin.get('article'));
