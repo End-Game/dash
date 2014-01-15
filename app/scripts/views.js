@@ -261,7 +261,6 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
         renderRelevantArticles: function() {
             var articles = this.model.getTaggedArticles().where({type:'article'});
             var that = this;
-            console.log(articles);
             _.each(articles,function(article) {
                 that.renderListItem(article, "#relevantArticleList");
             });
@@ -272,11 +271,8 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
         },
 
         renderListItem: function(item, tag) {
-            console.log(this.model.get('currentProductName'));
-            console.log(item.hasProduct(this.model.get('currentProductName')));
             item.set("currentProductName", this.model.get('currentProductName'));
             item.setUrl(this.model.get('currentProductName'));
-            console.log(item.get('URL'));
             var listItem = new Dash.ListItem({
                 model: item
             });

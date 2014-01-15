@@ -382,7 +382,9 @@ if (typeof define === "function" && define.amd) {
     define("Hoist", [], function() {
         return Hoist;
     });
-} else {
+}
+else
+{
     //put hoist on the global namespace
     window.Hoist = Hoist;
 }

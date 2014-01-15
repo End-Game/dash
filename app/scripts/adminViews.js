@@ -186,14 +186,18 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
     Dash.View.Admin.NewArticle = Dash.View.Admin.extend({
         el: "#Article",
         template: Dash.Template.newArticle,
-
+        previewTemplate: Dash.Template.preview,
+        
         events: {
-            'click button.save': 'save'
+            'click button.save': 'save',
+            'keydown #title': 'renderPreview',
+            'keydown #content': 'renderPreview'
         },
 
         render: function() {
             this.$el.html(this.template());
             this.renderSidebar();
+            this.$('#preview').hide();
             return this;
         },
 
@@ -201,6 +205,18 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             this.$('.sideBar').empty();
             this.sideBar = new Dash.SideBar.NewArticle();
             this.$el.append(this.sideBar.render().el);
+        },
+
+        renderPreview: function(){
+            var name = $('#title').val();
+            var content = $('#content').val();
+            var date = Dash.getDateString();
+            this.$('#preview').html(this.previewTemplate({
+                name: name,
+                content: content,
+                date: date
+            }));
+            this.$('#preview').show();
         },
 
         save: function() {

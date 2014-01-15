@@ -270,11 +270,11 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                 url = url.replace(/\s/g, '');
                 this.set('URL', url);
             }
-            console.log("finished find: " + this.get('URL'));
-            if(!  this.get('URL')){
-                console.log(this);
-            }
-            console.log("done finding url from: " + product);
+            // console.log("finished find: " + this.get('URL'));
+            // if(!  this.get('URL')){
+            //     console.log(this);
+            // }
+            // console.log("done finding url from: " + product);
         },
 
         findUrl: function(product) {
@@ -286,10 +286,10 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                 // check products for product
                 productJoins.every(function(productJoin) {
                     if (!url) {
-                        console.log(productJoin.get("product").get("name") + " vs " + product);
+                       // console.log(productJoin.get("product").get("name") + " vs " + product);
                         if (productJoin.get("product").get("name") === product) {
                             url = product + "/" + that.get("name");
-                            console.log(url);
+                       //     console.log(url);
                             return false;
                         }
                     }
@@ -302,8 +302,8 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                 parentJoins.every(function(parentJoin) {
                     if (!url) {
                         var tempUrl = parentJoin.get("parent").findUrl(product);
-                        console.log(parentJoin.get('parent'));
-                        console.log(tempUrl);
+                       // console.log(parentJoin.get('parent'));
+                       // console.log(tempUrl);
                         if (tempUrl) {
                             url = tempUrl + "/" + that.get('name');
                             return false;

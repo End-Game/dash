@@ -218,10 +218,22 @@ define(['dash', 'underscore'], function(Dash, _) {
             "<textarea id='content' class='bottomField' placeholder='Enter Article Content...'>" +
             "</textarea>" +
             "<hr>" +
-            "<h3>Preview<h3>" +
-            "<!-- insert Preview here -->" +
+            "<h3>Preview</h3>" +
+            "<div id='preview'></div>" +
             "<button class='half offwhite' type='button'>" +
-            "<img src='images/sitemap.png'> View Full Preview</button>" +
+                "<img src='images/sitemap.png'> View Full Preview" +
+            "</button>" +
+        "</div>"
+    );
+
+    Dash.Template.preview = _.template(
+        "<h1><%=name%></h1>" +
+        "<hr>" +
+        "<div id='article'>" +
+            "<div id='tags'>" +
+                "<p class='bold'>PUBLISHED <%=date%></p>" +
+            "</div>" +
+            "<p><%=content%></p>" +
         "</div>"
     );
 

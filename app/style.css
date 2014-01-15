@@ -439,3 +439,9 @@ div.themeBorder {
     margin-top: 10px;
     margin-bottom: 10px;
 }
+
+#preview{
+    border: 2px solid #d0d0d0;
+    border-radius: 5px;
+    padding: 10px;
+}
