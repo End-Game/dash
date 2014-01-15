@@ -201,9 +201,11 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
     Dash.Section = Backbone.RelationalModel.extend({
         idAttribute: '_id',
         subModelTypeAttribute: '_type',
-        // initialize: function() {
-        // },
 
+        initialize: function(){
+            this.on('destroy', this.removeJoins, this);
+        },
+        
         subModelTypes: {
             'article': 'Section.Article',
             // 'faq': 'Section.Article',
@@ -262,7 +264,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
         },
 
         setUrl: function(product) {
-            if (product === undefined) {
+            if (!product) {
                 product = this.get("currentProductName");
             }
             var url = this.findUrl(product);
@@ -313,6 +315,18 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                 });
             }
             return url;
+        },
+        
+        removeJoins: function(){
+            this.get('parentJoins').each(function(join){
+                join.destroy();
+            });
+            this.get('productJoins').each(function(join){
+                join.destroy();
+            });
+            this.get('tagJoins').each(function(join){
+                join.destroy();
+            });
         }
     });
 
@@ -533,6 +547,10 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
     Dash.Tag = Backbone.RelationalModel.extend({
         idAttribute: '_id',
 
+        initialize: function(){
+            this.on('destroy', this.removeJoins, this);
+        },
+        
         getArticles: function() {
             var articles = new Dash.Sections();
             this.get('articleJoins').each(function(articleJoin) {
@@ -550,6 +568,12 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                 }
             });
             return articles;
+        },
+        
+        removeJoins: function(){
+            this.get('articleJoins').each(function(join){
+                join.destroy();
+            });
         }
     });
 

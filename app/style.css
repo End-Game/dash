@@ -79,6 +79,10 @@ div {
     width: 65%;
 }
 
+.third {
+    width: 32%;
+}
+
 hr {
     border: 1px solid #d0d0d0;
     height: 0px;
@@ -440,8 +444,12 @@ div.themeBorder {
     margin-bottom: 10px;
 }
 
-#preview{
+.preview{
     border: 2px solid #d0d0d0;
     border-radius: 5px;
     padding: 10px;
 }
+
+select {
+    width: 100%;
+} 

@@ -50,11 +50,13 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                                         new Dash.View.Admin.Article({
                                             model: section
                                         });
-                                    } else {
+                                    } else /*if(article.get('published'))*/{
                                         new Dash.View.Article({
                                             model: section
                                         });
-                                    }
+                                    } /*else {
+                                        loadHome = true;
+                                    }*/
                                 } else if (section.get("_type") === "section") {
                                     loadHome = false;
                                     if (Dash.admin) {

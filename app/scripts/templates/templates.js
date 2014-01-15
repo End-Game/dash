@@ -219,8 +219,8 @@ define(['dash', 'underscore'], function(Dash, _) {
             "</textarea>" +
             "<hr>" +
             "<h3>Preview</h3>" +
-            "<div id='preview'></div>" +
-            "<button class='half offwhite' type='button'>" +
+            "<div class='preview'></div>" +
+            "<button class='half offwhite fullPreview' type='button'>" +
                 "<img src='images/sitemap.png'> View Full Preview" +
             "</button>" +
         "</div>"
@@ -235,6 +235,12 @@ define(['dash', 'underscore'], function(Dash, _) {
             "</div>" +
             "<p><%=content%></p>" +
         "</div>"
+    );
+
+    Dash.Template.backButton = _.template(
+        "<button class='third offwhite back' type='button'>" +
+            "<%=text%>" +
+        "</button>"
     );
 
     Dash.Template.checkboxItem = _.template(
@@ -292,7 +298,10 @@ define(['dash', 'underscore'], function(Dash, _) {
         "<hr>" +
         "<div>" +
             "<h4>Article Status</h4>" +
-            "<!-- drop down box -->" +
+            "<select id='published'>" +
+                "<option value='published'>Published</option>" +
+                "<option value='unpublished'>Unpublished</option>" +
+            "</select>" +
         "</div>" +
         "<button type='button' class='save'>Save</button>"
     );

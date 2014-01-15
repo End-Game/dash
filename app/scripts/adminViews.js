@@ -82,12 +82,12 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             for (var i = 0; i < model.length; i++) {
                 toSend[i] = model[i].toJSON();
             }
-            console.log(model);
+            console.log(toSend);
         } else {
             console.log(model.toJSON());
             toSend = model.toJSON();
         }
-        Hoist.post(type, model, function(res) {
+        Hoist.post(type, toSend, function(res) {
             console.log(res);
             if (model instanceof Array) {
                 for (var i = 0; i < model.length; i++) {
@@ -97,7 +97,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                     }
                 }
                 console.log(model);
-            } else {    // might change to need res[0]._id etc
+            } else { // might change to need res[0]._id etc
                 model.set('_rev', res._rev);
                 if (!model.get("_id")) {
                     model.set("_id", res._id);
@@ -187,9 +187,10 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         el: "#Article",
         template: Dash.Template.newArticle,
         previewTemplate: Dash.Template.preview,
-        
+
         events: {
             'click button.save': 'save',
+            'click button.fullPreview': 'fullPreview',
             'keydown #title': 'renderPreview',
             'keydown #content': 'renderPreview'
         },
@@ -197,7 +198,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         render: function() {
             this.$el.html(this.template());
             this.renderSidebar();
-            this.$('#preview').hide();
+            this.$('.preview').hide();
             return this;
         },
 
@@ -207,16 +208,16 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             this.$el.append(this.sideBar.render().el);
         },
 
-        renderPreview: function(){
+        renderPreview: function() {
             var name = $('#title').val();
             var content = $('#content').val();
             var date = Dash.getDateString();
-            this.$('#preview').html(this.previewTemplate({
+            this.$('.preview').html(this.previewTemplate({
                 name: name,
                 content: content,
                 date: date
             }));
-            this.$('#preview').show();
+            this.$('.preview').show();
         },
 
         save: function() {
@@ -247,23 +248,29 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 return;
             }
             var date = Dash.getDateString();
-
+            var published = $('#published').val() === 'published';
+            console.log(published);
             var article = new Dash.Section.Article({
                 name: name,
                 content: content,
                 type: type,
                 _type: 'article',
-                date: date
+                date: date,
+                published: published
             });
 
             this.addTags(article, function() {
                 Dash.postModel('article', article, function(res) {
                     this.addToSections(article);
+                    article.set('currentProductName', treePlaces.products[0].get('name'));
+                    article.setUrl();
+                    Dash.router.navigate(article.get('URL'));
+                    new Dash.View.Admin.Article ({
+                        model: article
+                    });
                 }, this);
                 console.log(article);
-            });
-            //new Dash.View.Admin.Article
-
+            }, this);
         },
 
         getType: function() {
@@ -282,21 +289,15 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             }
         },
 
-        addTags: function(article, callback) {
+        addTags: function(article, callback, context) {
             var tagNames = this.sideBar.tagNames;
             if (!tagNames) {
+                callback.call(context);
                 return;
             }
-            var tags = new Dash.Tags();
             var tagCount = 0;
             var that = this;
-            var callbackFunction = function(res) {
-                tagCount++;
-                if (tagCount === tagNames.length) {
-                    callback.call(that, res);
-                }
-            };
-         //   var toPost = new Dash.Tags();
+            var toPost = new Dash.Tags();
             for (var i = 0; i < tagNames.length; i++) {
                 var tag = Dash.tags.findWhere({
                     name: tagNames[i]
@@ -306,24 +307,15 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                         name: tagNames[i]
                     });
                     Dash.tags.add(tag);
-                    article.addTag(tag);
-                    //toPost.push(tag);
-                    Dash.postModel('tag', tag, callbackFunction, this);
-                } else {
-                    tagCount++;
-                    article.addTag(tag);
-                    if (tagCount === tagNames.length) {
-                        callback.call(this);
-                    }
+                    toPost.add(tag);
                 }
+                article.addTag(tag);
             }
-            //for sending array
-            // if (toPost.length) {
-            //     //Dash.postModel('tag', toPost.models, callbackFunction, this);
-            // } else {
-            //     // callback.call(this);
-            // }
-
+            if (toPost.length) {
+                Dash.postModel('tag', toPost.models, callback, context);
+            } else {
+                callback.call(context);
+            }
         },
 
         addToSections: function(article) {
@@ -343,6 +335,59 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 }
                 Dash.postModel('section', section);
             }
+        },
+
+        fullPreview: function() {
+            var type = this.getType();
+            var name = $('#title').val();
+            var content = $('#content').val();
+            var date = Dash.getDateString();
+
+            var article = new Dash.Section.Article({
+                name: name,
+                content: content,
+                type: type,
+                _type: 'article',
+                date: date,
+                currentProductName: "",
+            });
+
+            // Dash.router.navigate('newArticle/preview');
+            var view = new Dash.View.Article.Preview({
+                model: article,
+            });
+        }
+    });
+
+    Dash.View.Article.Preview = Dash.View.Article.extend({
+        el: '#Preview',
+        backButtonTemplate: Dash.Template.backButton,
+
+        render: function() {
+            this.$el.empty();
+            this.$el.html(this.template(this.model.toJSON()));
+            this.renderSidebar();
+            this.renderTags();
+            this.renderRelevantArticles();
+            this.$el.prepend(this.backButtonTemplate({
+                text: "Exit Preview"
+            }));
+            return this;
+        },
+
+        events: {
+            'click': 'removeClick',
+            'click button.back': 'trash'
+        },
+
+        removeClick: function(e) {
+            e.preventDefault();
+        },
+
+        end: function() {
+            this.model.destroy();
+            this.$el.hide();
+            $('#Article').show();
         }
     });
 
