@@ -32,7 +32,7 @@ require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone
     Hoist.apiKey('TVGDGQGQSETLPLSSKRL[');
     // put somewhere to show that user is admin, maybe after login
     // maybe makae a link to a login page
-    app.dash.admin = true;
+    app.dash.admin = false;
     Hoist.get({
         tags: "tag",
         articles: "article",
@@ -56,22 +56,24 @@ require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone
         console.log(app.dash.products);
         app.dash.router = new app.dash.Router();
         Backbone.history.start();
-        app.dash.sections.each(function(section){
-            if(section.get('parentJoins').length === 0 && section.get('productJoins').length === 0) {
+        var count = 0;
+        app.dash.sections.each(function(section) {
+            count++;
+            if (section.get('parentJoins').length === 0 && section.get('productJoins').length === 0) {
                 Hoist.remove("section", section.get('_id'));
                 app.dash.sections.remove(section);
                 console.log(app.dash.sections);
             }
         });
-        app.dash.articles.each(function(article){
-            if(article.get('parentJoins').length === 0 && article.get('productJoins').length === 0) {
+        app.dash.articles.each(function(article) {
+            if (article.get('parentJoins').length === 0 && article.get('productJoins').length === 0) {
                 Hoist.remove("article", article.get('_id'));
                 app.dash.articles.remove(article);
                 console.log(app.dash.articles);
             }
         });
-        app.dash.tags.each(function(tag){
-            if(tag.getArticles().length === 0) {
+        app.dash.tags.each(function(tag) {
+            if (tag.getArticles().length === 0) {
                 Hoist.remove("tag", tag.get('_id'));
                 app.dash.tags.remove(tag);
                 console.log(app.dash.tags);

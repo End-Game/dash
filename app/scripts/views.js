@@ -173,9 +173,11 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             var that = this;
             var keySectionsList = item.getKeySections();
             keySectionsList.each(function(section) {
-                section.set("currentProductName", item.get('name'));
-                section.setUrl(item.get('name'));
-                that.renderListItem(section, "#keySections" + item.get('_id'));
+                if (section.get('_type') === 'section' || section.get('published')) {
+                    section.set("currentProductName", item.get('name'));
+                    section.setUrl(item.get('name'));
+                    that.renderListItem(section, "#keySections" + item.get('_id'));
+                }
             }, this);
         },
 
@@ -202,10 +204,14 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
         renderList: function(list, listTag, divTag) {
             var that = this;
             list.each(function(item) {
-                that.renderListItem(item, listTag);
+                if (item.get('published') || Dash.admin) {
+                    that.renderListItem(item, listTag);
+                }
             });
-            if (this.$(listTag+" li").length === 0) {
-                this.$(divTag).empty();
+            if (this.$(listTag + " li").length === 0) {
+                this.$(divTag).hide();
+            } else {
+                this.$(divTag).show();
             }
         },
 
@@ -259,14 +265,18 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
         },
 
         renderRelevantArticles: function() {
-            var articles = this.model.getTaggedArticles().where({type:'article'});
+            var articles = this.model.getTaggedArticles().where({
+                type: 'article'
+            });
             var that = this;
-            _.each(articles,function(article) {
+            _.each(articles, function(article) {
                 that.renderListItem(article, "#relevantArticleList");
             });
 
             if (this.$("#relevantArticleList li").length === 0) {
-                this.$("#relevantArticles").empty();
+                this.$("#relevantArticles").hide();
+            } else{
+                this.$("#relevantArticles").show();
             }
         },
 
@@ -299,9 +309,11 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                 url = url + "/";
             }
             this.model.getChildren().each(function(child) {
-                child.set("currentProductName", that.model.get('currentProductName'));
-                child.set("URL", url + child.get('name').replace(/\s/g, ""));
-                that.renderListItem(child, "#children");
+                if (child.get('_type') === 'section' || child.get('published') || Dash.admin) {
+                    child.set("currentProductName", that.model.get('currentProductName'));
+                    child.set("URL", url + child.get('name').replace(/\s/g, ""));
+                    that.renderListItem(child, "#children");
+                }
             });
         },
 
@@ -368,8 +380,12 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                 url = url.substring(0, url.length - 1);
             }
             this.renderSiteMap();
-            this.renderList(url, this.model.getTaggedArticles().where({type:'faq'}), "#faqList", "#faqs");
-            this.renderList(url, this.model.getTaggedArticles().where({type:'howDoI'}), "#howDoIList", "#howDoIs");
+            this.renderList(url, this.model.getTaggedArticles().where({
+                type: 'faq'
+            }), "#faqList", "#faqs");
+            this.renderList(url, this.model.getTaggedArticles().where({
+                type: 'howDoI'
+            }), "#howDoIList", "#howDoIs");
             this.renderOtherArticles(url);
             return this;
         },
@@ -377,19 +393,23 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
         renderSiteMap: function() {
 
         },
-        
+
         renderList: function(url, list, listTag, divTag) {
             var that = this;
             _.each(list, function(item) {
-                item.set("currentProductName", that.model.get('currentProductName'));
-                item.setUrl(that.model.get('currentProductName'));
-                if (item.get('URL') === undefined) {
-                    item.set("URL", url + "/" + item.get('name').replace(/\s/g, ""));
+                if (item.get('published') || Dash.admin) {
+                    item.set("currentProductName", that.model.get('currentProductName'));
+                    item.setUrl(that.model.get('currentProductName'));
+                    // if (item.get('URL') === undefined) {
+                    //     item.set("URL", url + "/" + item.get('name').replace(/\s/g, ""));
+                    // }
+                    that.renderListItem(item, listTag);
                 }
-                that.renderListItem(item, listTag);
             });
-            if (this.$(listTag+" li").length === 0) {
-                this.$(divTag).empty();
+            if (this.$(listTag + " li").length === 0) {
+                this.$(divTag).hide();
+            } else {
+                this.$(divTag).show();
             }
         },
 
@@ -401,24 +421,21 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             if (path.length > 2) {
                 var section = this.model.getSection(path[path.length - 2]);
                 if (section) {
-                    toRender.add(section.getChildren().where({type:'article'}));
+                    toRender.add(section.getChildren().where({
+                        type: 'article'
+                    }));
                 }
             } else {
                 var product = this.model.getProduct(path[0]);
                 if (product) {
-                    toRender.add(product.getSections().where({type:'article'}));
+                    toRender.add(product.getSections().where({
+                        type: 'article'
+                    }));
                 }
             }
             toRender.remove(this.model);
-            toRender.each(function(article) {
-                article.set("currentProductName", that.model.get('currentProductName'));
-                article.set("URL", url.substring(0, url.lastIndexOf('/') + 1) + article.get('name').replace(/\s/g, ""));
-                that.renderListItem(article, "#otherArticleList");
-            });
 
-            if (this.$("#otherArticleList li").length === 0) {
-                this.$("#otherArticles").empty();
-            }
+            this.renderList(url, toRender.models, "#otherArticleList", "#otherArticles");
         },
 
         renderListItem: function(item, tag) {
@@ -498,7 +515,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                     model: section
                 });
                 this.$("li").last().append(map.render().el);
-            } else {
+            } else if (section.get('published') || Dash.admin) {
                 this.renderListItem(section);
             }
         },
@@ -570,7 +587,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                 this.$("li").last().append(map.render().el);
             }
         },
-        
+
     });
     return Dash;
 });

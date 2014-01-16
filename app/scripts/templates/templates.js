@@ -119,11 +119,13 @@ define(['dash', 'underscore'], function(Dash, _) {
             "<ul id='faqList'>" +
             "</ul>" +
         "</div>" +
+        "<hr class='hideable'>" +
         "<div id='howDoIs'>" +
             "<h4>How Do I&#39;s</h4>" +
             "<ul id='howDoIList'>" +
             "</ul>" +
         "</div>" +
+        "<hr class='hideable'>" +
         "<div id='otherArticles'>" +
             "<h4>Other Articles in this Section</h4>" +
             "<ul id='otherArticleList'>" +

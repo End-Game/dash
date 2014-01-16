@@ -453,3 +453,8 @@ div.themeBorder {
 select {
     width: 100%;
 } 
+
+hr.hideable {
+    margin-top: -2px;
+    margin-bottom: 0px;
+}
