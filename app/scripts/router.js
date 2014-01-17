@@ -36,9 +36,15 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                     } else if (product) {
                         pathSplit.shift();
                         if (pathSplit[0] === "sitemap") {
-                            new Dash.View.SiteMap({
-                                model: product
-                            });
+                            if (Dash.admin) {
+                                new Dash.View.Admin.SiteMap({
+                                    model: product
+                                });
+                            } else {
+                                new Dash.View.SiteMap({
+                                    model: product
+                                });
+                            }
                             loadHome = false;
                         } else {
                             var section = product.findSection(pathSplit);
@@ -50,7 +56,7 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                                         new Dash.View.Admin.Article({
                                             model: section
                                         });
-                                    } else if(section.get('published')){
+                                    } else if (section.get('published')) {
                                         new Dash.View.Article({
                                             model: section
                                         });

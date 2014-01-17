@@ -68,6 +68,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             context = success;
             success = null;
         }
+        var that;
         // console.log(model);
         // if (!model.get("_id")) {
         //     model.set('_id', 'model' + model.get('name') + Math.floor(Math.random()*100000));
@@ -183,6 +184,98 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
     });
 
+    Dash.View.Admin.SiteMap = Dash.View.SiteMap.extend({
+        setPublishedTemplate: Dash.Template.siteMapSetPublished,
+
+        events: {
+            'click #setPublished': 'setPublished'
+        },
+
+        render: function() {
+            this.$el.html(this.template(this.model.toJSON()));
+            var map = this.isList ? new Dash.SiteMap.List({
+                model: this.model
+            }) : new Dash.SiteMap.AdminMap({
+                model: this.model
+            });
+            this.$('.map').append(map.render().el);
+            this.$('.map').append(Dash.Template.siteMapSetPublished());
+            this.renderSidebar();
+            return this;
+        },
+
+        setPublished: function() {
+            console.log('here');
+            var that = this;
+            this.$('input:checked').each(function() {
+                var hash = that.$(this).closest('li').find('a')[0].hash;
+                hash = hash.substring(1);
+                var pathSplit = hash.split("/");
+                var product = Dash.products.findProduct(pathSplit[0]);
+                var article = product.findSection(pathSplit.slice(1));
+                article.set('published', true);
+                Dash.postModel('article', article);
+                console.log(article);
+            });
+            this.render();
+        },
+
+        renderSidebar: function() {
+            this.$('.sideBar').empty();
+            var sideBar = new Dash.AdminSideBar.Product({
+                model: this.model,
+            });
+            this.$el.append(sideBar.render().el);
+        }
+    });
+
+    Dash.AdminMapItem = Dash.ListItem.extend({
+        template: Dash.Template.adminSiteMapItem
+    });
+
+    Dash.SiteMap.AdminMap = Dash.SiteMap.Map.extend({
+
+        renderSection: function(section) {
+            if (this.model.get('_type') === 'product') {
+                section.set('currentProductName', this.model.get('name'));
+            } else {
+                section.set('currentProductName', this.model.get('currentProductName'));
+            }
+            var url = this.model.get('URL');
+            if (url.charAt(url.length - 1) === '/') {
+                url = url.substring(0, url.length - 1);
+            }
+            url = url + "/" + section.get("name").replace(/\s/g, "");
+            section.set('URL', url);
+            if (section.get('_type') === 'section') {
+                this.renderListItem(section);
+                var map = new Dash.SiteMap.AdminMap({
+                    model: section
+                });
+                this.$("li").last().append(map.render().el);
+            } else if (section.get('published') || Dash.admin) {
+                this.renderListItem(section);
+            }
+        },
+
+        renderListItem: function(item) {
+            var listItem;
+            if (item.get("_type") === "article") {
+                listItem = new Dash.AdminMapItem({
+                    model: item,
+                });
+                //console.log(listItem.render().el);
+            }
+            if (item.get("_type") === "section") {
+                listItem = new Dash.ListItem({
+                    model: item,
+                    className: 'bold'
+                });
+            }
+            this.$el.append(listItem.render().el);
+        },
+    });
+
     Dash.View.Admin.NewArticle = Dash.View.Admin.extend({
         el: "#Article",
         template: Dash.Template.newArticle,
@@ -265,7 +358,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                     article.set('currentProductName', treePlaces.products[0].get('name'));
                     article.setUrl();
                     Dash.router.navigate(article.get('URL'));
-                    new Dash.View.Admin.Article ({
+                    new Dash.View.Admin.Article({
                         model: article
                     });
                 }, this);

@@ -31,8 +31,8 @@ require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone
     $('section').hide();
     Hoist.apiKey('TVGDGQGQSETLPLSSKRL[');
     // put somewhere to show that user is admin, maybe after login
-    // maybe makae a link to a login page
-    app.dash.admin = false;
+    // maybe make a link to a login page
+    app.dash.admin = true;
     Hoist.get({
         tags: "tag",
         articles: "article",
@@ -54,11 +54,7 @@ require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone
         console.log(app.dash.articles);
         console.log(app.dash.sections);
         console.log(app.dash.products);
-        app.dash.router = new app.dash.Router();
-        Backbone.history.start();
-        var count = 0;
         app.dash.sections.each(function(section) {
-            count++;
             if (section.get('parentJoins').length === 0 && section.get('productJoins').length === 0) {
                 Hoist.remove("section", section.get('_id'));
                 app.dash.sections.remove(section);
@@ -70,6 +66,13 @@ require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone
                 Hoist.remove("article", article.get('_id'));
                 app.dash.articles.remove(article);
                 console.log(app.dash.articles);
+            } else {
+                // console.log('here main');
+                // if (!article.get('published')) {
+                //     article.set('published', false);
+                //     Hoist.post('article', article);
+                //     console.log('here main');
+                // }
             }
         });
         app.dash.tags.each(function(tag) {
@@ -79,6 +82,8 @@ require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone
                 console.log(app.dash.tags);
             }
         });
+        app.dash.router = new app.dash.Router();
+        Backbone.history.start();
     }, function(res) {
         console.log('get unsuccessful: ' + res);
     });

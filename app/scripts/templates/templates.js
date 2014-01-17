@@ -283,12 +283,12 @@ define(['dash', 'underscore'], function(Dash, _) {
         "<div>" +
             "<ul id='articleTypeList' class='checkboxList'>" +
                 "<li>" +
-                "<label>" +
-                "<input class='checkbox' id='isFaq' type='checkbox'>Article is a 'FAQ'</label>" +
+                    "<label>" +
+                    "<input class='checkbox' id='isFaq' type='checkbox'>Article is a 'FAQ'</label>" +
                 "</li>" +
                 "<li>" +
-                "<label>" +
-                "<input class='checkbox' id='isHowTo' type='checkbox'>Article is a 'How To'</label>" +
+                    "<label>" +
+                    "<input class='checkbox' id='isHowTo' type='checkbox'>Article is a 'How To'</label>" +
                 "</li>" +
             "</ul>" +
         "</div>" +
@@ -339,5 +339,20 @@ define(['dash', 'underscore'], function(Dash, _) {
             "<hr>" +
             "<button class='themeButton save' type='button'>Save Section</button>" +
         "</div>"
+    );
+    
+    Dash.Template.adminSiteMapItem = _.template(
+        "<a href='#<%=URL%>'><%=name%></a>" +
+        "<%=published ? " + 
+        '"'+"<p class='themeText bold small'>&#10003; PUBLISHED</p>"+'"'+":"+'"'+"" +
+        "<div><label>" +
+            "<p class='themeText bold small'>&times; UNPUBLISHED</p>" +
+            "<input class='checkbox' type='checkbox'>" +
+        "</label></div>"+'"'+ 
+        "%>"
+    );
+    
+    Dash.Template.siteMapSetPublished = _.template(
+        "<p id='setPublished'>Set Selected to Published</p>"
     );
 });

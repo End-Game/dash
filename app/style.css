@@ -1,5 +1,5 @@
 * {
-    font-family: sans-serif;
+    font-family: helvetica, sans-serif;
     color: gray;
     font-weight: 200;}
 
@@ -33,7 +33,7 @@ h1, h2, h3, h4, h5, h6{
     display: block;
     width: 100px;
     height: 50px;
-}
+} 
 
 #Home div div {
     display: inline-block;
@@ -138,7 +138,7 @@ div > .bold {
 }
 
 
-#SiteMap .map {
+#SiteMap .map{
     display: inline-block;
     border: 2px solid #d0d0d0;
     margin-top: 7px;
@@ -154,7 +154,6 @@ div > .bold {
     width: 50%;
     float: left;
 }
-
 /*.map > ul > li:nth-child(even){
     float: right;
 }*/
@@ -457,4 +456,34 @@ select {
 hr.hideable {
     margin-top: -2px;
     margin-bottom: 0px;
+}
+
+input.checkbox {
+    width: auto;
+}
+
+label > p {
+    width: auto;
+    display: inline-block;
+}
+
+.map li > p {
+    margin-top: 5px;
+}
+
+.map li div > label > p {
+    margin-top: 0px;
+}
+
+.map li > label .checkbox {
+    margin-top: 0px;
+}
+
+#setPublished{
+    font-style: italic;
+    text-align: right;
+    display: block;
+    margin-right: 10px;
+    width: auto;
+    font-size: 12px;
 }
