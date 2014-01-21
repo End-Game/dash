@@ -104,10 +104,14 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             }
 
             this.render();
-
-            if (this.model) {
-                this.listenTo(this.model, 'change', this.render);
+            
+            if(this.afterRender){
+                this.afterRender();
             }
+            
+            // if (this.model) {
+            //     this.listenTo(this.model, 'change', this.render);
+            // }
 
             this.$el.show();
         },

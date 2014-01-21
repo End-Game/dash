@@ -317,6 +317,21 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             return url;
         },
         
+        getAllUrls: function(toHere){
+            var urls = [];            _.each(this.get('productJoins').pluck('product'), function(product){
+                urls.push((product.get('name') + '/' + this.get('name') + '/' + toHere).replace(/\s/g, ''));
+            }, this);
+            _.each(this.get('parentJoins').pluck('parent'), function(section){
+                urls = urls.concat(section.getAllUrls((this.get('name') + '/' + toHere).replace(/\s/g, '')));
+            }, this);
+            if(!toHere){
+                for(var i = 0; i<urls.length; i++){
+                    urls[i] = urls[i].substring(0, urls[i].length - 1);
+                }
+            }
+            return urls;
+        },
+        
         removeJoins: function(){
             this.get('parentJoins').each(function(join){
                 join.destroy();
@@ -327,7 +342,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             this.get('tagJoins').each(function(join){
                 join.destroy();
             });
-        }
+        },
     });
 
     Dash.Section.Article = Dash.Section.extend({
@@ -415,8 +430,31 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             });
             articles.remove(this);
             return articles;
+        },
+        
+        setSections: function(sections){
+            var sectionJoins = new Dash.SectionSectionJoins();
+            sections.each(function(section){
+                var sectionJoin = this.get('parentJoins').findWhere({
+                    parent: section
+                });
+                if(sectionJoin){
+                    sectionJoins.add(sectionJoin);
+                } else {
+                    sectionJoins.add(new Dash.SectionSectionJoin({
+                        parent: section,
+                        child: this
+                    }));
+                }
+            }, this);
+            this.get('parentJoins').each(function(parentJoin){
+                if(!sectionJoins.contains(parentJoin)){
+                    parentJoin.destroy();
+                }
+            });
+            this.get('parentJoins').set(sectionJoins.models);
         }
-
+        
     });
 
     Dash.Section.Section = Dash.Section.extend({

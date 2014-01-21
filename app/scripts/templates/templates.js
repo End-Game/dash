@@ -171,6 +171,21 @@ define(['dash', 'underscore'], function(Dash, _) {
         "<div id='products' class='container'>" +
         "</div>"
     );
+    
+    Dash.Template.adminArticle = _.template(
+        "<h1><%=name%></h1>" +
+        "<div class='inlineDiv twoThird'>" +
+            "<hr>" +
+            "<div id='article'>" +
+                "<div id='tags'>" +
+                    "<p class='bold'><%=published ? " + 
+                        '"PUBLISHED"'+":"+'"UNPUBLISHED"%>' + " <%=date%></p>" +
+                "</div>" +
+                "<p><%=content%></p>" +
+                "<hr>" +
+            "</div>" +
+        "</div>"
+    );
 
     Dash.Template.productSetup = _.template(
         "<div class='content'>" +
@@ -220,7 +235,7 @@ define(['dash', 'underscore'], function(Dash, _) {
             "<textarea id='content' class='bottomField' placeholder='Enter Article Content...'>" +
             "</textarea>" +
             "<hr>" +
-            "<h3>Preview</h3>" +
+              "<h3>Preview</h3>" +
             "<div class='preview'></div>" +
             "<button class='half offwhite fullPreview' type='button'>" +
                 "<img src='images/sitemap.png'> View Full Preview" +
@@ -247,12 +262,14 @@ define(['dash', 'underscore'], function(Dash, _) {
 
     Dash.Template.checkboxItem = _.template(
         "<label>" +
-        "<input class='checkbox' type='checkbox'><%=name%></label>"
+            "<input class='checkbox' type='checkbox'><%=name%>" + 
+        "</label>"
     );
 
     Dash.Template.checkboxProduct = _.template(
         "<label>" +
-        "<input class='checkbox' type='checkbox'><%=name%></label>" +
+            "<input class='checkbox' type='checkbox'><%=name%>" + 
+        "</label>" +
         "<div id='_<%=_id%>'>" +
             "<button class='treePlace' type='button'>Place in Tree</button>" +
             "<div class='treePlace'>" +
@@ -309,13 +326,22 @@ define(['dash', 'underscore'], function(Dash, _) {
     );
 
     Dash.Template.adminProductSideBar = _.template(
-        "<button class='themeButton' type='button' id='newSection'> Add New Section</button>" +
+        "<button class='themeButton newSection' type='button'> Add New Section</button>" +
         "<hr>" +
-        "<button type='button' id='newArticle'> Add New Article</button>" +
-        "<button type='button' id='productSettings'> Product Settings</button>" +
-        "<button type='button' id='personalise'> Personalise</button>"
+        "<button type='button' class='newArticle'> Add New Article</button>" +
+        "<button type='button' class='productSettings'> Product Settings</button>" +
+        "<button type='button' class='personalise'> Personalise</button>"
     );
-
+    
+    Dash.Template.adminArticleSideBar = _.template(
+        "<button class='themeButton editArticle' type='button'> Edit Article</button>" +
+        "<hr>" +
+        "<button type='button' class='newArticle'> Add New Article</button>" +
+        "<%=published ? " + 
+        '"'+'"'+":"+'"' +
+        "<button type='button' class='publishArticle'> publishArticle</button>" + '"%>' 
+    );
+    
     Dash.Template.errorText = _.template(
         "<p class='errorText'>* <%=errorText%></p>"
     );
