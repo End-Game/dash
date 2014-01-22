@@ -362,7 +362,6 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         save: function() {
             $('.errorText').remove();
             var error;
-            var errorText = "";
             var treePlaces = this.sideBar.treePlaces;
             if (!(treePlaces && treePlaces.length())) {
                 $('#productList').before(Dash.Template.errorText({
@@ -375,11 +374,13 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 error = true;
             }
             var name = $('#title').val();
+            if (!this.checkName(name)) {
+                error = true;
+            }
             var content = $('#content').val().replace(/\r?\n/g, '<br />');
             if (!(name && content)) {
-                errorText += "Article must have title and contents.";
                 $('#title').before(Dash.Template.errorText({
-                    errorText: errorText
+                    errorText: "Article must have title and contents."
                 }));
                 error = true;
             }
@@ -389,7 +390,40 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             var date = Dash.getDateString();
             var published = $('#published').val() === 'published';
             // var date = published ? Dash.getDateString() : "";
-            this.saveModel(name, content, type, date, published);
+            console.log('here');
+            // this.saveModel(name, content, type, date, published);
+        },
+
+        checkName: function(name) {
+            var valid;
+            if (!Dash.checkKeywords(name)) {
+                $('#title').before(Dash.Template.errorText({
+                    errorText: "Article name is invalid."
+                }));
+                return false;
+            }
+
+            var sections = this.sideBar.treePlaces.sections;
+
+            for (var i = 0; i < sections.length; i++) {
+                var section = sections[i];
+                if (section.get('_type') !== 'section'){
+                    var path = this.sideBar.treePlaces.sectionUrls[i].split('/');
+                    var sectionName = path[path.length - 2];
+                    section = section.getSection(sectionName);
+                }                
+                var children = section.getChildren();
+                for (var j = 0; j < children.length; j++) {
+                    var child = children.at(j);
+                    if (child.get('name').equalsIgnoreCaseSpace(name) && child !== this.model) {
+                        $('#title').before(Dash.Template.errorText({
+                            errorText: "Article name is invalid."
+                        }));
+                        return false;
+                    }
+                }
+            }
+            return true;
         },
 
         saveModel: function(name, content, type, date, published) {
@@ -498,7 +532,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             var view = new Dash.View.Article.Preview({
                 model: article,
             });
-        }
+        },
     });
 
     Dash.View.Admin.EditArticle = Dash.View.Admin.NewArticle.extend({
@@ -741,7 +775,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
     Dash.SideBar.EditArticle = Dash.SideBar.NewArticle.extend({
 
         renderModel: function() {
-            if(this.rendered){
+            if (this.rendered) {
                 return;
             }
             this.rendered = true;
@@ -769,7 +803,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             }
             var tags = this.model.get('tagJoins').pluck('tag');
             this.tagNames = [];
-            _.each(tags, function(tag){
+            _.each(tags, function(tag) {
                 this.renderTag(tag.get('name'));
                 this.tagNames.push(tag.get('name'));
             }, this);

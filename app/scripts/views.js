@@ -581,7 +581,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             if (url.charAt(url.length - 1) === '/') {
                 url = url.substring(0, url.length - 1);
             }
-            url = url + "/" + section.get("name").replace(/\s/g, "");
+            url = (url + "/" + section.get("name")).replace(/\s/g, "");
             section.set('URL', url);
             if (section.get('_type') === 'section') {
                 this.renderListItem(section);
