@@ -360,11 +360,11 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         },
 
         save: function() {
-            $('.errorText').remove();
+            this.$('.errorText').remove();
             var error;
             var treePlaces = this.sideBar.treePlaces;
             if (!(treePlaces && treePlaces.length())) {
-                $('#productList').before(Dash.Template.errorText({
+                this.$('#productList').before(Dash.Template.errorText({
                     errorText: "Article must be placed in the tree of at least one product."
                 }));
                 error = true;
@@ -379,7 +379,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             }
             var content = $('#content').val().replace(/\r?\n/g, '<br />');
             if (!(name && content)) {
-                $('#title').before(Dash.Template.errorText({
+                this.$('#title').before(Dash.Template.errorText({
                     errorText: "Article must have title and contents."
                 }));
                 error = true;
@@ -388,16 +388,15 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 return;
             }
             var date = Dash.getDateString();
-            var published = $('#published').val() === 'published';
+            var published = this.$('#published').val() === 'published';
             // var date = published ? Dash.getDateString() : "";
             console.log('here');
             // this.saveModel(name, content, type, date, published);
         },
 
         checkName: function(name) {
-            var valid;
             if (!Dash.checkKeywords(name)) {
-                $('#title').before(Dash.Template.errorText({
+                this.$('#title').before(Dash.Template.errorText({
                     errorText: "Article name is invalid."
                 }));
                 return false;
@@ -407,16 +406,16 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
             for (var i = 0; i < sections.length; i++) {
                 var section = sections[i];
-                if (section.get('_type') !== 'section'){
+                if (section.get('_type') !== 'section') {
                     var path = this.sideBar.treePlaces.sectionUrls[i].split('/');
                     var sectionName = path[path.length - 2];
                     section = section.getSection(sectionName);
-                }                
+                }
                 var children = section.getChildren();
                 for (var j = 0; j < children.length; j++) {
                     var child = children.at(j);
                     if (child.get('name').equalsIgnoreCaseSpace(name) && child !== this.model) {
-                        $('#title').before(Dash.Template.errorText({
+                        this.$('#title').before(Dash.Template.errorText({
                             errorText: "Article name is invalid."
                         }));
                         return false;
@@ -937,7 +936,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
         events: {
             'click button.save': 'save',
-            'click .treePlace': 'treePlace',
+            'click .treePlace': 'treePlaceFunction',
             'click .content': 'swallow',
             'click': 'trash',
         },
@@ -949,9 +948,24 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         },
 
         save: function() {
+            this.$('.errorText').remove();
+            var error;
+            if(!this.treePlace){
+                this.$('button.treePlace').before(Dash.Template.errorText({
+                    errorText: "Section must be placed in the tree."
+                }));
+                error = true;
+            }
+            var name = this.$('#name').val();
+            if (!this.checkName(name)) {
+                error = true;
+            }
+            if(error){
+                return;
+            }
             var that = this;
             var section = new Dash.Section.Section({
-                name: this.$('#name').val(),
+                name: name,
                 _type: 'section'
             });
             Dash.postModel("section", section, function(res) {
@@ -961,7 +975,41 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             this.trash();
         },
 
-        treePlace: function(e) {
+
+        // probably should be refactored as almost identical to that in newArticle
+        // params: name, error tag, treeplace sections (will need to check if product), context
+        checkName: function(name) {
+            if(name === "" || name === undefined){
+                this.$('#name').before(Dash.Template.errorText({
+                    errorText: "Section name is invalid."
+                }));
+                return false;
+            }
+            if (!Dash.checkKeywords(name)) {
+                this.$('#name').before(Dash.Template.errorText({
+                    errorText: "Section name is invalid."
+                }));
+                return false;
+            }
+            var children;
+            if(this.treePlace.get('_type')==='section'){
+                children = this.treePlace.getChildren();
+            } else if(this.treePlace.get('_type')==='product'){
+                children = this.treePlace.getSections();
+            }
+            for (var j = 0; j < children.length; j++) {
+                var child = children.at(j);
+                if (child.get('name').equalsIgnoreCaseSpace(name) && child !== this.model) {
+                    this.$('#name').before(Dash.Template.errorText({
+                        errorText: "Section name is invalid."
+                    }));
+                    return false;
+                }
+            }
+            return true;
+        },
+
+        treePlaceFunction: function(e) {
             var that = this;
             // pop up modal
             var treePlaceView = new Dash.View.Modal.SectionTreePlace({
