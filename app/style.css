@@ -201,9 +201,9 @@ button {
     padding: 10px 10px 10px 10px;
     width: 100%;
     background: #d0d0d0;
-    background: -webkit-gradient(linear, left top, left bottom, from(#f9f9f9), to(#d0d0d0));
-    background: -moz-linear-gradient(top,  #f9f9f9,  #d0d0d0);
-    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#f9f9f9', endColorstr='#d0d0d0');
+    background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#d0d0d0));
+    background: -moz-linear-gradient(top,  #ffffff,  #d0d0d0);
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#d0d0d0');
 }
 
 .modal {
@@ -375,7 +375,6 @@ div.treePlace > p {
     margin-left: 0px;
     margin-right: 0px;
     margin-top: 20px;
-    height: 32px;
 }
 
 .newTag:nth-of-type(2n){
@@ -384,14 +383,21 @@ div.treePlace > p {
 
 .newTag > div {
     display: inline-block;
-    width: 28px;
+    width: 30px;
     text-align: center;
     height: 100%;
     border-radius: 5px 0px 0px 5px;
     margin-left: -2px;
-    margin-top:  -2px;
+    margin-top: -1.5px;
+    margin-bottom: -2px;
     border: 2px solid;
     border-right: none;
+}
+
+.newTag p {
+    margin-top: 8px;
+    margin-bottom: 9px;
+    vertical-align: top;
 }
 
 .newTag > p {
@@ -399,11 +405,8 @@ div.treePlace > p {
     width: 66px;
     margin-left: 10px;
     margin-right: 10px;
-}
+    margin-top: 10px;
 
-.newTag p {
-    margin-top: 9px;
-    margin-bottom: 9px;
 }
 
 .smallText {

@@ -255,7 +255,7 @@ define(['dash', 'underscore'], function(Dash, _) {
     );
 
     Dash.Template.backButton = _.template(
-        "<button class='third offwhite back' type='button'>" +
+        "<button class='third back' type='button'>" +
             "<%=text%>" +
         "</button>"
     );

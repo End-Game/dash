@@ -17,7 +17,7 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                     path = path.substring(0, path.length - 1);
                 }
                 var pathSplit = path.split("/");
-                if (pathSplit[0] === "newArticle" && Dash.admin) {
+                if ("newArticle".equalsIgnoreCaseSpace(pathSplit[0]) && Dash.admin) {
                     loadHome = false;
                     new Dash.View.Admin.NewArticle();
                 } else {
@@ -35,7 +35,7 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                         }
                     } else if (product) {
                         pathSplit.shift();
-                        if (pathSplit[0] === "sitemap") {
+                        if ("sitemap".equalsIgnoreCaseSpace(pathSplit[0])) {
                             if (Dash.admin) {
                                 new Dash.View.Admin.SiteMap({
                                     model: product
