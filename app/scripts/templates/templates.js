@@ -381,4 +381,54 @@ define(['dash', 'underscore'], function(Dash, _) {
     Dash.Template.siteMapSetPublished = _.template(
         "<p id='setPublished'>Set Selected to Published</p>"
     );
+    
+    Dash.Template.login = _.template(
+        '<div class="third centre">' +
+            '<h1>Log in</h1>' +
+            '<fieldset>' +
+                '<label for="EmailAddress">Email Address</label>' +
+                '<div class="input-cage">' +
+                    '<input type="text" id="EmailAddress" name="EmailAddress" />' +
+                '</div>' +
+            '</fieldset>' +
+            '<fieldset>' +
+                '<label for="Password">Password</label>' +
+                '<div class="input-cage">' +
+                    '<input type="password" id="Password" name="Password" />' +
+                '</div>' +
+            '</fieldset>' +
+            '<button class="login third themeButton centre" type="button">Log in</button>' +
+        '</div>'
+    );
+    
+    Dash.Template.signup = _.template(
+        '<div class="third centre">' +
+            '<h1>Sign Up</h1>' +
+            '<fieldset>' +
+                '<label for="Name">Name</label>' +
+                '<div class="input-cage">' +
+                    '<input type="text" id="Name" name="Name" />' +
+                '</div>' +
+            '</fieldset>' +
+            '<fieldset>' +
+                '<label for="EmailAddress">Email Address</label>' +
+                '<div class="input-cage">' +
+                    '<input type="text" id="EmailAddress" name="EmailAddress" />' +
+                '</div>' +
+            '</fieldset>' +
+            '<fieldset>' +
+                '<label for="Password">Password</label>' +
+                '<div class="input-cage">' +
+                    '<input type="password" id="Password" name="Password" />' +
+                '</div>' +
+            '</fieldset>' +
+            '<fieldset>' +
+                '<label for="RepeatPassword">Repeat Password</label>' +
+                '<div class="input-cage">' +
+                    '<input type="password" id="RepeatPassword" name="RepeatPassword" />' +
+                '</div>' +
+            '</fieldset>' +
+            '<button class="signup third themeButton centre" type="button">Sign Up</button>' +
+        '</div>'
+    );
 });

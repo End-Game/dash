@@ -83,6 +83,10 @@ div {
     width: 32%;
 }
 
+.quarter {
+    width: 24%;
+}
+
 hr {
     border: 1px solid #d0d0d0;
     height: 0px;
@@ -489,4 +493,21 @@ label > p {
     margin-right: 10px;
     width: auto;
     font-size: 12px;
+}
+
+fieldset {
+    border: none;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+#Login > div {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.centre {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }

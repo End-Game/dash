@@ -84,7 +84,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         var day = date.getDate();
         var month = date.getMonth() + 1; //starts from 0
         var year = date.getFullYear().toString();
-        year = year.substring(year.length - 2);
+        year = year.substring(year.length - 2); // make to 2 digits
         if (day < 10) {
             day = '0' + day;
         }
@@ -111,8 +111,9 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         // if (success) {
         //     success.call(context);
         // }
+
         console.log('before post');
-        var toSend;
+        console.log(toSend);
         if (model instanceof Array) {
             toSend = [];
             for (var i = 0; i < model.length; i++) {
@@ -272,6 +273,100 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         }
     });
 
+    Dash.View.Admin.Login = Dash.View.Admin.extend({
+        el: "#Login",
+        template: Dash.Template.login,
+
+        events: {
+            'click button.login': 'login',
+        },
+
+        render: function() {
+            this.$el.html(this.template());
+            return this;
+        },
+
+        login: function() {
+            this.$('.errorText').remove();
+            Hoist.login({
+                username: this.$('#EmailAddress').val(),
+                password: this.$('#Password').val()
+            }, function(res) {
+                Dash.router.navigate('');
+                Dash.admin = true;
+                new Dash.View.Admin.Home();
+            }, function(res) {
+                console.log('login unsuccessful: ' + res);
+            });
+            return false;
+        },
+        
+        checkInputs: function(){
+            var that = this;
+            var valid = true;
+            this.$('input').each(function() {
+                var $this = that.$(this);
+                if (!$this.val()) {
+                    $this.before(Dash.Template.errorText({
+                        errorText: "Field must not be blank."
+                    }));
+                    valid = false;
+                }
+            });
+            return valid;
+        }
+    });
+
+    Dash.View.Admin.SignUp = Dash.View.Admin.Login.extend({
+        el: "#Signup",
+        template: Dash.Template.signup,
+
+        events: {
+            'click button.signup': 'signup',
+        },
+
+        render: function() {
+            this.$el.html(this.template());
+            return this;
+        },
+
+        signup: function() { // should probably check that password and repeat password match
+            
+            this.$('.errorText').remove();
+            var that = this;
+            var error = ! this.checkInputs();
+            if(this.$('#Password').val().length <6){
+                this.$('#Password').before(Dash.Template.errorText({
+                    errorText: "Password must be at least 6 characters."
+                }));
+                error = true;
+            }
+            if(this.$('#Password').val() !== this.$('#RepeatPassword').val()){
+                this.$('#Password').before(Dash.Template.errorText({
+                    errorText: "Passwords do not match."
+                }));
+                error = true;
+            }
+            //console.log(this.$('input'));
+            if(error){
+                return false;
+            }
+            console.log(this.$('#Password').val());
+            Hoist.signup({
+                name: this.$('#Name').val(),
+                email: this.$('#EmailAddress').val(),
+                password: this.$('#Password').val()
+            }, function(res) {
+                Dash.router.navigate('');
+                Dash.admin = true;
+                new Dash.View.Admin.Home();
+            }, function(res) {
+                console.log('Signup unsuccessful: ' + res);
+            });
+            return false;
+        }
+    });
+
     Dash.AdminMapItem = Dash.ListItem.extend({
         template: Dash.Template.adminSiteMapItem
     });
@@ -390,8 +485,8 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             var date = Dash.getDateString();
             var published = this.$('#published').val() === 'published';
             // var date = published ? Dash.getDateString() : "";
-            console.log('here');
-            // this.saveModel(name, content, type, date, published);
+            // console.log('here');
+            this.saveModel(name, content, type, date, published);
         },
 
         checkName: function(name) {
@@ -950,7 +1045,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         save: function() {
             this.$('.errorText').remove();
             var error;
-            if(!this.treePlace){
+            if (!this.treePlace) {
                 this.$('button.treePlace').before(Dash.Template.errorText({
                     errorText: "Section must be placed in the tree."
                 }));
@@ -960,7 +1055,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             if (!this.checkName(name)) {
                 error = true;
             }
-            if(error){
+            if (error) {
                 return;
             }
             var that = this;
@@ -979,7 +1074,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         // probably should be refactored as almost identical to that in newArticle
         // params: name, error tag, treeplace sections (will need to check if product), context
         checkName: function(name) {
-            if(name === "" || name === undefined){
+            if (name === "" || name === undefined) {
                 this.$('#name').before(Dash.Template.errorText({
                     errorText: "Section name is invalid."
                 }));
@@ -992,9 +1087,9 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 return false;
             }
             var children;
-            if(this.treePlace.get('_type')==='section'){
+            if (this.treePlace.get('_type') === 'section') {
                 children = this.treePlace.getChildren();
-            } else if(this.treePlace.get('_type')==='product'){
+            } else if (this.treePlace.get('_type') === 'product') {
                 children = this.treePlace.getSections();
             }
             for (var j = 0; j < children.length; j++) {

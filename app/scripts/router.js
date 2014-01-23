@@ -17,7 +17,13 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                     path = path.substring(0, path.length - 1);
                 }
                 var pathSplit = path.split("/");
-                if ("newArticle".equalsIgnoreCaseSpace(pathSplit[0]) && Dash.admin) {
+                if(path.equalsIgnoreCaseSpace('admin login')){
+                    new Dash.View.Admin.Login();
+                    loadHome = false;
+                }else if (path.equalsIgnoreCaseSpace('admin signup')) {
+                    loadHome = false;
+                    new Dash.View.Admin.SignUp();
+                } else if ("newArticle".equalsIgnoreCaseSpace(path) && Dash.admin) {
                     loadHome = false;
                     new Dash.View.Admin.NewArticle();
                 } else {
