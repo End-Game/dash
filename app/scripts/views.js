@@ -5,17 +5,85 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
     Views needed:
     Product-
     Article-
-    Home- + Admin
+    Home- + Admin-
     ProductHelpDesk-
     SearchResults
         ResultsList
     SiteMap + Admin
-        Map
+        Map-
         List
-    NewArticle->Admin
+    NewArticle->Admin-
     SetupProduct modal ->Admin
-    PlaceTree modal -> Admin when making article
+    PlaceTree modal -> Admin when making article-
 */
+    Dash.ignoredWords = [
+        "a",
+        "all",
+        "am",
+        "an",
+        "and",
+        "any",
+        "are",
+        "as",
+        "at",
+        "be",
+        "but",
+        "can",
+        "did",
+        "do",
+        "does",
+        "for",
+        "from",
+        "had",
+        "has",
+        "have",
+        "here",
+        "how",
+        "i",
+        "if",
+        "in",
+        "is",
+        "it",
+        "no",
+        "not",
+        "of",
+        "on",
+        "or",
+        "so",
+        "that",
+        "the",
+        "then",
+        "there",
+        "this",
+        "to",
+        "too",
+        "up",
+        "use",
+        "what",
+        "when",
+        "where",
+        "who",
+        "why",
+        "you"
+    ];
+
+    Dash.simplifySearchQuery = function(query) {
+        query = query.replace("?", "");
+        query = query.replace("&", "");
+        var words = query.split(" ");
+        var result = "";
+        _.each(words, function(word) {
+            if (Dash.ignoredWords.indexOf(word.trim().toLowerCase()) < 0) {
+                result = result + word + " ";
+            }
+        });
+        result = result.trim();
+        if (!result) {
+            result = query;
+        }
+        return result;
+    };
+
 
     Dash.ListItem = Backbone.View.extend({
 
@@ -47,6 +115,17 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
         template: Dash.Template.tag,
         tagName: "div",
         className: 'tag themeBorder'
+    });
+
+    Dash.SearchResult = Backbone.View.extend({
+        template: Dash.Template.searchResult,
+        tagName: 'div',
+        className: 'searchResult',
+
+        render: function() {
+            this.$el.html(this.template(this.model));
+            return this;
+        },
     });
 
     Dash.HomeProductView = Backbone.View.extend({
@@ -104,11 +183,11 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             }
 
             this.render();
-            
-            if(this.afterRender){
+
+            if (this.afterRender) {
                 this.afterRender();
             }
-            
+
             // if (this.model) {
             //     this.listenTo(this.model, 'change', this.render);
             // }
@@ -279,7 +358,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
 
             if (this.$("#relevantArticleList li").length === 0) {
                 this.$("#relevantArticles").hide();
-            } else{
+            } else {
                 this.$("#relevantArticles").show();
             }
         },
@@ -340,6 +419,70 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             //     model: this.model
             // });
             // this.$el.append(sideBar.render().el);
+        }
+    });
+
+    Dash.View.Search = Dash.View.extend({
+        el: "#Search",
+        template: Dash.Template.search,
+
+        events: {
+            "click div.search": "getResults",
+            "keydown input.search": "keydown"
+        },
+
+        afterRender: function() {
+            if (this.search) {
+                this.$('input.search').val(search);
+                this.getResults();
+            }
+        },
+
+        render: function() {
+            this.$el.html(this.template());
+            if (this.results) {
+                this.renderResults();
+            }
+            return this;
+        },
+
+        renderResults: function() {
+            this.$('.results').empty();
+            for (var i = 0; i < this.results.length; i++) {
+                this.renderItem(this.results[i]);
+            }
+        },
+
+        getResults: function() {
+            var query = this.$('input.search').val();
+            query = Dash.simplifySearchQuery(query);
+            console.log(query);
+            if (!this.results) {
+                this.results = [{
+                    htmlTitle: "Example result",
+                    link: "#searchResultLink",
+                    htmlSnippet: "this is where a snippet of the article displays"
+                }, {
+                    htmlTitle: "new article 1",
+                    link: "#product1/newsection/newarticle1",
+                    htmlSnippet: "this is where the article content displays"
+                }]; // get array of results (pref json)
+            }
+            this.renderResults();
+        },
+
+        keydown: function(e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                this.getResults();
+            }
+        },
+
+        renderItem: function(item) {
+            var listItem = new Dash.SearchResult({
+                model: item
+            });
+            this.$(".results").append(listItem.render().el);
         }
     });
 

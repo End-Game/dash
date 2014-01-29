@@ -13,7 +13,7 @@ define(['dash', 'underscore'], function(Dash, _) {
     );
 
     Dash.Template.homeProduct = _.template(
-        "<a class='product' href='#<%=URL%>'>" +
+        "<a class='product' href='#!<%=URL%>'>" +
         "<img src='images/product.jpg'/>" +
         "</a>" +
         "<h3><%=name%></h3>" +
@@ -65,6 +65,24 @@ define(['dash', 'underscore'], function(Dash, _) {
         "</div>"
     );
     
+    Dash.Template.search = _.template(
+        "<h1>Search Results</h1>" +
+        "<hr>" +
+        "<!--insert search box-->" +// insert searchbox
+        "<div class='searchbox'>" + 
+            "<input type='text' class='search' placeholder='What are you looking for...' />" +
+            "<div class='themeBorder search themeButton'><p>Search</p></div>" +
+        "</div>" +
+        "<div class='results'></div>" +
+        "<hr>" +
+        "<!--insert page number links-->" //insert page number links
+    );
+    
+    Dash.Template.searchResult = _.template(
+        "<a href='<%=link%>'><h3><%=htmlTitle%></h3></a>" +
+        "<p><%=htmlSnippet%></p>"
+    );
+    
     Dash.Template.tag = _.template(
         "<p class='themeText'><%=name%></p>"
     );
@@ -79,11 +97,11 @@ define(['dash', 'underscore'], function(Dash, _) {
     );
 
     Dash.Template.listItem = _.template(
-        "<a href='#<%=URL%>'><%=name%></a>"
+        "<a href='#!<%=URL%>'><%=name%></a>"
     );
 
     Dash.Template.productSideBar = _.template(
-        "<a href='#<%=URL%>/sitemap'>" +
+        "<a href='#!<%=URL%>/sitemap'>" +
             "<div>" +
                 "<img src='images/sitemap.png'/>" +
                 "<h4 class='bold'>View Site Map</h4>" +
@@ -96,7 +114,7 @@ define(['dash', 'underscore'], function(Dash, _) {
             "</ul>" +
         "</div>" +
         "<hr>" +
-        "<a href='#'>" +
+        "<a href='#!'>" +
             "<div>" +
                 "<img src='images/sitemap.png'/>" +
                 "<p class='bold'>View Other Products</p>" +
@@ -107,7 +125,7 @@ define(['dash', 'underscore'], function(Dash, _) {
     Dash.Template.articleSideBar = _.template(
         "<!--insert mini site map-->" +
         "<hr>" +
-        "<a href='#<%=currentProductName%>/sitemap'>" +
+        "<a href='#!<%=currentProductName%>/sitemap'>" +
             "<div>" +
                 "<img src='images/sitemap.png'/>" +
                 "<h4 class='bold'>View Full Site Map</h4>" +
@@ -142,7 +160,7 @@ define(['dash', 'underscore'], function(Dash, _) {
             "</ul>" +
         "</div>" +
         "<hr>" +
-        "<a href='#'>" +
+        "<a href='#!'>" +
             "<div>" +
                 "<img src='images/sitemap.png'/>" +
                 "<p class='bold'>View Other Products</p>" +
@@ -339,7 +357,7 @@ define(['dash', 'underscore'], function(Dash, _) {
         "<button type='button' class='newArticle'> Add New Article</button>" +
         "<%=published ? " + 
         '"'+'"'+":"+'"' +
-        "<button type='button' class='publishArticle'> publishArticle</button>" + '"%>' 
+        "<button type='button' class='publishArticle'> Publish Article</button>" + '"%>' 
     );
     
     Dash.Template.errorText = _.template(
@@ -368,7 +386,7 @@ define(['dash', 'underscore'], function(Dash, _) {
     );
     
     Dash.Template.adminSiteMapItem = _.template(
-        "<a href='#<%=URL%>'><%=name%></a>" +
+        "<a href='#!<%=URL%>'><%=name%></a>" +
         "<%=published ? " + 
         '"'+"<p class='themeText bold small'>&#10003; PUBLISHED</p>"+'"'+":"+'"'+"" +
         "<div><label>" +
@@ -383,52 +401,52 @@ define(['dash', 'underscore'], function(Dash, _) {
     );
     
     Dash.Template.login = _.template(
-        '<div class="third centre">' +
-            '<h1>Log in</h1>' +
-            '<fieldset>' +
-                '<label for="EmailAddress">Email Address</label>' +
-                '<div class="input-cage">' +
-                    '<input type="text" id="EmailAddress" name="EmailAddress" />' +
-                '</div>' +
-            '</fieldset>' +
-            '<fieldset>' +
-                '<label for="Password">Password</label>' +
-                '<div class="input-cage">' +
-                    '<input type="password" id="Password" name="Password" />' +
-                '</div>' +
-            '</fieldset>' +
-            '<button class="login third themeButton centre" type="button">Log in</button>' +
-        '</div>'
+        "<div class='third centre'>" +
+            "<h1>Log in</h1>" +
+            "<fieldset>" +
+                "<label for='EmailAddress'>Email Address</label>" +
+                "<div class='input-cage'>" +
+                    "<input type='text' id='EmailAddress' name='EmailAddress' />" +
+                "</div>" +
+            "</fieldset>" +
+            "<fieldset>" +
+                "<label for='Password'>Password</label>" +
+                "<div class='input-cage'>" +
+                    "<input type='password' id='Password' name='Password' />" +
+                "</div>" +
+            "</fieldset>" +
+            "<button class='login third themeButton centre' type='button'>Log in</button>" +
+        "</div>"
     );
     
     Dash.Template.signup = _.template(
-        '<div class="third centre">' +
-            '<h1>Sign Up</h1>' +
-            '<fieldset>' +
-                '<label for="Name">Name</label>' +
-                '<div class="input-cage">' +
-                    '<input type="text" id="Name" name="Name" />' +
-                '</div>' +
-            '</fieldset>' +
-            '<fieldset>' +
-                '<label for="EmailAddress">Email Address</label>' +
-                '<div class="input-cage">' +
-                    '<input type="text" id="EmailAddress" name="EmailAddress" />' +
-                '</div>' +
-            '</fieldset>' +
-            '<fieldset>' +
-                '<label for="Password">Password</label>' +
-                '<div class="input-cage">' +
-                    '<input type="password" id="Password" name="Password" />' +
-                '</div>' +
-            '</fieldset>' +
-            '<fieldset>' +
-                '<label for="RepeatPassword">Repeat Password</label>' +
-                '<div class="input-cage">' +
-                    '<input type="password" id="RepeatPassword" name="RepeatPassword" />' +
-                '</div>' +
-            '</fieldset>' +
-            '<button class="signup third themeButton centre" type="button">Sign Up</button>' +
-        '</div>'
+        "<div class='third centre'>" +
+            "<h1>Sign Up</h1>" +
+            "<fieldset>" +
+                "<label for='Name'>Name</label>" +
+                "<div class='input-cage'>" +
+                    "<input type='text' id='Name' name='Name' />" +
+                "</div>" +
+            "</fieldset>" +
+            "<fieldset>" +
+                "<label for='EmailAddress'>Email Address</label>" +
+                "<div class='input-cage'>" +
+                    "<input type='text' id='EmailAddress' name='EmailAddress' />" +
+                "</div>" +
+            "</fieldset>" +
+            "<fieldset>" +
+                "<label for='Password'>Password</label>" +
+                "<div class='input-cage'>" +
+                    "<input type='password' id='Password' name='Password' />" +
+                "</div>" +
+            "</fieldset>" +
+            "<fieldset>" +
+                "<label for='RepeatPassword'>Repeat Password</label>" +
+                "<div class='input-cage'>" +
+                    "<input type='password' id='RepeatPassword' name='RepeatPassword' />" +
+                "</div>" +
+            "</fieldset>" +
+            "<button class='signup third themeButton centre' type='button'>Sign Up</button>" +
+        "</div>"
     );
 });

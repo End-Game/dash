@@ -82,6 +82,25 @@ require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone
                 console.log(app.dash.tags);
             }
         });
+        
+        
+        // for giving products random colours for testing
+        // function getRandomColour() {
+        //     var letters = '0123456789ABCDEF'.split('');
+        //     var color = '#';
+        //     for (var i = 0; i < 6; i++) {
+        //         color += letters[Math.round(Math.random() * 15)];
+        //     }
+        //     return color;
+        // }
+
+        // app.dash.products.each(function(product) {
+        //     if (product.get('themeColour')==='#77BB22') {
+        //         product.set('themeColour', getRandomColour());
+        //         app.dash.postModel('product', product);
+        //     }
+        // });
+
         app.dash.router = new app.dash.Router();
         Backbone.history.start();
     }, function(res) {

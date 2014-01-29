@@ -29,9 +29,8 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
         }],
 
         defaults: {
-            name: "",
             shortDescription: "",
-            description: "",
+            themeColour: "#77BB22",
             _type: "product"
         },
 

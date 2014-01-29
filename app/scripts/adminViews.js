@@ -2,13 +2,13 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
     'use strict';
     /*
     views needed:
-    home
-    product help desk
-    article
+    home-
+    product help desk-
+    article-
     sitemap
-    new article
+    new article-
     setup product - modal
-    place tree - modal - when making an article
+    place tree - modal - when making an article-
 */
 
     Dash.TreePlaces = function() {
@@ -103,44 +103,42 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             context = success;
             success = null;
         }
-        var that;
-        // console.log(model);
-        // if (!model.get("_id")) {
-        //     model.set('_id', 'model' + model.get('name') + Math.floor(Math.random()*100000));
-        // }
-        // if (success) {
-        //     success.call(context);
-        // }
-
+        var i, toSend;
         console.log('before post');
-        console.log(toSend);
         if (model instanceof Array) {
             toSend = [];
-            for (var i = 0; i < model.length; i++) {
+            for (i = 0; i < model.length; i++) {
                 toSend[i] = model[i].toJSON();
             }
-            console.log(toSend);
         } else {
-            console.log(model.toJSON());
             toSend = model.toJSON();
         }
+        console.log(toSend);
+
         Hoist.post(type, toSend, function(res) {
             console.log(res);
             if (model instanceof Array) {
-                for (var i = 0; i < model.length; i++) {
+                for (i = 0; i < model.length; i++) {
                     model[i].set('_rev', res[i]._rev);
                     if (!model[i].get("_id")) {
                         model[i].set("_id", res[i]._id);
                     }
                 }
-                console.log(model);
-            } else { // might change to need res[0]._id etc
-                model.set('_rev', res._rev);
-                if (!model.get("_id")) {
-                    model.set("_id", res._id);
+            } else {
+                if (toSend instanceof Array) {
+                    for (i = 0; i < model.length; i++) {
+                        model.at(i).set('_rev', res[i]._rev);
+                        if (!model.at(i).get("_id")) {
+                            model.at(i).set("_id", res[i]._id);
+                        }
+                    }
+                } else {
+                    model.set('_rev', res._rev);
+                    if (!model.get("_id")) {
+                        model.set("_id", res._id);
+                    }
                 }
             }
-
             if (success) {
                 success.call(context, res);
             }
@@ -203,6 +201,10 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
     });
 
     Dash.View.Admin.HelpDesk = Dash.View.HelpDesk.extend({
+
+        start: function() {
+            this.model.on('change', this.render, this);
+        },
 
         renderSidebar: function() {
             this.$('.adminSideBar').empty();
@@ -292,7 +294,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 username: this.$('#EmailAddress').val(),
                 password: this.$('#Password').val()
             }, function(res) {
-                Dash.router.navigate('');
+                Dash.router.navigate('!');
                 Dash.admin = true;
                 new Dash.View.Admin.Home();
             }, function(res) {
@@ -300,8 +302,8 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             });
             return false;
         },
-        
-        checkInputs: function(){
+
+        checkInputs: function() {
             var that = this;
             var valid = true;
             this.$('input').each(function() {
@@ -330,25 +332,25 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             return this;
         },
 
-        signup: function() { // should probably check that password and repeat password match
-            
+        signup: function() {
+
             this.$('.errorText').remove();
             var that = this;
-            var error = ! this.checkInputs();
-            if(this.$('#Password').val().length <6){
+            var error = !this.checkInputs();
+            if (this.$('#Password').val().length < 6) {
                 this.$('#Password').before(Dash.Template.errorText({
                     errorText: "Password must be at least 6 characters."
                 }));
                 error = true;
             }
-            if(this.$('#Password').val() !== this.$('#RepeatPassword').val()){
+            if (this.$('#Password').val() !== this.$('#RepeatPassword').val()) {
                 this.$('#Password').before(Dash.Template.errorText({
                     errorText: "Passwords do not match."
                 }));
                 error = true;
             }
             //console.log(this.$('input'));
-            if(error){
+            if (error) {
                 return false;
             }
             console.log(this.$('#Password').val());
@@ -357,7 +359,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 email: this.$('#EmailAddress').val(),
                 password: this.$('#Password').val()
             }, function(res) {
-                Dash.router.navigate('');
+                Dash.router.navigate('!');
                 Dash.admin = true;
                 new Dash.View.Admin.Home();
             }, function(res) {
@@ -490,6 +492,9 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         },
 
         checkName: function(name) {
+            if (!name) {
+                return false;
+            }
             if (!Dash.checkKeywords(name)) {
                 this.$('#title').before(Dash.Template.errorText({
                     errorText: "Article name is invalid."
@@ -535,7 +540,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                     this.addToSections(article);
                     article.set('currentProductName', this.sideBar.treePlaces.products[0].get('name'));
                     article.setUrl();
-                    Dash.router.navigate(article.get('URL'));
+                    Dash.router.navigate('!' + article.get('URL'));
                     new Dash.View.Admin.Article({
                         model: article
                     });
@@ -622,7 +627,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 currentProductName: "",
             });
 
-            // Dash.router.navigate('newArticle/preview');
+            // Dash.router.navigate('!newArticle/preview');
             var view = new Dash.View.Article.Preview({
                 model: article,
             });
@@ -670,7 +675,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                         article.set('currentProductName', treePlaces.products[0].get('name'));
                         article.setUrl();
                     }
-                    Dash.router.navigate(article.get('URL'));
+                    Dash.router.navigate('!'+article.get('URL'));
                     new Dash.View.Admin.Article({
                         model: article
                     });
@@ -937,7 +942,12 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             new Dash.View.Admin.NewArticle();
         },
 
-        settings: function() {},
+        settings: function() {
+            var that = this;
+            new Dash.View.Modal.ProductSetup({
+                model: that.model
+            });
+        },
 
         personalise: function() {},
 
@@ -958,7 +968,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         },
 
         newArticle: function() {
-            Dash.router.navigate("newArticle");
+            Dash.router.navigate("!newArticle");
             var that = this;
             new Dash.View.Admin.NewArticle();
         },
@@ -1010,7 +1020,6 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 name: this.$('#name').val(),
                 description: this.$('#description').val(),
                 shortDescription: this.$('#description').val(),
-                _type: 'product'
             };
             var product;
             if (this.model) {

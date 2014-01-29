@@ -7,7 +7,8 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
         },
 
         find: function(path) {
-            //console.log(window.location);
+            console.log(window.location);
+            console.log(path);
             var loadHome = true;
             if (path) {
                 if (path.charAt(0) === "/" || path.charAt(0) === "#") {
@@ -15,6 +16,9 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                 }
                 if (path.charAt(path.length - 1) === "/") {
                     path = path.substring(0, path.length - 1);
+                }
+                if (path.charAt(0) === "!") {
+                    path = path.substring(1, path.length);
                 }
                 var pathSplit = path.split("/");
                 if(path.equalsIgnoreCaseSpace('admin login')){
@@ -26,12 +30,15 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                 } else if ("newArticle".equalsIgnoreCaseSpace(path) && Dash.admin) {
                     loadHome = false;
                     new Dash.View.Admin.NewArticle();
+                } else if ("search".equalsIgnoreCaseSpace(path) && Dash.admin) {
+                    loadHome = false;
+                    new Dash.View.Search();
                 } else {
                     var product = Dash.products.findProduct(pathSplit[0]);
                     if (pathSplit.length === 1 && product) {
                         loadHome = false;
                         if (Dash.admin) {
-                            new Dash.View.Admin.HelpDesk({
+                            new Dash.View.Admin.SiteMap({
                                 model: product
                             });
                         } else {
