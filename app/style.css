@@ -266,6 +266,7 @@ input, textarea {
 .themeButton {
     color: white;
     background: #77BB22;
+    border-color: #77BB22;
 }
 
 .themeButton p {
@@ -417,15 +418,19 @@ div.treePlace > p {
     font-size: 14px;
 }
 
-div.themeBorder {
-    border-color: #77BB22;
-}
-
 .tag {
     float: right;
     border: 2px solid;
     border-radius: 5px;
     margin-left: 10px;
+}
+
+div.themeBorder {
+    border-color: #77BB22;
+}
+
+.themeBorder {
+    border-color: #77BB22;
 }
 
 #tags > p {
@@ -510,4 +515,35 @@ fieldset {
     display: block;
     margin-left: auto;
     margin-right: auto;
+}
+
+.searchbox{
+    margin-top: 30px;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.searchbox input{
+    box-sizing: border-box;
+    -moz-box-sizing:border-box; /* Firefox */
+    width: 80%;
+    height: 100%;
+    padding: 10px 15px 10px 15px;
+    border-radius: 5px 0px 0px 5px;
+    border-right: none;
+}
+
+.searchbox div {
+    box-sizing: border-box;
+    -moz-box-sizing:border-box; /* Firefox */
+    display: inline-block;
+    width: 20%;
+    text-align: center;
+    height: 100%;
+    border-radius: 0px 5px 5px 0px;
+}
+
+.searchbox div p {
+    margin-top: 12px;
+    margin-bottom: 12px;
 }
