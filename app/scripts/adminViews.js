@@ -234,19 +234,29 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
     Dash.View.Admin.SiteMap = Dash.View.SiteMap.extend({
         setPublishedTemplate: Dash.Template.siteMapSetPublished,
 
+
+        start: function() {
+            this.model.on('newSection', this.changed, this);
+        },
+
         events: {
-            'click #setPublished': 'setPublished'
+            'click .setPublished': 'setPublished'
         },
 
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
-            var map = this.isList ? new Dash.SiteMap.List({
-                model: this.model
-            }) : new Dash.SiteMap.AdminMap({
-                model: this.model
-            });
-            this.$('.map').append(map.render().el);
-            this.$('.map').append(Dash.Template.siteMapSetPublished());
+            if (this.model.get('sectionJoins').length) {
+                var map = this.isList ? new Dash.SiteMap.List({
+                    model: this.model
+                }) : new Dash.SiteMap.AdminMap({
+                    model: this.model
+                });
+                this.$('.map').append(map.render().el);
+                this.$('.map').append(Dash.Template.siteMapSetPublished());
+            } else {
+                this.$('.map').append(Dash.Template.adminEmptyProduct());
+                this.$('> h1').remove();
+            }
             this.renderSidebar();
             return this;
         },
@@ -256,8 +266,11 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             this.$('input:checked').each(function() {
                 var hash = that.$(this).closest('li').find('a')[0].hash;
                 hash = hash.substring(1);
+                if (hash.charAt(0) === '!') {
+                    hash = hash.substring(1);
+                }
                 var pathSplit = hash.split("/");
-                var product = Dash.products.findProduct(pathSplit[0]);
+                var product = that.model;
                 var article = product.findSection(pathSplit.slice(1));
                 article.set('published', true);
                 article.set('date', Dash.getDateString());
@@ -272,6 +285,11 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 model: this.model,
             });
             this.$el.append(sideBar.render().el);
+        },
+
+        changed: function() {
+            console.log('changed');
+            this.render();
         }
     });
 
@@ -457,6 +475,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         },
 
         save: function() {
+            this.$('button.save').prop("disabled", true);
             this.$('.errorText').remove();
             var error;
             var treePlaces = this.sideBar.treePlaces;
@@ -482,6 +501,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 error = true;
             }
             if (error) {
+                this.$('button.save').prop("disabled", false);
                 return;
             }
             var date = Dash.getDateString();
@@ -675,7 +695,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                         article.set('currentProductName', treePlaces.products[0].get('name'));
                         article.setUrl();
                     }
-                    Dash.router.navigate('!'+article.get('URL'));
+                    Dash.router.navigate('!' + article.get('URL'));
                     new Dash.View.Admin.Article({
                         model: article
                     });
@@ -831,6 +851,9 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 product = this.treePlaces.products[index];
             } else {
                 hash = hash.substring(1);
+                if (hash.charAt(0) === '!') {
+                    hash = hash.substring(1);
+                }
                 var pathSplit = hash.split("/");
                 section = product.findSection(pathSplit.slice(1));
                 this.treePlaces.addPlace(product, hash, section);
@@ -931,7 +954,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
         newSection: function() {
             var that = this;
-            new Dash.View.Modal.NewSection({
+            var modal = new Dash.View.Modal.NewSection({
                 model: that.model
             });
         },
@@ -1003,6 +1026,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         events: {
             'click button.save': 'save',
             'click .content': 'swallow',
+            'click button.cancel': 'trash',
             'click': 'trash'
         },
 
@@ -1016,10 +1040,22 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         },
 
         save: function() {
+            this.$('button.save').prop("disabled", true);
+            this.$('.errorText').remove();
+            var name = this.$('#name').val();
+            if (!this.checkName(name)) {
+                this.$('#name').before(Dash.Template.errorText({
+                    errorText: "Name is invalid."
+                }));
+                this.$('button.save').prop("disabled", false);
+                return;
+            }
+            var description = this.$('#description').val();
             var attributes = {
-                name: this.$('#name').val(),
-                description: this.$('#description').val(),
-                shortDescription: this.$('#description').val(),
+                name: name,
+                description: description,
+                shortDescription: description,
+                URL: name.replace(/\s/g, "")
             };
             var product;
             if (this.model) {
@@ -1033,6 +1069,22 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             }, this);
         },
 
+        checkName: function(name) {
+            if (name === "" || name === undefined) {
+                return false;
+            }
+            if (!Dash.checkKeywords(name)) {
+                return false;
+            }
+            for (var j = 0; j < Dash.products.length; j++) {
+                var product = Dash.products.at(j);
+                if (product.get('name').equalsIgnoreCaseSpace(name)) {
+                    return false;
+                }
+            }
+            return true;
+        },
+
     });
 
     Dash.View.Modal.NewSection = Dash.View.Modal.extend({
@@ -1040,6 +1092,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
         events: {
             'click button.save': 'save',
+            'click button.cancel': 'trash',
             'click .treePlace': 'treePlaceFunction',
             'click .content': 'swallow',
             'click': 'trash',
@@ -1052,6 +1105,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         },
 
         save: function() {
+            this.$('button.save').prop("disabled", true);
             this.$('.errorText').remove();
             var error;
             if (!this.treePlace) {
@@ -1062,9 +1116,13 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             }
             var name = this.$('#name').val();
             if (!this.checkName(name)) {
+                this.$('#name').before(Dash.Template.errorText({
+                    errorText: "Section name is invalid."
+                }));
                 error = true;
             }
             if (error) {
+                this.$('button.save').prop("disabled", false);
                 return;
             }
             var that = this;
@@ -1074,9 +1132,11 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             });
             Dash.postModel("section", section, function(res) {
                 this.treePlace.addChild(section);
-                Dash.postModel(this.treePlace.get('_type'), this.treePlace);
+                this.treePlace.trigger('newSection');
+                Dash.postModel(this.treePlace.get('_type'), this.treePlace, function() {
+                    this.trash();
+                }, this);
             }, this);
-            this.trash();
         },
 
 
@@ -1084,15 +1144,9 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         // params: name, error tag, treeplace sections (will need to check if product), context
         checkName: function(name) {
             if (name === "" || name === undefined) {
-                this.$('#name').before(Dash.Template.errorText({
-                    errorText: "Section name is invalid."
-                }));
                 return false;
             }
             if (!Dash.checkKeywords(name)) {
-                this.$('#name').before(Dash.Template.errorText({
-                    errorText: "Section name is invalid."
-                }));
                 return false;
             }
             var children;
@@ -1104,9 +1158,6 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             for (var j = 0; j < children.length; j++) {
                 var child = children.at(j);
                 if (child.get('name').equalsIgnoreCaseSpace(name) && child !== this.model) {
-                    this.$('#name').before(Dash.Template.errorText({
-                        errorText: "Section name is invalid."
-                    }));
                     return false;
                 }
             }
@@ -1126,6 +1177,9 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
         treePlaceCallback: function(hash, product) {
             hash = hash.substring(1);
+            if (hash.charAt(0) === '!') {
+                hash = hash.substring(1);
+            }
             var pathSplit = hash.split("/");
             if (pathSplit.length > 1) {
                 var section = product.findSection(pathSplit.slice(1));
@@ -1141,7 +1195,15 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
         treePlaceTrashCallback: function(hash, product) {
             this.$el.show();
-        }
+        },
+
+        // end: function() {
+        //     if (this.treePlace.get('_type') !== 'product') {
+        //         this.model.trigger('change');
+        //         console.log(this.model);
+        //         console.log('here');
+        //     }
+        // }
     });
 
     Dash.View.Modal.TreePlace = Dash.View.Modal.extend({
@@ -1170,6 +1232,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         },
 
         save: function() {
+            this.$('button.save').prop("disabled", true);
             var selected = this.$(".map .themeText");
             if (selected[0]) {
                 var hash = selected[0].hash;
@@ -1178,6 +1241,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 }
                 this.trash();
             }
+            this.$('button.save').prop("disabled", false);
         },
 
         select: function(e) {

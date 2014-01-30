@@ -491,7 +491,7 @@ label > p {
     margin-top: 0px;
 }
 
-#setPublished{
+.setPublished{
     font-style: italic;
     text-align: right;
     display: block;
@@ -546,4 +546,12 @@ fieldset {
 .searchbox div p {
     margin-top: 12px;
     margin-bottom: 12px;
+}
+
+.modal .cancel{
+    float: right;
+}
+
+.emptyProduct{
+    margin: 100px 40px 300px 40px;
 }

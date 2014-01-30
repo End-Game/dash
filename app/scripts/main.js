@@ -59,7 +59,15 @@ require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone
                 Hoist.remove("section", section.get('_id'));
                 app.dash.sections.remove(section);
                 console.log(app.dash.sections);
+            } else{
+                section.get('childJoins').each(function(childJoin){
+                    childJoin.listenTo(childJoin.get('child'), 'newSection', childJoin.changeSection);
+                });
+                section.get('productJoins').each(function(productJoin){
+                    productJoin.listenTo(productJoin.get('section'), 'newSection', productJoin.changeSection);
+                });
             }
+            
         });
         app.dash.articles.each(function(article) {
             if (article.get('parentJoins').length === 0 && article.get('productJoins').length === 0) {
@@ -67,12 +75,11 @@ require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone
                 app.dash.articles.remove(article);
                 console.log(app.dash.articles);
             } else {
+                //to make half the articles unpublished
                 // console.log('here main');
-                // if (!article.get('published')) {
-                //     article.set('published', false);
-                //     Hoist.post('article', article);
-                //     console.log('here main');
-                // }
+                // article.set('published', (Math.random() > 0.5) ? true : false);
+                // Hoist.post('article', article);
+                // console.log('here main');
             }
         });
         app.dash.tags.each(function(tag) {
@@ -82,14 +89,14 @@ require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone
                 console.log(app.dash.tags);
             }
         });
-        
-        
+
+
         // for giving products random colours for testing
         // function getRandomColour() {
         //     var letters = '0123456789ABCDEF'.split('');
         //     var color = '#';
         //     for (var i = 0; i < 6; i++) {
-        //         color += letters[Math.round(Math.random() * 15)];
+        //         color += letters[Math.floor(Math.random() * 16)];
         //     }
         //     return color;
         // }

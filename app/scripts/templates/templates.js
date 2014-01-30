@@ -218,7 +218,8 @@ define(['dash', 'underscore'], function(Dash, _) {
                 "<h4 class='bold'>Upload Logo</h4>" +
             "</div>" +
             "<hr>" +
-            "<button class='themeButton save' type='button'>Save Product</button>" +
+            "<button class='themeButton save inline half' type='button'>Save Product</button>" +
+            "<button class='themeButton cancel inline half' type='button inline half'>Cancel</button>" +
         "</div>"
     );
 
@@ -381,7 +382,8 @@ define(['dash', 'underscore'], function(Dash, _) {
                 "<img src='images/sitemap.png'>" +
             "</div>" +
             "<hr>" +
-            "<button class='themeButton save' type='button'>Save Section</button>" +
+            "<button class='themeButton save inline half' type='button'>Save Section</button>" +
+            "<button class='themeButton cancel inline half' type='button'>cancel</button>" +
         "</div>"
     );
     
@@ -397,7 +399,7 @@ define(['dash', 'underscore'], function(Dash, _) {
     );
     
     Dash.Template.siteMapSetPublished = _.template(
-        "<p id='setPublished'>Set Selected to Published</p>"
+        "<p class='setPublished'>Set Selected to Published</p>"
     );
     
     Dash.Template.login = _.template(
@@ -449,4 +451,12 @@ define(['dash', 'underscore'], function(Dash, _) {
             "<button class='signup third themeButton centre' type='button'>Sign Up</button>" +
         "</div>"
     );
+    
+    Dash.Template.adminEmptyProduct = _.template(
+        "<div class='emptyProduct'>" +
+            "<h1>There are currently no sections set up for this product.</h1>" +
+            "<hr>" +
+            "<p>To get your site map underway, click on the ‘Add New Section’ button to the right.</p>" +
+        "</div>"
+    )
 });

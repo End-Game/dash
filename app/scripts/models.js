@@ -14,6 +14,9 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             key: 'sectionJoins',
             relatedModel: 'ProductSectionJoin',
             collectionType: 'ProductSectionJoins',
+            collectionOptions: {
+                silent: false
+            },
             keyDestination: 'sections',
             autofetch: false,
             reverseRelation: {
@@ -175,6 +178,10 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             }
         }],
 
+        changeSection: function() {
+            this.get('product').trigger("newSection");
+        },
+
         toJSON: function() {
             return this.get('section').get('_id');
         }
@@ -194,7 +201,32 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
     });
 
     Dash.ProductSectionJoins = Backbone.Collection.extend({
-        model: Dash.ProductSectionJoin
+        model: Dash.ProductSectionJoin,
+
+        initialize: function(models) {
+            this.on('add', this.onAdd, this);
+            
+            // this.on('reset', this.onReset, this);
+
+            // this.on('relational', function(){
+            //     console.log('reset');}, this);
+            // console.log('models');
+            // console.log(arguments);
+            // console.log('done');
+        },
+
+        onAdd: function(model) {
+            // console.log('here psj');
+            model.listenTo(model.get("section"), 'newSection', model.changeSection);
+        },
+        
+        // onReset: function(){
+        //     console.log('reset');
+        //     this.each(function(model){
+        //         console.log(model);
+        //         model.listenTo(model.get("section"), 'newSection', model.changeSection);
+        //     });
+        // }
     });
 
     Dash.Section = Backbone.RelationalModel.extend({
@@ -569,6 +601,11 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             }
         }],
 
+        changeSection: function() {
+            // console.log('sectionsectionJoin changesection');
+            this.get('parent').trigger("newSection");
+        },
+
         toJSON: function() {
             var child = this.get('child');
             if (!child) {
@@ -579,7 +616,15 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
     });
 
     Dash.SectionSectionJoins = Backbone.Collection.extend({
-        model: Dash.SectionSectionJoin
+        model: Dash.SectionSectionJoin,
+
+        initialize: function() {
+            this.on('add', this.onAdd, this);
+        },
+
+        onAdd: function(model) {
+            model.listenTo(model.get("child"), 'newSection', model.changeSection);
+        }
     });
 
     Dash.Tag = Backbone.RelationalModel.extend({

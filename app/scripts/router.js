@@ -7,8 +7,8 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
         },
 
         find: function(path) {
-            console.log(window.location);
-            console.log(path);
+            // console.log(window.location);
+            // console.log(path);
             var loadHome = true;
             if (path) {
                 if (path.charAt(0) === "/" || path.charAt(0) === "#") {

@@ -627,6 +627,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
 
     Dash.SiteMap = Backbone.View.extend({
         render: function() {
+            this.$el.empty();
             var sections = new Dash.Sections();
             if (this.model.get('_type') === 'product') {
                 sections = this.model.getSections();
