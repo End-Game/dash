@@ -3,18 +3,12 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
 
     /*
     Views needed:
-    Product-
-    Article-
-    Home- + Admin-
-    ProductHelpDesk-
     SearchResults
         ResultsList
     SiteMap + Admin
         Map-
         List
-    NewArticle->Admin-
-    SetupProduct modal ->Admin
-    PlaceTree modal -> Admin when making article-
+    personaliseProduct modal ->Admin 
 */
     Dash.ignoredWords = [
         "a",
@@ -391,6 +385,9 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             if (url.charAt(url.length - 1) !== '/') {
                 url = url + "/";
             }
+            if (url.charAt(0) === '!') {
+                url = url.substring(1);
+            }
             this.model.getChildren().each(function(child) {
                 if (child.get('_type') === 'section' || child.get('published') || Dash.admin) {
                     child.set("currentProductName", that.model.get('currentProductName'));
@@ -526,6 +523,9 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             if (url.charAt(url.length - 1) === '/') {
                 url = url.substring(0, url.length - 1);
             }
+            if (url.charAt(0) === '!') {
+                url = url.substring(1);
+            }
             this.renderSiteMap();
             this.renderList(url, this.model.getTaggedArticles().where({
                 type: 'faq'
@@ -655,6 +655,9 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             if (url.charAt(url.length - 1) === '/') {
                 url = url.substring(0, url.length - 1);
             }
+            if (url.charAt(0) === '!') {
+                url = url.substring(1);
+            }
             url = url + "/" + section.get("name").replace(/\s/g, "");
             section.set('URL', url);
             if (section.get('_type') === 'section') {
@@ -724,6 +727,9 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             var url = this.model.get('URL');
             if (url.charAt(url.length - 1) === '/') {
                 url = url.substring(0, url.length - 1);
+            }
+            if (url.charAt(0) === '!') {
+                url = url.substring(1);
             }
             url = (url + "/" + section.get("name")).replace(/\s/g, "");
             section.set('URL', url);

@@ -149,7 +149,7 @@ define(['dash', 'underscore'], function(Dash, _) {
             "<ul id='otherArticleList'>" +
             "</ul>" +
         "</div>" +
-        "<button type='button'>" +
+        "<button type='button' class='support themeButton'>" +
         "<img src='images/support.png'/> Request Support</button>"
     );
 
@@ -181,7 +181,7 @@ define(['dash', 'underscore'], function(Dash, _) {
 
     // <!-- admin templates -->" +
     Dash.Template.adminHome = _.template(
-        "<div class='buttonContainer'>" +
+        "<div class='buttonContainer container'>" +
             "<button class='themeButton' type='button'>" +
             "<img src='images/support.png'/>Add New Product</button>" +
         "</div>" +
@@ -218,8 +218,32 @@ define(['dash', 'underscore'], function(Dash, _) {
                 "<h4 class='bold'>Upload Logo</h4>" +
             "</div>" +
             "<hr>" +
-            "<button class='themeButton save inline half' type='button'>Save Product</button>" +
-            "<button class='themeButton cancel inline half' type='button inline half'>Cancel</button>" +
+            "<button class='themeButton save half' type='button'>Save Product</button>" +
+            "<button class='themeButton cancel half' type='button'>Cancel</button>" +
+        "</div>"
+    );
+    
+    Dash.Template.productPersonalise = _.template(
+        "<div class='content'>" +
+            "<h1>Personalise</h1>" +
+            "<hr>" +
+            "<!-- insert product logo here <img /> -->" +
+            //put logo image here
+            "<img src='images/sitemap.png' class='inlineDiv half'>" +
+            "<div class='uploadLogo inlineDiv half'>" +
+                "<img src='images/sitemap.png'>" +
+                "<h4 class='bold'>Change Logo</h4>" +
+            "</div>" +
+            "<hr>" +
+            "<h4>Choose Primary Colour</h4>" +
+            // insert drop down for colour
+            "<input type='text' class='primary' placeholder='Enter Hex Code' />" +
+            "<h4>Choose Secondary Colour</h4>" +
+            // insert drop down for colour
+            "<input type='text' class='secondary' placeholder='Enter Hex Code' />" +
+            "<hr>" +
+            "<button class='themeButton save half' type='button'>Save Changes</button>" +
+            "<button class='themeButton cancel half' type='button'>Cancel</button>" +
         "</div>"
     );
 
@@ -341,7 +365,7 @@ define(['dash', 'underscore'], function(Dash, _) {
                 "<option value='unpublished'>Unpublished</option>" +
             "</select>" +
         "</div>" +
-        "<button type='button' class='save'>Save</button>"
+        "<button type='button' class='save themeButton'>Save</button>"
     );
 
     Dash.Template.adminProductSideBar = _.template(
@@ -382,8 +406,8 @@ define(['dash', 'underscore'], function(Dash, _) {
                 "<img src='images/sitemap.png'>" +
             "</div>" +
             "<hr>" +
-            "<button class='themeButton save inline half' type='button'>Save Section</button>" +
-            "<button class='themeButton cancel inline half' type='button'>cancel</button>" +
+            "<button class='themeButton save half' type='button'>Save Section</button>" +
+            "<button class='themeButton cancel half' type='button'>Cancel</button>" +
         "</div>"
     );
     

@@ -23,12 +23,6 @@ h1, h2, h3, h4, h5, h6{
     display: inline-block;
 }*/
 
-#logoDiv {
-    width: 960px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
 #logo {
     display: block;
     width: 100px;
@@ -97,6 +91,8 @@ a {
 }
 
 ul {
+    box-sizing: border-box;
+    -moz-box-sizing:border-box; /* Firefox */ 
     padding-left: 15px;
 }
 
@@ -109,7 +105,9 @@ ul {
     font-weight: bold;
 }
 
-.themeColour {}
+.themeColour {
+    background: #77BB22;
+}
 
 .themeText {
     color: #77BB22;
@@ -165,8 +163,6 @@ div > .bold {
 .sideBar > button {
     width: 101%;
     border-radius: 0px 0px 5px 5px;
-    color: white;
-    background: #77BB22;
     margin-left: -1px;
     margin-right: -1px;
     margin-bottom: -2px;
@@ -193,8 +189,6 @@ button img {
 
 #Home .buttonContainer {
     height: 50px;
-    display: block;
-    width: 960px;
 }
 
 button {
@@ -217,9 +211,12 @@ button {
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.4);
     padding-top: 100px;
+    padding-bottom: 100px;
     text-align: center;
-    position: absolute;
-    padding-bottom: auto;
+    position: fixed;
+    overflow: auto;
+    overflow-x: auto;
+    overflow-y: scroll;
 }
 
 .modal > .content {
@@ -228,14 +225,11 @@ button {
     background-color: #fff;
     border-radius: 5px;
     padding: 0px 20px 20px 20px;
+    text-align: left;
 }
 
 .modal > .big {
     width: 640px;
-}
-
-.modal > .content{
-    text-align: left;
 }
 
 input, textarea {
@@ -249,17 +243,20 @@ input, textarea {
 
 .topField {
     border-radius: 5px 5px 0px 0px;
-    margin-bottom: 1px;
+    margin-bottom: 0px;
 }
+
+#content {}
 
 .bottomField {
     border-radius: 0px 0px 5px 5px;
-    margin-top: 0px;
+    margin-top: 1px;
     resize: none;
     border-top: none;
 }
 
 .content .bottomField {
+    margin-top: 0px;    
     height: 200px;
 }
 

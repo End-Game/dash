@@ -145,9 +145,11 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             if (index === undefined) {
                 index = sectionJoins.length;
             }
-            sectionJoins.add(sectionJoin, {
+            sectionJoins.add(new Dash.ProductSectionJoin({
+                section: child,
+            }), {
                 at: index
-            }); // this should add it to the collection at the given index, but it doesn't
+            });
             console.log(index);
             console.log(sectionJoins);
         },
@@ -158,7 +160,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
 
         findProduct: function(name) {
             for (var i = 0; i < this.models.length; i++) {
-                if (this.at(i).get('name').replace(/\s/g, '') == name) {
+                if (this.at(i).get('name').equalsIgnoreUrl(name)) {
                     return this.at(i);
                 }
             }
@@ -205,7 +207,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
 
         initialize: function(models) {
             this.on('add', this.onAdd, this);
-            
+
             // this.on('reset', this.onReset, this);
 
             // this.on('relational', function(){
@@ -219,7 +221,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             // console.log('here psj');
             model.listenTo(model.get("section"), 'newSection', model.changeSection);
         },
-        
+
         // onReset: function(){
         //     console.log('reset');
         //     this.each(function(model){
@@ -254,7 +256,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             var i;
             for (i = 0; i < productJoins.length; i++) {
                 var product = productJoins.at(i).get('product');
-                if (product.get('name').equalsIgnoreCaseSpace(productName ? productName : this.get('currentProductName'))) {
+                if (product.get('name').equalsIgnoreUrl(productName ? productName : this.get('currentProductName'))) {
                     return true;
                 }
             }
@@ -270,7 +272,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
         },
 
         findSection: function(path) {
-            if (this.get("name").equalsIgnoreCaseSpace(path[0])) {
+            if (this.get("name").equalsIgnoreUrl(path[0])) {
                 if (path.length === 1) {
                     return this;
                 }
@@ -320,7 +322,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                 productJoins.every(function(productJoin) {
                     if (!url) {
                         // console.log(productJoin.get("product").get("name") + " vs " + productName);
-                        if (productName.equalsIgnoreCaseSpace(productJoin.get("product").get("name"))) {
+                        if (productName.equalsIgnoreUrl(productJoin.get("product").get("name"))) {
                             url = productName + "/" + that.get("name");
                             //     console.log(url);
                             return false;
@@ -414,7 +416,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             var parentJoins = this.get('parentJoins');
             for (var i = 0; i < parentJoins.length; i++) {
                 var section = parentJoins.at(i).get('parent');
-                if (section.get('name').equalsIgnoreCaseSpace(sectionName)) {
+                if (section.get('name').equalsIgnoreUrl(sectionName)) {
                     return section;
                 }
             }
@@ -425,7 +427,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             var productJoins = this.get('productJoins');
             for (var i = 0; i < productJoins.length; i++) {
                 var product = productJoins.at(i).get('product');
-                if (product.get('name').equalsIgnoreCaseSpace(productName ? productName : this.get('currentProductName'))) {
+                if (product.get('name').equalsIgnoreUrl(productName ? productName : this.get('currentProductName'))) {
                     return product;
                 }
             }
@@ -485,6 +487,17 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                 }
             });
             this.get('parentJoins').set(sectionJoins.models);
+        },
+
+        removeSections: function(sections) {
+            sections.each(function(section) {
+                var sectionJoin = this.get('parentJoins').findWhere({
+                    parent: section
+                });
+                if (sectionJoin) {
+                    sectionJoin.destroy();
+                }
+            }, this);
         }
 
     });
@@ -544,22 +557,26 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
         addChild: function(child, index) {
             var childJoins = this.get('childJoins');
             for (var i = 0; i < childJoins.length; i++) {
-                if (child === childJoins.at(i).get('child')) {
-                    return;
+                var childJoin = childJoins.at(i);
+                if (child === childJoin.get('child')) {
+                    if (index === undefined || index === i) {
+                        return;
+                    } else {
+                        index = (index < i) ? index : (index - 1);
+                        childJoin.destroy();
+                        break;
+                    }
                 }
             }
             var that = this;
-            var childJoin = new Dash.SectionSectionJoin({
-                child: child,
-                parent: this
-            });
             if (index === undefined) {
                 index = childJoins.length;
             }
-            childJoins.add(childJoin, {
+            childJoins.add(new Dash.SectionSectionJoin({
+                child: child
+            }), {
                 at: index
-            }); // this should add it to the collection at the given index, but it doesn't
-            console.log(index);
+            });
             console.log(childJoins);
         },
 

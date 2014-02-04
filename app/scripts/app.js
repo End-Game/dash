@@ -5,8 +5,9 @@ define(['backbone', 'dash', 'models', 'views', 'adminViews', 'router'], function
         this.dash = dash;
     };
 
-    String.prototype.equalsIgnoreCaseSpace = function(other){
-        return this.toLocaleLowerCase().replace(/\s/g, "") === other.toLocaleLowerCase().replace(/\s/g, "");
+    String.prototype.equalsIgnoreUrl = function(other){
+        var urlRegex = /[^0-9a-zA-Z_./~-]/g;
+        return this.toLocaleLowerCase().replace(urlRegex, "") === other.toLocaleLowerCase().replace(urlRegex , "");
     };
     
     return new App();

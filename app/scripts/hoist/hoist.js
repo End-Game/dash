@@ -384,6 +384,10 @@ var Hoist = (function () {
             }
             
             request({ url: "https://file.hoi.io/" + key, data: data }, success, error, context);
+        },
+        
+        index: function (id, data, success, error, context) {
+            // do stuff
         }
     });
     
