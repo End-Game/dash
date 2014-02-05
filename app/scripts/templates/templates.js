@@ -14,7 +14,8 @@ define(['dash', 'underscore'], function(Dash, _) {
 
     Dash.Template.homeProduct = _.template(
         "<a class='product' href='#!<%=URL%>'>" +
-        "<img src='images/product.jpg'/>" +
+      //  "<img src='<%=logoURL ? logoURL:'images/product.jpg'%>'/>" +
+        "<img src='<%=logoURL%>'/>" +
         "</a>" +
         "<h3><%=name%></h3>" +
         "<p><%=shortDescription%></p>"
@@ -217,6 +218,7 @@ define(['dash', 'underscore'], function(Dash, _) {
                 "<img src='images/sitemap.png'>" +
                 "<h4 class='bold'>Upload Logo</h4>" +
             "</div>" +
+            "<input type='file'/>" +
             "<hr>" +
             "<button class='themeButton save half' type='button'>Save Product</button>" +
             "<button class='themeButton cancel half' type='button'>Cancel</button>" +
@@ -227,13 +229,12 @@ define(['dash', 'underscore'], function(Dash, _) {
         "<div class='content'>" +
             "<h1>Personalise</h1>" +
             "<hr>" +
-            "<!-- insert product logo here <img /> -->" +
-            //put logo image here
-            "<img src='images/sitemap.png' class='inlineDiv half'>" +
+            "<img src='<%=logoURL%>' class='logo inlineDiv half'>" +
             "<div class='uploadLogo inlineDiv half'>" +
                 "<img src='images/sitemap.png'>" +
                 "<h4 class='bold'>Change Logo</h4>" +
             "</div>" +
+            "<input type='file'/>" +
             "<hr>" +
             "<h4>Choose Primary Colour</h4>" +
             // insert drop down for colour

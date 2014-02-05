@@ -25,7 +25,6 @@ h1, h2, h3, h4, h5, h6{
 
 #logo {
     display: block;
-    width: 100px;
     height: 50px;
 } 
 
@@ -222,7 +221,7 @@ button {
 .modal > .content {
     display: inline-block;
     width: 360px;
-    background-color: #fff;
+    background-color: #ffffff;
     border-radius: 5px;
     padding: 0px 20px 20px 20px;
     text-align: left;
@@ -245,8 +244,6 @@ input, textarea {
     border-radius: 5px 5px 0px 0px;
     margin-bottom: 0px;
 }
-
-#content {}
 
 .bottomField {
     border-radius: 0px 0px 5px 5px;
@@ -392,7 +389,8 @@ div.treePlace > p {
     margin-left: -2px;
     margin-top: -1.5px;
     margin-bottom: -2px;
-    border: 2px solid;
+    border-width: 2px;
+    border-style: solid;
     border-right: none;
 }
 
@@ -420,10 +418,6 @@ div.treePlace > p {
     border: 2px solid;
     border-radius: 5px;
     margin-left: 10px;
-}
-
-div.themeBorder {
-    border-color: #77BB22;
 }
 
 .themeBorder {

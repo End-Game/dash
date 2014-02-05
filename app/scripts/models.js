@@ -7,6 +7,11 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
 
         initialize: function() {
             this.set("URL", this.get('name').replace(/\s/g, ""));
+            Hoist.file(this.get("_id"), function(res) {
+                this.set("logoURL", URL.createObjectURL(res));
+            }, function(){
+                this.set("logoURL", "");
+            }, this);
         },
 
         relations: [{
@@ -34,6 +39,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
         defaults: {
             shortDescription: "",
             themeColour: "#77BB22",
+            logoURL: "",
             _type: "product"
         },
 

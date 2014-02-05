@@ -16,9 +16,6 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             'background: ' + colour + ';' +
             'border-color: ' + colour + ';' +
             '}' +
-            'div.themeBorder {' +
-            'border-color: ' + colour + ';' +
-            '}' +
             '.themeBorder {' +
             'border-color: ' + colour + ';' +
             '}' +
@@ -186,7 +183,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         var content = article.get('name') + ' ' + article.get('content');
         // get all urls to article
         var urls = article.getAllUrls();
-        _.each(urls, function(url){
+        _.each(urls, function(url) {
             Hoist.index('#!' + url, content, success, error, context);
         });
     };
@@ -243,6 +240,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
         start: function() {
             this.model.on('change', this.render, this);
+            this.model.on('change:logoURL', this.renderLogo, this);
         },
 
         renderSidebar: function() {
@@ -251,6 +249,12 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 model: this.model
             });
             this.$el.append(sideBar.render().el);
+        },
+
+        renderLogo: function() {
+            Dash.products.on("add", this.render, this);
+            console.log('here logo');
+            $('#logo').attr('src', this.model.get('logoURL'));
         }
     });
 
@@ -279,7 +283,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         },
 
         events: {
-            'click .setPublished': 'setPublished'
+            'click .setPublished': 'setPublished',
         },
 
         render: function() {
@@ -329,7 +333,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         changed: function() {
             console.log('changed');
             this.render();
-        }
+        },
     });
 
     Dash.View.Admin.Login = Dash.View.Admin.extend({
@@ -696,10 +700,10 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
     Dash.View.Admin.EditArticle = Dash.View.Admin.NewArticle.extend({
 
-        start: function(){
+        start: function() {
             console.log(this.model);
         },
-        
+
         afterRender: function() {
             this.$('h1').text('Edit Article');
             this.$('#title').val(this.model.get('name'));
@@ -746,7 +750,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                     });
                 }, this);
             }, this);
-            
+
             return article;
         },
 
@@ -1084,6 +1088,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         events: {
             'click button.save': 'save',
             'click .content': 'swallow',
+            'click .uploadLogo': 'uploadLogo',
             'click button.cancel': 'trash',
             'click': 'trash'
         },
@@ -1094,6 +1099,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 this.$('#name').val(this.model.get('name'));
                 this.$('#description').val(this.model.get('description'));
             }
+            this.$(':file').hide();
             return this;
         },
 
@@ -1121,7 +1127,18 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             } else {
                 product = new Dash.Product(attributes);
             }
+
+            var file = this.$(':file')[0].files[0];
+
             Dash.postModel("product", product, function(res) {
+                if (file) {
+                    Hoist.file(product.get("_id"), file, function(res) {
+                        console.log('filepost');
+                        product.set("logoURL", URL.createObjectURL(file));
+                    }, function(res) {
+                        console.log("file post unsuccessful: " + res);
+                    });
+                }
                 Dash.products.add(product);
                 this.trash();
             }, this);
@@ -1138,47 +1155,70 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             }
             for (var j = 0; j < Dash.products.length; j++) {
                 var product = Dash.products.at(j);
-                if (product.get('name').equalsIgnoreUrl(name)) {
+                if (product !== this.model && product.get('name').equalsIgnoreUrl(name)) {
                     return false;
                 }
             }
             return true;
         },
 
+        uploadLogo: function() {
+            this.$(':file').click();
+        }
+
     });
 
     Dash.View.Modal.ProductPersonalise = Dash.View.Modal.extend({
         template: Dash.Template.productPersonalise,
-        
+
         events: {
             'click button.save': 'save',
             'click .content': 'swallow',
             'click button.cancel': 'trash',
+            'click .uploadLogo': 'uploadLogo',
+            'change :file': 'change',
             'click': 'trash'
         },
-        
+
         render: function() {
-            this.$el.html(this.template());
+            this.$el.html(this.template(this.model.toJSON()));
+            this.$(':file').hide();
             return this;
         },
-        
-        save: function(){
+
+        save: function() {
             this.$('button.save').prop("disabled", true);
             this.$('.errorText').remove();
-            console.log('before');
-            console.log(this.model);
             var primary = this.$('.primary').val();
             var secondary = this.$('.secondary').val();
-            if(primary){
+            if (primary) {
                 this.model.set('themeColour', primary);
             }
-            if(secondary){
+            if (secondary) {
                 this.model.set('secondaryTheme', secondary);
             }
-            console.log('after');
-            console.log(this.model);
-            Dash.postModel('product', this.model, this.trash, this);
-        }
+            var file = this.$(':file')[0].files[0];
+            Dash.postModel('product', this.model, function() {
+                if (file) {
+                    Hoist.file(this.model.get("_id"), file, function(res) {
+                        console.log('filepost');
+                        this.model.set("logoURL", URL.createObjectURL(file));
+                    }, function(res) {
+                        console.log("file post unsuccessful: " + res);
+                    }, this);
+                }
+                this.trash();
+            }, this);
+        },
+
+        uploadLogo: function() {
+            this.$(':file').click();
+        },
+
+        change: function(e) {
+            var file = this.$(':file')[0].files[0];
+            this.$('.logo').attr('src', URL.createObjectURL(file));
+        },
     });
 
     Dash.View.Modal.NewSection = Dash.View.Modal.extend({

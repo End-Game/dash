@@ -126,7 +126,11 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
         tagName: "div",
         className: "homeProduct",
         template: Dash.Template.homeProduct,
-
+        
+        initialize:function(){
+            this.model.on('change', this.render, this);
+        },
+        
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
             return this;
