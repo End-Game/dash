@@ -4,8 +4,38 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
     views needed:
     personalise product - modal
 */
+    Dash.shadeColor = function(color, percent) {
+        var R, G, B;
+        if (color.length < 7) { // support for #RGB and #RRGGBB
+            R = parseInt(color.substring(1, 2), 16);
+            G = parseInt(color.substring(2, 3), 16);
+            B = parseInt(color.substring(3, 4), 16);
+        } else {
+            R = parseInt(color.substring(1, 3), 16);
+            G = parseInt(color.substring(3, 5), 16);
+            B = parseInt(color.substring(5, 7), 16);
+        }
+
+        R = 255 - parseInt((255 - R) * (100 - percent) / 100);
+        G = 255 - parseInt((255 - G) * (100 - percent) / 100);
+        B = 255 - parseInt((255 - B) * (100 - percent) / 100);
+
+        R = (R < 255) ? R : 255;
+        G = (G < 255) ? G : 255;
+        B = (B < 255) ? B : 255;
+        R = (R > 0) ? R : 0;
+        B = (B > 0) ? B : 0;
+        G = (G > 0) ? G : 0;
+
+        var RR = ((R.toString(16).length === 1) ? "0" + R.toString(16) : R.toString(16));
+        var GG = ((G.toString(16).length === 1) ? "0" + G.toString(16) : G.toString(16));
+        var BB = ((B.toString(16).length === 1) ? "0" + B.toString(16) : B.toString(16));
+
+        return "#" + RR + GG + BB;
+    };
 
     Dash.getThemeStyleText = function(colour) {
+        var lighterColour = Dash.shadeColor(colour, 20);
         return '.themeColour {' +
             'background: ' + colour + ';' +
             '}' +
@@ -15,6 +45,9 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             '.themeButton {' +
             'background: ' + colour + ';' +
             'border-color: ' + colour + ';' +
+            'background: -webkit-gradient(linear, left top, left bottom, from(' + lighterColour + '), to(' + colour + '));' +
+            'background: -moz-linear-gradient(top, ' + lighterColour + ', ' + colour + ');' +
+            'filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr="' + lighterColour + '", endColorstr="' + colour + '");' +
             '}' +
             '.themeBorder {' +
             'border-color: ' + colour + ';' +
@@ -260,7 +293,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
     Dash.View.Admin.Article = Dash.View.Article.extend({
         template: Dash.Template.adminArticle,
-
+        
         renderSidebar: function() {
             var sideBar = new Dash.AdminSideBar.Article({
                 model: this.model
@@ -271,7 +304,12 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
     });
 
     Dash.View.Admin.Section = Dash.View.Section.extend({
-
+        renderSidebar: function(){
+            var sideBar = new Dash.AdminSideBar.Section({
+                model: this.model
+            });
+            this.$el.append(sideBar.render().el);
+        }
     });
 
     Dash.View.Admin.SiteMap = Dash.View.SiteMap.extend({
@@ -1035,6 +1073,34 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 model: that.model
             });
         }
+
+    });
+    Dash.AdminSideBar.Section = Dash.AdminSideBar.extend({
+        template: Dash.Template.adminSectionSideBar,
+
+        render: function() {
+            this.$el.html(this.template());
+            return this;
+        },
+
+        events: {
+            'click button.newSection': 'newSection',
+            'click button.newArticle': 'newArticle',
+        },
+
+        newSection: function() {
+            var that = this;
+            var product = this.model.getProduct(undefined,true);
+            console.log(product);
+            var modal = new Dash.View.Modal.NewSection({
+                model: product
+            });
+        },
+
+        newArticle: function() {
+            Dash.router.navigate("newArticle");
+            new Dash.View.Admin.NewArticle();
+        },
 
     });
 

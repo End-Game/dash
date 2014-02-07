@@ -317,6 +317,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
     Dash.View.Article = Dash.View.extend({
         el: "#Article",
         template: Dash.Template.article,
+        breadCrumbTemplate: Dash.Template.breadCrumb,
 
         render: function() {
             this.$el.empty();
@@ -324,6 +325,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             this.renderSidebar();
             this.renderTags();
             this.renderRelevantArticles();
+            this.renderBreadCrumb();
             return this;
         },
 
@@ -360,6 +362,18 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                 this.$("#relevantArticles").show();
             }
         },
+        
+        renderBreadCrumb: function(){
+            var pathSplit = this.model.get('URL').split('/');
+            var urlItems = this.model.getUrlItems(pathSplit.slice(0, pathSplit.length -1));
+            console.log(urlItems);
+            var crumbText = this.breadCrumbTemplate(urlItems[0].toJSON());
+            for(var i=1; i<urlItems.length; i++){
+                crumbText = crumbText  + ' > ' + this.breadCrumbTemplate(urlItems[i].toJSON());
+            }
+            console.log(crumbText);
+            this.$('.breadCrumb').html(crumbText);
+        },
 
         renderListItem: function(item, tag) {
             item.set("currentProductName", this.model.get('currentProductName'));
@@ -372,14 +386,16 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
 
     });
 
-
     Dash.View.Section = Dash.View.extend({
         el: "#Article",
         template: Dash.Template.section,
+        breadCrumbTemplate: Dash.Template.breadCrumb,
 
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
             this.renderSections();
+            this.renderSidebar();
+            this.renderBreadCrumb();
             return this;
         },
 
@@ -415,12 +431,25 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
         },
 
         renderSidebar: function() {
-            //this.$(sideBar).empty();
-            // var sideBar = new Dash.SideBar.Article({
-            //     model: this.model
-            // });
-            // this.$el.append(sideBar.render().el);
+            this.$(sideBar).empty();
+            var sideBar = new Dash.SideBar.Section({
+                model: this.model
+            });
+            this.$el.append(sideBar.render().el);
+        },
+        
+        renderBreadCrumb: function(){
+            var pathSplit = this.model.get('URL').split('/');
+            var urlItems = this.model.getUrlItems(pathSplit.slice(0, pathSplit.length -1));
+            console.log(urlItems);
+            var crumbText = this.breadCrumbTemplate(urlItems[0].toJSON());
+            for(var i=1; i<urlItems.length; i++){
+                crumbText = crumbText  + ' > ' + this.breadCrumbTemplate(urlItems[i].toJSON());
+            }
+            console.log(crumbText);
+            this.$('.breadCrumb').html(crumbText);
         }
+
     });
 
     Dash.View.Search = Dash.View.extend({

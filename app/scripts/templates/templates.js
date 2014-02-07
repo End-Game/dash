@@ -14,8 +14,10 @@ define(['dash', 'underscore'], function(Dash, _) {
 
     Dash.Template.homeProduct = _.template(
         "<a class='product' href='#!<%=URL%>'>" +
-      //  "<img src='<%=logoURL ? logoURL:'images/product.jpg'%>'/>" +
-        "<img src='<%=logoURL%>'/>" +
+          //  "<img src='<%=logoURL ? logoURL:'images/product.jpg'%>'/>" +
+            "<div class='imageContainer'>" +
+                "<img src='<%=logoURL%>'/>" +
+            "</div>" +
         "</a>" +
         "<h3><%=name%></h3>" +
         "<p><%=shortDescription%></p>"
@@ -48,6 +50,7 @@ define(['dash', 'underscore'], function(Dash, _) {
     );
 
     Dash.Template.article = _.template(
+        "<p class='breadCrumb'></p>" +
         "<h1><%=name%></h1>" +
         "<div class='inlineDiv twoThird'>" +
             "<hr>" +
@@ -89,6 +92,7 @@ define(['dash', 'underscore'], function(Dash, _) {
     );
 
     Dash.Template.section = _.template(
+        "<p class='breadCrumb'></p>" +
         "<h1><%=name%></h1>" +
         "<div class='inlineDiv twoThird'>" +
             "<hr>" +
@@ -179,7 +183,11 @@ define(['dash', 'underscore'], function(Dash, _) {
         "<ul class='sections'>" +
         "</ul>"
     );
-
+    
+    Dash.Template.breadCrumb = _.template(
+        "<a class='themeText' href='#!<%=URL%>'><%=name%></a>"
+    );
+    
     // <!-- admin templates -->" +
     Dash.Template.adminHome = _.template(
         "<div class='buttonContainer container'>" +
@@ -192,6 +200,7 @@ define(['dash', 'underscore'], function(Dash, _) {
     );
     
     Dash.Template.adminArticle = _.template(
+        "<p class='breadCrumb'></p>" +
         "<h1><%=name%></h1>" +
         "<div class='inlineDiv twoThird'>" +
             "<hr>" +
@@ -384,6 +393,12 @@ define(['dash', 'underscore'], function(Dash, _) {
         "<%=published ? " + 
         '"'+'"'+":"+'"' +
         "<button type='button' class='publishArticle'> Publish Article</button>" + '"%>' 
+    );
+    
+    Dash.Template.adminSectionSideBar = _.template(
+        "<button class='themeButton newArticle' type='button'> Add New Article</button>" +
+        "<hr>" +
+        "<button type='button' class='newSection'> Add New Section</button>"
     );
     
     Dash.Template.errorText = _.template(

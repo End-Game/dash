@@ -4,7 +4,7 @@
     font-weight: 200;}
 
 h1, h2, h3, h4, h5, h6{
-    color: #77BB22;
+    color: #3080C8;
     /*font-weight: normal;*/
 }
 
@@ -28,12 +28,6 @@ h1, h2, h3, h4, h5, h6{
     height: 50px;
 } 
 
-#Home div div {
-    display: inline-block;
-    width: 30%;
-    margin-right: 3%;
-}
-
 .sideBar {
     display: inline-block;
     border: 2px solid #d0d0d0;
@@ -49,15 +43,26 @@ div {
 }
 
 .homeProduct {
+    display: inline-block;
+    width: 300px;
+    margin-right: 20px;
     text-align: center;
+    vertical-align: bottom;
 }
 
-#Home img {
+.homeProduct img {
     display: block;
-    width: 150px;
+    max-width: 100%;
     height: 150px;
     margin-left: auto;
     margin-right: auto;
+    vertical-align: bottom;
+}
+
+.imageContainer{
+    max-height: 150px;
+    display: block;
+    vertical-align: bottom;
 }
 
 .inlineDiv {
@@ -105,11 +110,11 @@ ul {
 }
 
 .themeColour {
-    background: #77BB22;
+    background: #3080C8;
 }
 
 .themeText {
-    color: #77BB22;
+    color: #3080C8;
 }
 
 .sideBar img {
@@ -194,13 +199,15 @@ button {
     font-size: 16px;
     font-weight: normal;
     border-radius: 5px;
-    border: 2px solid #d0d0d0;
+    border: 1px solid #d0d0d0;
     padding: 10px 10px 10px 10px;
     width: 100%;
+    text-shadow: 0px 1px 0px rgba(0,0,0,0.4);
+    -webkit-box-shadow: rgba(0, 0, 0, 0.148438) 0px 1px 3px inset;
     background: #d0d0d0;
     background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#d0d0d0));
     background: -moz-linear-gradient(top,  #ffffff,  #d0d0d0);
-    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#d0d0d0');
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr="#ffffff", endColorstr="#d0d0d0");
 }
 
 .modal {
@@ -259,8 +266,8 @@ input, textarea {
 
 .themeButton {
     color: white;
-    background: #77BB22;
-    border-color: #77BB22;
+    background: #3080C8;
+    border-color: #3080C8;
 }
 
 .themeButton p {
@@ -421,7 +428,7 @@ div.treePlace > p {
 }
 
 .themeBorder {
-    border-color: #77BB22;
+    border-color: #3080C8;
 }
 
 #tags > p {

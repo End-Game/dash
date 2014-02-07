@@ -1,6 +1,6 @@
 define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone, hoist) {
     'use strict';
-    var defaultColour = '#77BB22';
+    var defaultColour = '#3080C8';
     Dash.Router = Backbone.Router.extend({
         routes: {
             "*path": "find"
@@ -67,6 +67,7 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                             var section = product.findSection(pathSplit);
                             if (section) {
                                 section.set("currentProductName", product.get("name"));
+                                section.set('URL', path);
                                 if (section.get("_type") === "article") {
                                     if (Dash.admin) {
                                         new Dash.View.Admin.Article({

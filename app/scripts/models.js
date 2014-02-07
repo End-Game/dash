@@ -9,7 +9,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             this.set("URL", this.get('name').replace(/\s/g, ""));
             Hoist.file(this.get("_id"), function(res) {
                 this.set("logoURL", URL.createObjectURL(res));
-            }, function(){
+            }, function() {
                 this.set("logoURL", "");
             }, this);
         },
@@ -38,7 +38,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
 
         defaults: {
             shortDescription: "",
-            themeColour: "#77BB22",
+            themeColour: "#3080C8",
             logoURL: "",
             _type: "product"
         },
@@ -383,6 +383,69 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                 join.destroy();
             });
         },
+
+        getProduct: function(productName, recurseTree) {
+            var productJoins = this.get('productJoins');
+            var i;
+            var product;
+            for (i = 0; i < productJoins.length; i++) {
+                product = productJoins.at(i).get('product');
+                if (product.get('name').equalsIgnoreUrl(productName ? productName : this.get('currentProductName'))) {
+                    return product;
+                }
+            }
+            if (recurseTree) {
+                var parentJoins = this.get('parentJoins');
+                for (i = 0; i < parentJoins.length; i++) {
+                    var section = parentJoins.at(i).get('parent');
+                    product = section.getProduct(productName ? productName : this.get('currentProductName'), true);
+                    console.log(product);
+                    if (product) {
+                        return product;
+                    }
+                }
+            }
+            return undefined;
+        },
+
+        getUrlItems: function(path) {
+            var items = [];
+            var toFind = path[path.length - 1];
+            var item;
+            var productJoins = this.get("productJoins");
+            if (productJoins) {
+                // check products for product
+                productJoins.every(function(productJoin) {
+                    if (!item) {
+                        var product = productJoin.get('product');
+                        // console.log(productJoin.get("product").get("name") + " vs " + productName);
+                        if (toFind.equalsIgnoreUrl(product.get("name"))) {
+                            item = product;
+                            items.push(product);
+                            return false;
+                        }
+                    }
+                    return true;
+                });
+            }
+            var parentJoins = this.get("parentJoins");
+            if (!item && parentJoins) {
+                // check parent sections for if they are connected to product
+                parentJoins.every(function(parentJoin) {
+                    if (!item) {
+                        var section = parentJoin.get("parent");
+                        console.log(section);
+                        if (toFind.equalsIgnoreUrl(section.get("name"))) {
+                            items = section.getUrlItems(path.splice(0, path.length - 1));
+                            items.push(section);
+                            return false;
+                        }
+                    }
+                    return true;
+                });
+            }
+            return items;
+        }
     });
 
     Dash.Section.Article = Dash.Section.extend({
@@ -424,17 +487,6 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                 var section = parentJoins.at(i).get('parent');
                 if (section.get('name').equalsIgnoreUrl(sectionName)) {
                     return section;
-                }
-            }
-            return undefined;
-        },
-
-        getProduct: function(productName) {
-            var productJoins = this.get('productJoins');
-            for (var i = 0; i < productJoins.length; i++) {
-                var product = productJoins.at(i).get('product');
-                if (product.get('name').equalsIgnoreUrl(productName ? productName : this.get('currentProductName'))) {
-                    return product;
                 }
             }
             return undefined;
