@@ -220,8 +220,8 @@ define(['dash', 'underscore'], function(Dash, _) {
             "<h1>Set Up Product</h1>" +
             "<hr>" +
             "<input type='text' id='name' class='topField' placeholder='Name of Product...' />" +
-            "<textarea id='description' class='bottomField' placeholder='Description of Product...'>" +
-            "</textarea>" +
+            "<textarea id='shortDescription' class='middleField' placeholder='Short description of Product...'></textarea>" +
+            "<textarea id='description' class='bottomField' placeholder='Full description of Product...'></textarea>" +
             "<hr>" +
             "<div class='uploadLogo'>" +
                 "<img src='images/sitemap.png'>" +

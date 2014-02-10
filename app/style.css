@@ -123,7 +123,7 @@ ul {
     color: #3080C8;
 }
 
-#HelpDesk > div > p{
+#HelpDesk > div > p, .homeProduct > p, #article > p{
     white-space: pre-wrap;
 }
 
@@ -257,6 +257,10 @@ input, textarea {
     border-radius: 5px;
 }
 
+textarea {
+    resize: vertical;
+}
+
 .topField {
     border-radius: 5px 5px 0px 0px;
     margin-bottom: 0px;
@@ -265,8 +269,14 @@ input, textarea {
 .bottomField {
     border-radius: 0px 0px 5px 5px;
     margin-top: 1px;
-    resize: none;
     border-top: none;
+}
+
+.middleField {
+    border-radius: 0px;
+    margin-top: 0px;
+    border-top: none;
+    margin-bottom: -4px;
 }
 
 .content .bottomField {
@@ -289,10 +299,6 @@ input, textarea {
     width: 32%;
     margin-top: 6px;
     margin-left: 2%;
-}
-
-#article > p{
-    white-space: pre-wrap;
 }
 
 #Article .bottomField {

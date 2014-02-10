@@ -1183,6 +1183,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             if (this.model) {
                 this.$('#name').val(this.model.get('name'));
                 this.$('#description').val(this.model.get('description'));
+                this.$('#shortDescription').val(this.model.get('shortDescription'));
                 this.$('.uploadLogo').first().hide();
                 this.$('.changeLogo .logo').attr('src', this.model.get('logoURL'));
             } else {
@@ -1202,15 +1203,16 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 this.$('button.save').prop("disabled", false);
                 return;
             }
+            var shortDescription = this.$('#shortDescription').val();
             var description = this.$('#description').val();
             var attributes = {
                 name: name,
                 description: description,
-                shortDescription: description,
+                shortDescription: shortDescription,
                 URL: Dash.urlEscape(name)
             };
             var file = this.$(':file')[0].files[0];
-            if (!file) {
+            if (!(file || this.$('.changeLogo .logo').attr('src'))) {
                 this.$('.uploadLogo').prepend(Dash.Template.errorText({
                     errorText: "Upload a logo."
                 }));
