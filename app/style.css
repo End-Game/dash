@@ -47,7 +47,7 @@ div {
     width: 300px;
     margin-right: 20px;
     text-align: center;
-    vertical-align: bottom;
+    vertical-align: top;
 }
 
 .homeProduct img {
@@ -63,6 +63,12 @@ div {
     max-height: 150px;
     display: block;
     vertical-align: bottom;
+}
+
+.keySections{
+    display: inline-block;
+    width: 300px;
+    margin-right: 20px;
 }
 
 .inlineDiv {
@@ -115,6 +121,10 @@ ul {
 
 .themeText {
     color: #3080C8;
+}
+
+#HelpDesk > div > p{
+    white-space: pre-wrap;
 }
 
 .sideBar img {
@@ -281,6 +291,9 @@ input, textarea {
     margin-left: 2%;
 }
 
+#article > p{
+    white-space: pre-wrap;
+}
 
 #Article .bottomField {
     height: 300px;

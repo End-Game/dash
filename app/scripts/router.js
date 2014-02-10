@@ -91,6 +91,8 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                                         });
                                     }
                                 }
+                            } else {
+                                loadHome = true;
                             }
                         }
                     }

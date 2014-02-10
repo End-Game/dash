@@ -34,25 +34,28 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         return "#" + RR + GG + BB;
     };
 
-    Dash.getThemeStyleText = function(colour) {
+    Dash.getThemeStyleText = function(colour, selector) {
         var lighterColour = Dash.shadeColor(colour, 20);
-        return '.themeColour {' +
+        if (!selector) {
+            selector = '';
+        }
+        return selector + '.themeColour {' +
             'background: ' + colour + ';' +
             '}' +
-            '.themeText {' +
+            selector + '.themeText {' +
             'color: ' + colour + ';' +
             '}' +
-            '.themeButton {' +
+            selector + '.themeButton {' +
             'background: ' + colour + ';' +
             'border-color: ' + colour + ';' +
             'background: -webkit-gradient(linear, left top, left bottom, from(' + lighterColour + '), to(' + colour + '));' +
             'background: -moz-linear-gradient(top, ' + lighterColour + ', ' + colour + ');' +
             'filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr="' + lighterColour + '", endColorstr="' + colour + '");' +
             '}' +
-            '.themeBorder {' +
+            selector + '.themeBorder {' +
             'border-color: ' + colour + ';' +
             '}' +
-            'h1, h2, h3, h4, h5, h6{' +
+            selector + 'h1, ' + selector + 'h2,' + selector + ' h3,' + selector + ' h4,' + selector + ' h5,' + selector + ' h6{' +
             'color: ' + colour + ';' +
             '}';
     };
@@ -205,15 +208,18 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         Dash.products.each(function(product) {
             content = content + product.get('name') + ' ' + product.get('shortDescription') + ' ';
         });
+        content = _.escape(content);
         Hoist.index('#!', content, success, error, context);
         // help desk page
         content = product.get('name') + ' ' + product.get('description');
+        content = _.escape(content);
         Hoist.index('#!' + product.get('URL'), content, success, error, context);
     };
 
     Dash.indexArticle = function(article, success, error, context) {
         // article page
         var content = article.get('name') + ' ' + article.get('content');
+        content = _.escape(content);
         // get all urls to article
         var urls = article.getAllUrls();
         _.each(urls, function(url) {
@@ -293,18 +299,22 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
     Dash.View.Admin.Article = Dash.View.Article.extend({
         template: Dash.Template.adminArticle,
-        
+
+        start: function() {
+            this.model.on('change', this.render, this);
+        },
+
         renderSidebar: function() {
             var sideBar = new Dash.AdminSideBar.Article({
                 model: this.model
             });
             this.$el.append(sideBar.render().el);
-        },
+        }
 
     });
 
     Dash.View.Admin.Section = Dash.View.Section.extend({
-        renderSidebar: function(){
+        renderSidebar: function() {
             var sideBar = new Dash.AdminSideBar.Section({
                 model: this.model
             });
@@ -469,7 +479,17 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
     });
 
     Dash.AdminMapItem = Dash.ListItem.extend({
-        template: Dash.Template.adminSiteMapItem
+        publishedTemplate: Dash.Template.adminMapItemPublished,
+        unpublishedTemplate: Dash.Template.adminMapItemUnpublished,
+
+        render: function() {
+            if (this.model.get('published')) {
+                this.$el.html(this.publishedTemplate(this.model.toJSON()));
+            } else {
+                this.$el.html(this.unpublishedTemplate(this.model.toJSON()));
+            }
+            return this;
+        }
     });
 
     Dash.SiteMap.AdminMap = Dash.SiteMap.Map.extend({
@@ -484,7 +504,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             if (url.charAt(url.length - 1) === '/') {
                 url = url.substring(0, url.length - 1);
             }
-            url = url + "/" + section.get("name").replace(/\s/g, "");
+            url = Dash.urlEscape(url + "/" + section.get("name"));
             section.set('URL', url);
             if (section.get('_type') === 'section') {
                 this.renderListItem(section);
@@ -574,7 +594,8 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             if (!this.checkName(name)) {
                 error = true;
             }
-            var content = $('#content').val().replace(/\r?\n/g, '<br />');
+            //  var content = $('#content').val().replace(/\r?\n/g, '<br />');
+            var content = $('#content').val();
             if (!(name && content)) {
                 this.$('#title').before(Dash.Template.errorText({
                     errorText: "Article must have title and contents."
@@ -1000,7 +1021,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             this.treePlaces = new Dash.TreePlaces();
             var products = new Dash.Products();
             for (var i = 0; i < sections.length; i++) {
-                var urls = sections[i].getAllUrls("");
+                var urls = sections[i].getAllUrls();
                 for (var j = 0; j < urls.length; j++) {
                     var index = this.treePlaceCallback(urls[j]);
                     products.push(this.treePlaces.products[index]);
@@ -1090,7 +1111,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
         newSection: function() {
             var that = this;
-            var product = this.model.getProduct(undefined,true);
+            var product = this.model.getProduct(undefined, true);
             console.log(product);
             var modal = new Dash.View.Modal.NewSection({
                 model: product
@@ -1132,14 +1153,9 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         },
 
         publishArticle: function() {
-            this.model.set('published', true);
+            this.model.set('published', !this.model.get('published'));
             this.model.set('date', Dash.getDateString());
             Dash.postModel('article', this.model);
-            if (this.articleView) {
-                this.articleView.render();
-            } else {
-                this.render();
-            }
         },
 
     });
@@ -1155,17 +1171,23 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             'click button.save': 'save',
             'click .content': 'swallow',
             'click .uploadLogo': 'uploadLogo',
+            'change :file': 'changeLogo',
             'click button.cancel': 'trash',
-            'click': 'trash'
+            'click': 'trash',
+
         },
 
         render: function() {
             this.$el.html(this.template());
+            this.$(':file').hide();
             if (this.model) {
                 this.$('#name').val(this.model.get('name'));
                 this.$('#description').val(this.model.get('description'));
+                this.$('.uploadLogo').first().hide();
+                this.$('.changeLogo .logo').attr('src', this.model.get('logoURL'));
+            } else {
+                this.$('.changeLogo').hide();
             }
-            this.$(':file').hide();
             return this;
         },
 
@@ -1185,16 +1207,22 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 name: name,
                 description: description,
                 shortDescription: description,
-                URL: name.replace(/\s/g, "")
+                URL: Dash.urlEscape(name)
             };
+            var file = this.$(':file')[0].files[0];
+            if (!file) {
+                this.$('.uploadLogo').prepend(Dash.Template.errorText({
+                    errorText: "Upload a logo."
+                }));
+                this.$('button.save').prop("disabled", false);
+                return;
+            }
             var product;
             if (this.model) {
                 product = this.model.set(attributes);
             } else {
                 product = new Dash.Product(attributes);
             }
-
-            var file = this.$(':file')[0].files[0];
 
             Dash.postModel("product", product, function(res) {
                 if (file) {
@@ -1230,6 +1258,13 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
         uploadLogo: function() {
             this.$(':file').click();
+        },
+
+        changeLogo: function() {
+            this.$('.uploadLogo').first().hide();
+            var file = this.$(':file')[0].files[0];
+            this.$('.changeLogo .logo').attr('src', URL.createObjectURL(file));
+            this.$('.changeLogo').show();
         }
 
     });

@@ -46,7 +46,6 @@ require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone
         app.dash.sections = new app.dash.Sections(data.sections, {
             parse: true
         });
-
         app.dash.products = new app.dash.Products(data.products, {
             parse: true
         });
@@ -59,15 +58,15 @@ require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone
                 Hoist.remove("section", section.get('_id'));
                 app.dash.sections.remove(section);
                 console.log(app.dash.sections);
-            } else{
-                section.get('childJoins').each(function(childJoin){
+            } else {
+                section.get('childJoins').each(function(childJoin) {
                     childJoin.listenTo(childJoin.get('child'), 'newSection', childJoin.changeSection);
                 });
-                section.get('productJoins').each(function(productJoin){
+                section.get('productJoins').each(function(productJoin) {
                     productJoin.listenTo(productJoin.get('section'), 'newSection', productJoin.changeSection);
                 });
             }
-            
+
         });
         app.dash.articles.each(function(article) {
             if (article.get('parentJoins').length === 0 && article.get('productJoins').length === 0) {
@@ -102,10 +101,10 @@ require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone
         // }
 
         // app.dash.products.each(function(product) {
-        //     if (product.get('themeColour')==='#77BB22') {
-        //         product.set('themeColour', getRandomColour());
-        //         app.dash.postModel('product', product);
-        //     }
+        //     // if (product.get('themeColour')==='#77BB22') {
+        //     //     product.set('themeColour', getRandomColour());
+        //     //     app.dash.postModel('product', product);
+        //     // }
         // });
 
         app.dash.router = new app.dash.Router();

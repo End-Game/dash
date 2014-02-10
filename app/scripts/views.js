@@ -126,11 +126,11 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
         tagName: "div",
         className: "homeProduct",
         template: Dash.Template.homeProduct,
-        
-        initialize:function(){
+
+        initialize: function() {
             this.model.on('change', this.render, this);
         },
-        
+
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
             return this;
@@ -256,7 +256,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             keySectionsList.each(function(section) {
                 if (section.get('_type') === 'section' || section.get('published')) {
                     section.set("currentProductName", item.get('name'));
-                    section.setUrl(item.get('name'));
+                    section.setUrl(Dash.urlEscape(item.get('name')));
                     that.renderListItem(section, "#keySections" + item.get('_id'));
                 }
             }, this);
@@ -298,7 +298,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
 
         renderListItem: function(item, tag) {
             item.set("currentProductName", this.model.get('name'));
-            item.setUrl(this.model.get('name'));
+            item.setUrl(Dash.urlEscape(this.model.get('name')));
             var listItem = new Dash.ListItem({
                 model: item
             });
@@ -362,22 +362,20 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                 this.$("#relevantArticles").show();
             }
         },
-        
-        renderBreadCrumb: function(){
+
+        renderBreadCrumb: function() {
             var pathSplit = this.model.get('URL').split('/');
-            var urlItems = this.model.getUrlItems(pathSplit.slice(0, pathSplit.length -1));
-            console.log(urlItems);
+            var urlItems = this.model.getUrlItems(pathSplit.slice(0, pathSplit.length - 1));
             var crumbText = this.breadCrumbTemplate(urlItems[0].toJSON());
-            for(var i=1; i<urlItems.length; i++){
-                crumbText = crumbText  + ' > ' + this.breadCrumbTemplate(urlItems[i].toJSON());
+            for (var i = 1; i < urlItems.length; i++) {
+                crumbText = crumbText + ' > ' + this.breadCrumbTemplate(urlItems[i].toJSON());
             }
-            console.log(crumbText);
             this.$('.breadCrumb').html(crumbText);
         },
 
         renderListItem: function(item, tag) {
             item.set("currentProductName", this.model.get('currentProductName'));
-            item.setUrl(this.model.get('currentProductName'));
+            item.setUrl(Dash.urlEscape(this.model.get('currentProductName')));
             var listItem = new Dash.ListItem({
                 model: item
             });
@@ -411,7 +409,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             this.model.getChildren().each(function(child) {
                 if (child.get('_type') === 'section' || child.get('published') || Dash.admin) {
                     child.set("currentProductName", that.model.get('currentProductName'));
-                    child.set("URL", url + child.get('name').replace(/\s/g, ""));
+                    child.set("URL", Dash.urlEscape(url + child.get('name')));
                     that.renderListItem(child, "#children");
                 }
             });
@@ -437,16 +435,14 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             });
             this.$el.append(sideBar.render().el);
         },
-        
-        renderBreadCrumb: function(){
+
+        renderBreadCrumb: function() {
             var pathSplit = this.model.get('URL').split('/');
-            var urlItems = this.model.getUrlItems(pathSplit.slice(0, pathSplit.length -1));
-            console.log(urlItems);
+            var urlItems = this.model.getUrlItems(pathSplit.slice(0, pathSplit.length - 1));
             var crumbText = this.breadCrumbTemplate(urlItems[0].toJSON());
-            for(var i=1; i<urlItems.length; i++){
-                crumbText = crumbText  + ' > ' + this.breadCrumbTemplate(urlItems[i].toJSON());
+            for (var i = 1; i < urlItems.length; i++) {
+                crumbText = crumbText + ' > ' + this.breadCrumbTemplate(urlItems[i].toJSON());
             }
-            console.log(crumbText);
             this.$('.breadCrumb').html(crumbText);
         }
 
@@ -535,7 +531,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
 
         renderListItem: function(item, tag) {
             item.set("currentProductName", this.model.get('name'));
-            item.setUrl(this.model.get('name'));
+            item.setUrl(Dash.urlEscape(this.model.get('name')));
             var listItem = new Dash.ListItem({
                 model: item
             });
@@ -549,7 +545,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
 
         render: function() {
             var modelJSON = this.model.toJSON();
-            modelJSON.currentProductName = modelJSON.currentProductName.replace(/\s/g, '');
+            modelJSON.currentProductName = Dash.urlEscape(modelJSON.currentProductName);
             this.$el.html(this.template(modelJSON));
             var that = this;
             var url = window.location.hash.substring(1);
@@ -579,7 +575,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             _.each(list, function(item) {
                 if (item.get('published') || Dash.admin) {
                     item.set("currentProductName", that.model.get('currentProductName'));
-                    item.setUrl(that.model.get('currentProductName'));
+                    item.setUrl(Dash.urlEscape(that.model.get('currentProductName')));
                     // if (item.get('URL') === undefined) {
                     //     item.set("URL", url + "/" + item.get('name').replace(/\s/g, ""));
                     // }
@@ -691,8 +687,8 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             if (url.charAt(0) === '!') {
                 url = url.substring(1);
             }
-            url = url + "/" + section.get("name").replace(/\s/g, "");
-            section.set('URL', url);
+            url = url + "/" + section.get("name");
+            section.set('URL', Dash.urlEscape(url));
             if (section.get('_type') === 'section') {
                 this.renderListItem(section);
                 var map = new Dash.SiteMap.Map({
@@ -705,16 +701,20 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
         },
 
         renderListItem: function(item) {
-            var listItem = new Dash.ListItem({
-                model: item
-            });
-            if (item.get("_type") === "section") {
+            var listItem;
+            if (item.get("_type") === "article" && (item.get('published') || Dash.admin)) {
+                listItem = new Dash.ListItem({
+                    model: item
+                });
+            } else if (item.get("_type") === "section") {
                 listItem = new Dash.ListItem({
                     model: item,
                     className: 'bold'
                 });
             }
-            this.$el.append(listItem.render().el);
+            if (listItem) {
+                this.$el.append(listItem.render().el);
+            }
         },
     });
 
@@ -764,8 +764,8 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             if (url.charAt(0) === '!') {
                 url = url.substring(1);
             }
-            url = (url + "/" + section.get("name")).replace(/\s/g, "");
-            section.set('URL', url);
+            url = (url + "/" + section.get("name"));
+            section.set('URL', Dash.urlEscape(url));
             if (section.get('_type') === 'section') {
                 this.renderListItem(section);
                 var map = new Dash.SiteMap.SectionMap({

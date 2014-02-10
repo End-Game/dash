@@ -13,28 +13,28 @@ define(['dash', 'underscore'], function(Dash, _) {
     );
 
     Dash.Template.homeProduct = _.template(
-        "<a class='product' href='#!<%=URL%>'>" +
-          //  "<img src='<%=logoURL ? logoURL:'images/product.jpg'%>'/>" +
+        "<a class='product' href='#!<%-URL%>'>" +
+          //  "<img src='<%-logoURL ? logoURL:'images/product.jpg'%>'/>" +
             "<div class='imageContainer'>" +
-                "<img src='<%=logoURL%>'/>" +
+                "<img src='<%-logoURL%>'/>" +
             "</div>" +
         "</a>" +
-        "<h3><%=name%></h3>" +
-        "<p><%=shortDescription%></p>"
+        "<h3><%-name%></h3>" +
+        "<p><%-shortDescription%></p>"
     );
 
     Dash.Template.keySections = _.template(
         "<h1>Key Sections</h1>" +
-        "<ul id='keySections<%=_id%>'>" +
+        "<ul id='keySections<%-_id%>'>" +
         "</ul>"
     );
 
     Dash.Template.helpDesk = _.template(
-        "<h1><%=name%> Help Desk</h1>" +
+        "<h1><%-name%> Help Desk</h1>" +
         "<div class='inlineDiv twoThird'>" +
             "<hr>" +
             "<!--insert search box here-->" +
-            "<p><%=description%></p>" +
+            "<p><%-description%></p>" +
             "<hr>" +
             "<div class='inlineDiv half' id='faqs'>" +
                 "<h3>FAQ&#39;s</h3>" +
@@ -51,14 +51,14 @@ define(['dash', 'underscore'], function(Dash, _) {
 
     Dash.Template.article = _.template(
         "<p class='breadCrumb'></p>" +
-        "<h1><%=name%></h1>" +
+        "<h1><%-name%></h1>" +
         "<div class='inlineDiv twoThird'>" +
             "<hr>" +
             "<div id='article'>" +
                 "<div id='tags'>" +
-                    "<p class='bold'>PUBLISHED <%=date%></p>" +
+                    "<p class='bold'>PUBLISHED <%-date%></p>" +
                 "</div>" +
-                "<p><%=content%></p>" +
+                "<p><%-content%></p>" +
                 "<hr>" +
                 "<div id='relevantArticles'>" +
                     "<h4>Other Relevant Articles</h4>" +
@@ -83,17 +83,17 @@ define(['dash', 'underscore'], function(Dash, _) {
     );
     
     Dash.Template.searchResult = _.template(
-        "<a href='<%=link%>'><h3><%=htmlTitle%></h3></a>" +
-        "<p><%=htmlSnippet%></p>"
+        "<a href='<%-link%>'><h3><%-htmlTitle%></h3></a>" +
+        "<p><%-htmlSnippet%></p>"
     );
     
     Dash.Template.tag = _.template(
-        "<p class='themeText'><%=name%></p>"
+        "<p class='themeText'><%-name%></p>"
     );
 
     Dash.Template.section = _.template(
         "<p class='breadCrumb'></p>" +
-        "<h1><%=name%></h1>" +
+        "<h1><%-name%></h1>" +
         "<div class='inlineDiv twoThird'>" +
             "<hr>" +
             "<ul id='children'>" +
@@ -102,11 +102,11 @@ define(['dash', 'underscore'], function(Dash, _) {
     );
 
     Dash.Template.listItem = _.template(
-        "<a href='#!<%=URL%>'><%=name%></a>"
+        "<a href='#!<%-URL%>'><%-name%></a>"
     );
 
     Dash.Template.productSideBar = _.template(
-        "<a href='#!<%=URL%>/sitemap'>" +
+        "<a href='#!<%-URL%>/sitemap'>" +
             "<div>" +
                 "<img src='images/sitemap.png'/>" +
                 "<h4 class='bold'>View Site Map</h4>" +
@@ -130,7 +130,7 @@ define(['dash', 'underscore'], function(Dash, _) {
     Dash.Template.articleSideBar = _.template(
         "<!--insert mini site map-->" +
         "<hr>" +
-        "<a href='#!<%=currentProductName%>/sitemap'>" +
+        "<a href='#!<%-currentProductName%>/sitemap'>" +
             "<div>" +
                 "<img src='images/sitemap.png'/>" +
                 "<h4 class='bold'>View Full Site Map</h4>" +
@@ -174,7 +174,7 @@ define(['dash', 'underscore'], function(Dash, _) {
     );
 
     Dash.Template.siteMap = _.template(
-        "<h1><%=name%></h1>" +
+        "<h1><%-name%></h1>" +
         "<div class='map inlineDiv twoThird'>" +
         "</div>"
     );
@@ -185,7 +185,7 @@ define(['dash', 'underscore'], function(Dash, _) {
     );
     
     Dash.Template.breadCrumb = _.template(
-        "<a class='themeText' href='#!<%=URL%>'><%=name%></a>"
+        "<a class='themeText' href='#!<%-URL%>'><%-name%></a>"
     );
     
     // <!-- admin templates -->" +
@@ -201,15 +201,15 @@ define(['dash', 'underscore'], function(Dash, _) {
     
     Dash.Template.adminArticle = _.template(
         "<p class='breadCrumb'></p>" +
-        "<h1><%=name%></h1>" +
+        "<h1><%-name%></h1>" +
         "<div class='inlineDiv twoThird'>" +
             "<hr>" +
             "<div id='article'>" +
                 "<div id='tags'>" +
-                    "<p class='bold'><%=published ? " + 
-                        '"PUBLISHED"'+":"+'"UNPUBLISHED"%>' + " <%=date%></p>" +
+                    "<p class='bold'><%-published ? " + 
+                        '"PUBLISHED":"UNPUBLISHED"%>' + " <%-date%></p>" +
                 "</div>" +
-                "<p><%=content%></p>" +
+                "<p><%-content%></p>" +
                 "<hr>" +
             "</div>" +
         "</div>"
@@ -227,6 +227,13 @@ define(['dash', 'underscore'], function(Dash, _) {
                 "<img src='images/sitemap.png'>" +
                 "<h4 class='bold'>Upload Logo</h4>" +
             "</div>" +
+            "<div class='changeLogo'>" +
+                "<img src='' class='logo inlineDiv half'>" +
+                "<div class='uploadLogo inlineDiv half'>" +
+                    "<img src='images/sitemap.png'>" +
+                    "<h4 class='bold'>Change Logo</h4>" +
+                "</div>" +
+            "</div>" +
             "<input type='file'/>" +
             "<hr>" +
             "<button class='themeButton save half' type='button'>Save Product</button>" +
@@ -238,7 +245,7 @@ define(['dash', 'underscore'], function(Dash, _) {
         "<div class='content'>" +
             "<h1>Personalise</h1>" +
             "<hr>" +
-            "<img src='<%=logoURL%>' class='logo inlineDiv half'>" +
+            "<img src='<%-logoURL%>' class='logo inlineDiv half'>" +
             "<div class='uploadLogo inlineDiv half'>" +
                 "<img src='images/sitemap.png'>" +
                 "<h4 class='bold'>Change Logo</h4>" +
@@ -297,33 +304,33 @@ define(['dash', 'underscore'], function(Dash, _) {
     );
 
     Dash.Template.preview = _.template(
-        "<h1><%=name%></h1>" +
+        "<h1><%-name%></h1>" +
         "<hr>" +
         "<div id='article'>" +
             "<div id='tags'>" +
-                "<p class='bold'>PUBLISHED <%=date%></p>" +
+                "<p class='bold'>PUBLISHED <%-date%></p>" +
             "</div>" +
-            "<p><%=content%></p>" +
+            "<p><%-content%></p>" +
         "</div>"
     );
 
     Dash.Template.backButton = _.template(
         "<button class='third back' type='button'>" +
-            "<%=text%>" +
+            "<%-text%>" +
         "</button>"
     );
 
     Dash.Template.checkboxItem = _.template(
         "<label>" +
-            "<input class='checkbox' type='checkbox'><%=name%>" + 
+            "<input class='checkbox' type='checkbox'><%-name%>" + 
         "</label>"
     );
 
     Dash.Template.checkboxProduct = _.template(
         "<label>" +
-            "<input class='checkbox' type='checkbox'><%=name%>" + 
+            "<input class='checkbox' type='checkbox'><%-name%>" + 
         "</label>" +
-        "<div id='_<%=_id%>'>" +
+        "<div id='_<%-_id%>'>" +
             "<button class='treePlace' type='button'>Place in Tree</button>" +
             "<div class='treePlace'>" +
                 "<p></p>" +
@@ -390,9 +397,8 @@ define(['dash', 'underscore'], function(Dash, _) {
         "<button class='themeButton editArticle' type='button'> Edit Article</button>" +
         "<hr>" +
         "<button type='button' class='newArticle'> Add New Article</button>" +
-        "<%=published ? " + 
-        '"'+'"'+":"+'"' +
-        "<button type='button' class='publishArticle'> Publish Article</button>" + '"%>' 
+        
+        "<button type='button' class='publishArticle'> <%-published ?  'Unpublish Article':'Publish Article' %></button>" 
     );
     
     Dash.Template.adminSectionSideBar = _.template(
@@ -402,12 +408,12 @@ define(['dash', 'underscore'], function(Dash, _) {
     );
     
     Dash.Template.errorText = _.template(
-        "<p class='errorText'>* <%=errorText%></p>"
+        "<p class='errorText'>* <%-errorText%></p>"
     );
     
     Dash.Template.newTag = _.template(
         "<div class='delete themeBorder themeButton'><p>&times;</p></div>" +
-        "<p class='smallText'><%=name%></p>"
+        "<p class='smallText'><%-name%></p>"
     );
     
     Dash.Template.newSection = _.template(
@@ -427,15 +433,19 @@ define(['dash', 'underscore'], function(Dash, _) {
         "</div>"
     );
     
-    Dash.Template.adminSiteMapItem = _.template(
-        "<a href='#!<%=URL%>'><%=name%></a>" +
-        "<%=published ? " + 
-        '"'+"<p class='themeText bold small'>&#10003; PUBLISHED</p>"+'"'+":"+'"'+"" +
-        "<div><label>" +
-            "<p class='themeText bold small'>&times; UNPUBLISHED</p>" +
-            "<input class='checkbox' type='checkbox'>" +
-        "</label></div>"+'"'+ 
-        "%>"
+    Dash.Template.adminMapItemPublished = _.template(
+        "<a href='#!<%-URL%>'><%-name%></a>" +
+        "<p class='themeText bold small'>&#10003; PUBLISHED</p>"
+    );
+    
+    Dash.Template.adminMapItemUnpublished = _.template(
+        "<a href='#!<%-URL%>'><%-name%></a>" +
+        "<div>" +
+            "<label>" +
+                "<p class='themeText bold small'>&times; UNPUBLISHED</p>" +
+                "<input class='checkbox' type='checkbox'>" +
+            "</label>" +
+        "</div>"
     );
     
     Dash.Template.siteMapSetPublished = _.template(

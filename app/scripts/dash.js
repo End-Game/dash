@@ -14,6 +14,7 @@ define(function() {
         
         urlEscape: function(string){
             var urlRegex = /[^0-9a-zA-Z_./~-]/g;
+            return string.toLocaleLowerCase().replace(urlRegex, "");
         }
     };
 });

@@ -6,12 +6,14 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
         idAttribute: '_id',
 
         initialize: function() {
-            this.set("URL", this.get('name').replace(/\s/g, ""));
-            Hoist.file(this.get("_id"), function(res) {
-                this.set("logoURL", URL.createObjectURL(res));
-            }, function() {
-                this.set("logoURL", "");
-            }, this);
+            this.set("URL", Dash.urlEscape(this.get('name')));
+            if (this.has('_id')) {
+                Hoist.file(this.get("_id"), function(res) {
+                    this.set("logoURL", URL.createObjectURL(res));
+                }, function() {
+                    this.set("logoURL", "");
+                }, this);
+            }
         },
 
         relations: [{
@@ -308,8 +310,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             }
             var url = this.findUrl(product);
             if (url) {
-                url = url.replace(/\s/g, '');
-                this.set('URL', url);
+                this.set('URL', Dash.urlEscape(url));
             }
             // console.log("finished find: " + this.get('URL'));
             // if(!  this.get('URL')){
@@ -357,17 +358,24 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
         },
 
         getAllUrls: function(toHere) {
+            if(!toHere){
+                toHere = "";
+            }
             var urls = [];
             _.each(this.get('productJoins').pluck('product'), function(product) {
-                urls.push((product.get('name') + '/' + this.get('name') + '/' + toHere).replace(/\s/g, ''));
+                urls.push((product.get('name') + '/' + this.get('name') + '/' + toHere));
             }, this);
             _.each(this.get('parentJoins').pluck('parent'), function(section) {
-                urls = urls.concat(section.getAllUrls((this.get('name') + '/' + toHere).replace(/\s/g, '')));
+                urls = urls.concat(section.getAllUrls((this.get('name') + '/' + toHere)));
             }, this);
+            var i;
             if (!toHere) {
-                for (var i = 0; i < urls.length; i++) {
+                for (i = 0; i < urls.length; i++) {
                     urls[i] = urls[i].substring(0, urls[i].length - 1);
                 }
+            }
+            for(i=0; i<urls.length; i++){
+                urls[i] = Dash.urlEscape(urls[i]);
             }
             return urls;
         },
@@ -434,7 +442,6 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                 parentJoins.every(function(parentJoin) {
                     if (!item) {
                         var section = parentJoin.get("parent");
-                        console.log(section);
                         if (toFind.equalsIgnoreUrl(section.get("name"))) {
                             items = section.getUrlItems(path.splice(0, path.length - 1));
                             items.push(section);
