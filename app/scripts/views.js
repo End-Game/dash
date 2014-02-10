@@ -133,10 +133,9 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
 
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
+            var that = this;
             this.$('.imageContainer img').load(function() {
-                var this$ = $(this);
-                console.log(this$.height());
-                console.log(this$.width());
+                var this$ = that.$(this);
                 if (this.naturalHeight / this.naturalWidth > 0.5) {
                     this$.css('height', 150);
                     this$.parent().css('padding-top', 0);
@@ -637,8 +636,37 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             this.$(tag).append(listItem.render().el);
         },
     });
+    
+    Dash.SideBar.Section = Dash.SideBar.Article.extend({
+        template: Dash.Template.sectionSideBar,
 
-    Dash.SideBar.Section = Dash.SideBar.extend({});
+        render: function() {
+            var modelJSON = this.model.toJSON();
+            modelJSON.currentProductName = Dash.urlEscape(modelJSON.currentProductName);
+            this.$el.html(this.template(modelJSON));
+            var that = this;
+            var url = window.location.hash.substring(1);
+            if (url.charAt(url.length - 1) === '/') {
+                url = url.substring(0, url.length - 1);
+            }
+            if (url.charAt(0) === '!') {
+                url = url.substring(1);
+            }
+            this.renderSiteMap();
+            var children = this.model.getChildren();
+            var articles = new Dash.Sections(children.where({
+                _type: 'article'
+            }));
+            console.log(articles.toJSON());
+            this.renderList(url, articles.where({
+                type: 'faq'
+            }), "#faqList", "#faqs");
+            this.renderList(url, articles.where({
+                type: 'howDoI'
+            }), "#howDoIList", "#howDoIs");
+            return this;
+        }
+    });
 
     Dash.SideBar.SiteMap = Dash.SideBar.Product.extend({
         template: Dash.Template.siteMapSideBar,

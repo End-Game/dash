@@ -157,6 +157,31 @@ define(['dash', 'underscore'], function(Dash, _) {
         "<button type='button' class='support themeButton'>" +
         "<img src='images/support.png'/> Request Support</button>"
     );
+    
+    Dash.Template.sectionSideBar = _.template(
+        "<!--insert mini site map-->" +
+        "<hr>" +
+        "<a href='#!<%-currentProductName%>/sitemap'>" +
+            "<div>" +
+                "<img src='images/sitemap.png'/>" +
+                "<h4 class='bold'>View Full Site Map</h4>" +
+            "</div>" +
+        "</a>" +
+        "<hr>" +
+        "<div id='faqs'>" +
+            "<h4>FAQ&#39;s</h4>" +
+            "<ul id='faqList'>" +
+            "</ul>" +
+        "</div>" +
+        "<hr>" +
+        "<div id='howDoIs'>" +
+            "<h4>How Do I&#39;s</h4>" +
+            "<ul id='howDoIList'>" +
+            "</ul>" +
+        "</div>" +
+        "<button type='button' class='support themeButton'>" +
+        "<img src='images/support.png'/> Request Support</button>"
+    );
 
     Dash.Template.siteMapSideBar = _.template(
         "<div>" +
