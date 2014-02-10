@@ -133,6 +133,21 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
 
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
+            this.$('.imageContainer img').load(function() {
+                var this$ = $(this);
+                console.log(this$.height());
+                console.log(this$.width());
+                if (this.naturalHeight / this.naturalWidth > 0.5) {
+                    this$.css('height', 150);
+                    this$.parent().css('padding-top', 0);
+                    this$.parent().css('padding-bottom', 0);
+                } else {
+                    this$.css('width', 300);
+                    this$.parent().css('height', 'auto');
+                    this$.parent().css('padding-top', (150 - this$.height())/2);
+                    this$.parent().css('padding-bottom', (150 - this$.height())/2);
+                }
+            });
             return this;
         },
 
@@ -584,6 +599,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             });
             if (this.$(listTag + " li").length === 0) {
                 this.$(divTag).hide();
+                this.$(divTag).prev('hr').hide();
             } else {
                 this.$(divTag).show();
             }

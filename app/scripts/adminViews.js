@@ -1225,7 +1225,6 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             } else {
                 product = new Dash.Product(attributes);
             }
-
             Dash.postModel("product", product, function(res) {
                 if (file) {
                     Hoist.file(product.get("_id"), file, function(res) {
