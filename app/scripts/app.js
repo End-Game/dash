@@ -6,6 +6,9 @@ define(['backbone', 'dash', 'models', 'views', 'adminViews', 'router'], function
     };
 
     String.prototype.equalsIgnoreUrl = function(other){
+        if(!other && other!==""){
+            return false;
+        }
         var urlRegex = /[^0-9a-zA-Z_./~-]/g;
         return this.toLocaleLowerCase().replace(urlRegex, "") === other.toLocaleLowerCase().replace(urlRegex , "");
     };

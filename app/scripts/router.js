@@ -29,9 +29,13 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                 new Dash.View.Admin.Login();
             } else if (path.equalsIgnoreUrl('admin signup')) {
                 new Dash.View.Admin.SignUp();
-            } else if ("newArticle".equalsIgnoreUrl(path) && Dash.admin) {
-                new Dash.View.Admin.NewArticle();
-            } else if ("search".equalsIgnoreUrl(path) && Dash.admin) {
+            } else if ("newArticle".equalsIgnoreUrl(path)) {
+                if (Dash.admin) {
+                    new Dash.View.Admin.NewArticle();
+                } else {
+                    loadHome = true;
+                }
+            } else if ("search".equalsIgnoreUrl(path)) {
                 new Dash.View.Search();
             } else {
                 var product = Dash.products.findProduct(pathSplit[0]);
@@ -41,61 +45,14 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                         $('#logo').attr('src', product.get('logoURL'));
                     });
                     $('#logo').attr('src', product.get('logoURL'));
-                    if (pathSplit.length === 1 && product) {
-                        if (Dash.admin) {
-                            new Dash.View.Admin.SiteMap({
-                                model: product
-                            });
-                        } else {
-                            new Dash.View.HelpDesk({
-                                model: product
-                            });
-                        }
+                    pathSplit.shift();
+                    if (Dash.admin) {
+                        loadHome = this.adminFindFromProduct(path, pathSplit, product);
                     } else {
-                        pathSplit.shift();
-                        if ("sitemap".equalsIgnoreUrl(pathSplit[0])) {
-                            if (Dash.admin) {
-                                new Dash.View.Admin.SiteMap({
-                                    model: product
-                                });
-                            } else {
-                                new Dash.View.SiteMap({
-                                    model: product
-                                });
-                            }
-                        } else {
-                            var section = product.findSection(pathSplit);
-                            if (section) {
-                                section.set("currentProductName", product.get("name"));
-                                section.set('URL', path);
-                                if (section.get("_type") === "article") {
-                                    if (Dash.admin) {
-                                        new Dash.View.Admin.Article({
-                                            model: section
-                                        });
-                                    } else if (section.get('published')) {
-                                        new Dash.View.Article({
-                                            model: section
-                                        });
-                                    } else {
-                                        loadHome = true;
-                                    }
-                                } else if (section.get("_type") === "section") {
-                                    if (Dash.admin) {
-                                        new Dash.View.Admin.Section({
-                                            model: section
-                                        });
-                                    } else {
-                                        new Dash.View.Section({
-                                            model: section
-                                        });
-                                    }
-                                }
-                            } else {
-                                loadHome = true;
-                            }
-                        }
+                        loadHome = this.findFromProduct(path, pathSplit, product);
                     }
+                } else {
+                    loadHome = true;
                 }
             }
             if (loadHome) {
@@ -103,9 +60,77 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                 $('#logo').attr('src', 'images/logo.jpg');
                 var view = Dash.admin ? new Dash.View.Admin.Home() : new Dash.View.Home();
             }
+        },
+
+        findFromProduct: function(path, pathSplit, product) {
+            var loadHome = false;
+            if (pathSplit.length === 0) {
+                new Dash.View.HelpDesk({
+                    model: product
+                });
+            } else if ("sitemap".equalsIgnoreUrl(pathSplit[0])) {
+                new Dash.View.SiteMap({
+                    model: product
+                });
+            } else if ("tag".equalsIgnoreUrl(pathSplit[0])) {
+                //do stuff for tag
+            } else {
+                var section = product.findSection(pathSplit);
+                if (section) {
+                    section.set("currentProductName", product.get("name"));
+                    section.set('URL', path);
+                    if (section.get("_type") === "article") {
+                        if (section.get('published')) {
+                            new Dash.View.Article({
+                                model: section
+                            });
+                        } else {
+                            loadHome = true;
+                        }
+                    } else if (section.get("_type") === "section") {
+                        new Dash.View.Section({
+                            model: section
+                        });
+                    }
+                } else {
+                    loadHome = true;
+                }
+            }
+            return loadHome;
+        },
+
+        adminFindFromProduct: function(path, pathSplit, product) {
+            var loadHome = false;
+            if (pathSplit.length === 0 || "sitemap".equalsIgnoreUrl(pathSplit[0])) {
+                new Dash.View.Admin.SiteMap({
+                    model: product
+                });
+            } else if ("tag".equalsIgnoreUrl(pathSplit[0])) {
+                //do stuff for tag
+            } else {
+                var section = product.findSection(pathSplit);
+                if (section) {
+                    section.set("currentProductName", product.get("name"));
+                    section.set('URL', path);
+                    if (section.get("_type") === "article") {
+                        new Dash.View.Admin.Article({
+                            model: section
+                        });
+                    } else if (section.get("_type") === "section") {
+                        new Dash.View.Admin.Section({
+                            model: section
+                        });
+                    }
+                } else {
+                    loadHome = true;
+                }
+            }
+            return loadHome;
         }
 
     });
+
+
 
     return Dash;
 });

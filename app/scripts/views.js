@@ -421,7 +421,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                 url = url.substring(1);
             }
             this.model.getChildren().each(function(child) {
-                if (child.get('_type') === 'section' || child.get('published') || Dash.admin) {
+                if (child.get('_type') === 'section' || (child.get('published') && child.get('type')==='article')|| Dash.admin) {
                     child.set("currentProductName", that.model.get('currentProductName'));
                     child.set("URL", Dash.urlEscape(url + child.get('name')));
                     that.renderListItem(child, "#children");
@@ -657,7 +657,6 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             var articles = new Dash.Sections(children.where({
                 _type: 'article'
             }));
-            console.log(articles.toJSON());
             this.renderList(url, articles.where({
                 type: 'faq'
             }), "#faqList", "#faqs");
