@@ -322,6 +322,8 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         }
     });
 
+    Dash.View.Admin.Section = Dash.View.Tag.extend({});
+
     Dash.View.Admin.SiteMap = Dash.View.SiteMap.extend({
         setPublishedTemplate: Dash.Template.siteMapSetPublished,
 

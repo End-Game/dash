@@ -25,9 +25,9 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
             }
             if (!path) {
                 loadHome = true;
-            } else if (path.equalsIgnoreUrl('admin login')) {
+            } else if ('admin login'.equalsIgnoreUrl(path)) {
                 new Dash.View.Admin.Login();
-            } else if (path.equalsIgnoreUrl('admin signup')) {
+            } else if ('admin signup'.equalsIgnoreUrl(path)) {
                 new Dash.View.Admin.SignUp();
             } else if ("newArticle".equalsIgnoreUrl(path)) {
                 if (Dash.admin) {
@@ -73,7 +73,15 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                     model: product
                 });
             } else if ("tag".equalsIgnoreUrl(pathSplit[0])) {
-                //do stuff for tag
+                var tag = Dash.tags.findTag(pathSplit[1]);
+                tag.set('currentProductName', product.get('name'));
+                if (tag) {
+                    new Dash.View.Tag({
+                        model: tag
+                    });
+                } else {
+                    loadHome = true;
+                }
             } else {
                 var section = product.findSection(pathSplit);
                 if (section) {
@@ -106,7 +114,15 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                     model: product
                 });
             } else if ("tag".equalsIgnoreUrl(pathSplit[0])) {
-                //do stuff for tag
+                var tag = Dash.tags.findTag(pathSplit[1]);
+                if (tag) {
+                    tag.set('currentProductName', product.get('name'));
+                    new Dash.View.Admin.Tag({
+                        model: tag
+                    });
+                } else {
+                    loadHome = true;
+                }
             } else {
                 var section = product.findSection(pathSplit);
                 if (section) {

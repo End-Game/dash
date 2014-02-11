@@ -6,7 +6,7 @@ define(['backbone', 'dash', 'models', 'views', 'adminViews', 'router'], function
     };
 
     String.prototype.equalsIgnoreUrl = function(other){
-        if(!other && other!==""){
+        if(typeof other !== 'string'){
             return false;
         }
         var urlRegex = /[^0-9a-zA-Z_./~-]/g;

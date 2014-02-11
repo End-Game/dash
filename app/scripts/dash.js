@@ -3,7 +3,7 @@ define(function() {
     return {
         checkKeywords: function(string){
             // could separate keywords for products and sections/articles
-            var keywords = ['New Article', 'Sitemap', 'admin login', 'admin signup', 'search', '/'];
+            var keywords = ['New Article', 'Sitemap', 'admin login', 'admin signup', 'search', '/', 'tag'];
             for(var i = 0; i<keywords.length; i++){
                 if(keywords[i].equalsIgnoreUrl(string)){
                     return false;

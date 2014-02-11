@@ -462,6 +462,44 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
 
     });
 
+    Dash.View.Tag = Dash.View.extend({
+        el: "#Article",
+        template: Dash.Template.section,
+        
+        render: function() {
+            this.$el.html(this.template(this.model.toJSON()));
+            this.renderSections();
+          //  this.renderSidebar();
+            return this;
+        },
+
+        renderSections: function() {
+            var that = this;
+            this.model.getArticlesFromProduct().each(function(child) {
+                if (Dash.admin || (child.get('published') && child.get('type')==='article')) {
+                    child.set("currentProductName", that.model.get('currentProductName'));
+                    child.setUrl();
+                    that.renderListItem(child, "#children");
+                }
+            });
+        },
+
+        renderListItem: function(item, tag) {
+            var listItem = new Dash.ListItem({
+                model: item
+            });
+            this.$(tag).append(listItem.render().el);
+        },
+        
+        renderSidebar: function() {
+            this.$(sideBar).empty();
+            var sideBar = new Dash.SideBar.Tag({
+                model: this.model
+            });
+            this.$el.append(sideBar.render().el);
+        },
+    });
+
     Dash.View.Search = Dash.View.extend({
         el: "#Search",
         template: Dash.Template.search,
@@ -570,10 +608,10 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                 url = url.substring(1);
             }
             this.renderSiteMap();
-            this.renderList(url, this.model.getTaggedArticles().where({
+            this.renderList(this.model.getTaggedArticles().where({
                 type: 'faq'
             }), "#faqList", "#faqs");
-            this.renderList(url, this.model.getTaggedArticles().where({
+            this.renderList(this.model.getTaggedArticles().where({
                 type: 'howDoI'
             }), "#howDoIList", "#howDoIs");
             this.renderOtherArticles(url);
@@ -584,7 +622,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
 
         },
 
-        renderList: function(url, list, listTag, divTag) {
+        renderList: function(list, listTag, divTag) {
             var that = this;
             _.each(list, function(item) {
                 if (item.get('published') || Dash.admin) {
@@ -626,7 +664,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             }
             toRender.remove(this.model);
 
-            this.renderList(url, toRender.models, "#otherArticleList", "#otherArticles");
+            this.renderList(toRender.models, "#otherArticleList", "#otherArticles");
         },
 
         renderListItem: function(item, tag) {
@@ -645,27 +683,26 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             modelJSON.currentProductName = Dash.urlEscape(modelJSON.currentProductName);
             this.$el.html(this.template(modelJSON));
             var that = this;
-            var url = window.location.hash.substring(1);
-            if (url.charAt(url.length - 1) === '/') {
-                url = url.substring(0, url.length - 1);
-            }
-            if (url.charAt(0) === '!') {
-                url = url.substring(1);
-            }
+            var url = this.model.get('URL');
             this.renderSiteMap();
             var children = this.model.getChildren();
+            // render list of sections?
             var articles = new Dash.Sections(children.where({
                 _type: 'article'
             }));
-            this.renderList(url, articles.where({
+            this.renderList(articles.where({
                 type: 'faq'
             }), "#faqList", "#faqs");
-            this.renderList(url, articles.where({
+            this.renderList(articles.where({
                 type: 'howDoI'
             }), "#howDoIList", "#howDoIs");
             return this;
         }
     });
+
+    // Dash.SideBar.Tag = Dash.SideBar.Article.extend({
+    // });
+    Dash.SideBar.Tag = Backbone.View.extend({});
 
     Dash.SideBar.SiteMap = Dash.SideBar.Product.extend({
         template: Dash.Template.siteMapSideBar,

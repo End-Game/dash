@@ -525,7 +525,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             this.get("tagJoins").each(function(tagJoin) {
                 var tag = tagJoin.get('tag');
                 tag.set('currentProductName', that.get('currentProductName'));
-                articles.add(tag.getArticlesFromProduct(that.get('currentProductName')).models);
+                articles.add(tag.getArticlesFromProduct().models);
             });
             articles.remove(this);
             return articles;
@@ -725,6 +725,9 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
         },
 
         getArticlesFromProduct: function(productName) {
+            if(!productName){
+                productName = this.get('currentProductName');
+            }
             var articles = new Dash.Sections();
             this.get('articleJoins').each(function(articleJoin) {
                 var article = articleJoin.get('article');
@@ -759,7 +762,16 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
     });
 
     Dash.Tags = Backbone.Collection.extend({
-        model: Dash.Tag
+        model: Dash.Tag,
+        
+        findTag: function(name) {
+            for (var i = 0; i < this.models.length; i++) {
+                if (this.at(i).get('name').equalsIgnoreUrl(name)) {
+                    return this.at(i);
+                }
+            }
+            return undefined;
+        }
     });
     // Dash.articles = new Dash.Sections(Dash.testJson.articles);
     // Dash.sections = new Dash.Sections(Dash.testJson.sections, {
