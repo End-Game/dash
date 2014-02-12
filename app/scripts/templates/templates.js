@@ -104,6 +104,10 @@ define(['dash', 'underscore'], function(Dash, _) {
     Dash.Template.listItem = _.template(
         "<a href='#!<%-URL%>'><%-name%></a>"
     );
+    
+    Dash.Template.nonLinkListItem = _.template(
+        "<span class='themeText'><%-name%></span>" 
+   );
 
     Dash.Template.productSideBar = _.template(
         "<a href='#!<%-URL%>/sitemap'>" +
@@ -128,7 +132,10 @@ define(['dash', 'underscore'], function(Dash, _) {
     );
 
     Dash.Template.articleSideBar = _.template(
-        "<!--insert mini site map-->" +
+        "<div id='miniMap'>" +
+            "<ul id='miniMapList'>" +
+            "</ul>" +
+        "</div>" +
         "<hr>" +
         "<a href='#!<%-currentProductName%>/sitemap'>" +
             "<div>" +
@@ -159,7 +166,10 @@ define(['dash', 'underscore'], function(Dash, _) {
     );
     
     Dash.Template.sectionSideBar = _.template(
-        "<!--insert mini site map-->" +
+        "<div id='miniMap'>" +
+            "<ul id='miniMapList'>" +
+            "</ul>" +
+        "</div>" +
         "<hr>" +
         "<a href='#!<%-currentProductName%>/sitemap'>" +
             "<div>" +

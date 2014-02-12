@@ -105,6 +105,10 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
         // }
     });
 
+    Dash.NonLinkListItem = Dash.ListItem.extend({
+        template: Dash.Template.nonLinkListItem
+    });
+
     Dash.TagView = Dash.ListItem.extend({
         template: Dash.Template.tag,
         tagName: "div",
@@ -143,8 +147,8 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                 } else {
                     this$.css('width', 300);
                     this$.parent().css('height', 'auto');
-                    this$.parent().css('padding-top', (150 - this$.height())/2);
-                    this$.parent().css('padding-bottom', (150 - this$.height())/2);
+                    this$.parent().css('padding-top', (150 - this$.height()) / 2);
+                    this$.parent().css('padding-bottom', (150 - this$.height()) / 2);
                 }
             });
             this.$('h1, h2, h3, h4, h5, h6').css('color', this.model.get('themeColour'));
@@ -424,7 +428,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                 url = url.substring(1);
             }
             this.model.getChildren().each(function(child) {
-                if (child.get('_type') === 'section' || (child.get('published') && child.get('type')==='article')|| Dash.admin) {
+                if (child.get('_type') === 'section' || (child.get('published') && child.get('type') === 'article') || Dash.admin) {
                     child.set("currentProductName", that.model.get('currentProductName'));
                     child.set("URL", Dash.urlEscape(url + child.get('name')));
                     that.renderListItem(child, "#children");
@@ -469,7 +473,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
         el: "#Article",
         template: Dash.Template.section,
         breadCrumbTemplate: Dash.Template.breadCrumb,
-        
+
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
             this.renderSections();
@@ -481,7 +485,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
         renderSections: function() {
             var that = this;
             this.model.getArticlesFromProduct().each(function(child) {
-                if (Dash.admin || (child.get('published') && child.get('type')==='article')) {
+                if (Dash.admin || (child.get('published') && child.get('type') === 'article')) {
                     child.set("currentProductName", that.model.get('currentProductName'));
                     child.setUrl();
                     that.renderListItem(child, "#children");
@@ -495,7 +499,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             });
             this.$(tag).append(listItem.render().el);
         },
-        
+
         renderSidebar: function() {
             this.$(sideBar).empty();
             var sideBar = new Dash.SideBar.Tag({
@@ -503,7 +507,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             });
             this.$el.append(sideBar.render().el);
         },
-        
+
         renderBreadCrumb: function() {
             var product = Dash.products.findProduct(this.model.get('currentProductName'));
             var crumbText = this.breadCrumbTemplate(product.toJSON());
@@ -623,18 +627,62 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
         },
 
         renderSiteMap: function() {
+            var that = this;
+            var path = this.model.get('URL').split('/');
+            var above, above2, toRenderAbove, toRenderSame;
+            var product = Dash.products.findProduct(path[0]);
+            if (path.length > 2) {
+                above = this.model.getSection(path[path.length - 2]);
+                toRenderSame = above.getChildren();
+                if (path.length > 3) {
+                    above2 = above.getSection(path[path.length - 3]);
+                    toRenderAbove = above2.getChildren();
+                } else {
+                    above2 = product;
+                    toRenderAbove = above2.getSections();
+                }
+            } else {
+                above = product;
+                toRenderSame = above.getSections();
+                toRenderAbove = new Dash.Products([above]);
+            }
+            this.renderMapLists(product, toRenderAbove, toRenderSame, above);
+        },
 
+        renderMapLists: function(product, toRenderAbove, toRenderSame, above) {
+            var that = this;
+            toRenderAbove.each(function(item) {
+                if (item.get('_type') !== 'article' || item.get('published')) {
+                    if (item.get('_type') !== 'product') {
+                        item.set("currentProductName", that.model.get('currentProductName'));
+                        item.setUrl();
+                    }
+                    that.renderListItem(item, '#miniMapList');
+                    if (item === above) {
+                        that.$('li').last().append('<ul class="innerList"></ul>');
+                        toRenderSame.each(function(item2) {
+                            if (item2 === that.model) {
+                                that.renderNonLinkListItem(item2, '.innerList');
+                            } else if (item2.get('_type') === 'section' || item2.get('published')) {
+                                item2.set("currentProductName", that.model.get('currentProductName'));
+                                item2.setUrl();
+                                that.renderListItem(item2, '.innerList');
+                            }
+                        });
+                    }
+                }
+            });
         },
 
         renderList: function(list, listTag, divTag) {
             var that = this;
+            if (!divTag) {
+                divTag = listTag;
+            }
             _.each(list, function(item) {
                 if (item.get('published') || Dash.admin) {
                     item.set("currentProductName", that.model.get('currentProductName'));
                     item.setUrl();
-                    // if (item.get('URL') === undefined) {
-                    //     item.set("URL", url + "/" + item.get('name').replace(/\s/g, ""));
-                    // }
                     that.renderListItem(item, listTag);
                 }
             });
@@ -645,7 +693,6 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                 this.$(divTag).show();
             }
         },
-
 
         renderOtherArticles: function() {
             var that = this;
@@ -677,8 +724,15 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             });
             this.$(tag).append(listItem.render().el);
         },
+
+        renderNonLinkListItem: function(item, tag) {
+            var listItem = new Dash.NonLinkListItem({
+                model: item
+            });
+            this.$(tag).append(listItem.render().el);
+        }
     });
-    
+
     Dash.SideBar.Section = Dash.SideBar.Article.extend({
         template: Dash.Template.sectionSideBar,
 
@@ -700,7 +754,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                 type: 'howDoI'
             }), "#howDoIList", "#howDoIs");
             return this;
-        }
+        },
     });
 
     Dash.SideBar.Tag = Dash.SideBar.Article.extend({
@@ -719,7 +773,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             }), "#howDoIList", "#howDoIs");
             return this;
         }
-        
+
     });
 
     Dash.SideBar.SiteMap = Dash.SideBar.Product.extend({

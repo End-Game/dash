@@ -595,3 +595,17 @@ fieldset {
 .emptyProduct{
     margin: 100px 40px 300px 40px;
 }
+
+.adminSideBar button {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.adminSideBar .themeButton {
+    margin-top: 2px;
+}
+
+.adminSideBar hr {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}

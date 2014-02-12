@@ -303,6 +303,17 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             }
             return undefined;
         },
+        
+        getSection: function(sectionName) {
+            var parentJoins = this.get('parentJoins');
+            for (var i = 0; i < parentJoins.length; i++) {
+                var section = parentJoins.at(i).get('parent');
+                if (section.get('name').equalsIgnoreUrl(sectionName)) {
+                    return section;
+                }
+            }
+            return undefined;
+        },
 
         setUrl: function(productName) {
             if (!productName) {
@@ -488,16 +499,6 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             return response;
         },
 
-        getSection: function(sectionName) {
-            var parentJoins = this.get('parentJoins');
-            for (var i = 0; i < parentJoins.length; i++) {
-                var section = parentJoins.at(i).get('parent');
-                if (section.get('name').equalsIgnoreUrl(sectionName)) {
-                    return section;
-                }
-            }
-            return undefined;
-        },
 
         addTag: function(tag) {
             var tagJoins = this.get('tagJoins');
