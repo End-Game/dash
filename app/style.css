@@ -1,6 +1,6 @@
 * {
     font-family: helvetica, sans-serif;
-    color: gray;
+    color: #999999;
     font-weight: 200;}
 
 h1, h2, h3, h4, h5, h6{
@@ -30,12 +30,12 @@ h1, h2, h3, h4, h5, h6{
 
 .sideBar {
     display: inline-block;
-    border: 2px solid #d0d0d0;
+    border: 2px solid #ededed;
     width: 31%;
     margin-top: 7px;
     border-radius: 5px;
     margin-left: 2%;
-    background-color: #f9f9f9;
+    background-color: #fcfcfc;
 }
 
 div {
@@ -91,7 +91,7 @@ div {
 }
 
 hr {
-    border: 1px solid #d0d0d0;
+    border: 1px solid #ededed;
     height: 0px;
 }
 
@@ -106,7 +106,7 @@ ul {
 }
 
 .keySections ul {
-    border-right: 2px solid #d0d0d0;
+    border-right: 2px solid #ededed;
 }
 
 .small {
@@ -136,6 +136,8 @@ ul {
 }
 
 .sideBar > a div {
+    margin-top: 8px;
+    margin-bottom: 8px;
     width:auto;
     text-align: center;
 }
@@ -155,20 +157,20 @@ div > .bold {
 
 #SiteMap .map{
     display: inline-block;
-    border: 2px solid #d0d0d0;
+    border: 2px solid #ededed;
     margin-top: 7px;
     border-radius: 5px;
-    background-color: #f9f9f9;
-    vertical-align: bottom;
+    background-color: #fcfcfc;
 }
     
 .map ul {
     margin-left: 20px;
 }
 
-.map > ul > li {
-    width: 50%;
+.map > ul > li, #relevantArticleList li {
+    width: 46%;
     float: left;
+    margin-right: 4%;
 }
 /*.map > ul > li:nth-child(even){
     float: right;
@@ -177,11 +179,11 @@ div > .bold {
 .sideBar > button {
     width: 101%;
     border-radius: 0px 0px 5px 5px;
-    margin-left: -1px;
-    margin-right: -1px;
+    margin-left: -1.5px;
+   /* margin-right: -1px;*/
     margin-bottom: -2px;
     border: none;
-   /* border: 1px solid #d0d0d0;*/
+   /* border: 1px solid #ededed;*/
 }
 
 button img {
@@ -209,15 +211,17 @@ button {
     font-size: 16px;
     font-weight: normal;
     border-radius: 5px;
-    border: 1px solid #d0d0d0;
+    border: 1px solid #ededed;
     padding: 10px 10px 10px 10px;
     width: 100%;
     text-shadow: 0px 1px 0px rgba(0,0,0,0.4);
-    -webkit-box-shadow: rgba(0, 0, 0, 0.148438) 0px 1px 3px inset;
-    background: #d0d0d0;
-    background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#d0d0d0));
-    background: -moz-linear-gradient(top,  #ffffff,  #d0d0d0);
-    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr="#ffffff", endColorstr="#d0d0d0");
+    -webkit-box-shadow: inset 0px 1px 3px rgba(0, 0, 0, 0.148438);
+    -moz-box-shadow: inset 0px 1px 3px rgba(0, 0, 0, 0.148438);
+    box-shadow: inset 0px 1px 3px rgba(0, 0, 0, 0.148438);
+    background: #ededed;
+    background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#ededed));
+    background: -moz-linear-gradient(top,  #ffffff,  #ededed);
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr="#ffffff", endColorstr="#ededed");
 }
 
 .modal {
@@ -249,9 +253,9 @@ button {
 }
 
 input, textarea {
-    border: 2px solid #d0d0d0;
+    border: 2px solid #ededed;
     font-size: 16px;
-    background-color: #f9f9f9;
+    background-color: #fcfcfc;
     padding: 2% 4% 2% 4%;
     width: 91%;
     border-radius: 5px;
@@ -350,34 +354,40 @@ textarea {
 }
 
 .offwhite {
-    background: #f9f9f9;
+    background: #fcfcfc;
 }
 
-.treePlace > img {
-    border-left: 2px solid #d0d0d0;
+.treePlace > div {
+    display: inline-block;
+    border-left: 2px solid #ededed;
     height: 100%;
     margin-top: 0px;
-    width:auto;
-    float:right;
+    width:53px;
+    /*float:right;*/
     vertical-align: top;
+}
+
+.treePlace img {
+    width:100%;
+    height: auto;
 }
 
 div.treePlace {
-    width: 99%;
+    width: 250px;
     border-radius: 5px;
     background-color: white;
     display: block;
-    vertical-align: top;
-    border: 2px solid #d0d0d0;
-    height: 42px;
+    border: 2px solid #ededed;
+    height: auto;
     margin-left: 0px;
     margin bottom:5px;
 }
 
 div.treePlace > p {
-    float:left;
+    display: inline-block;
     margin-left: 10px;
     font-size: 14px;
+    width: 185px;
 }
 
 #Article li > div {
@@ -386,13 +396,17 @@ div.treePlace > p {
     margin-bottom: 16px;
 }
 
+#article > p {
+    clear: both;
+}
+
 .errorText {
     color: red;
     font-size: 14px;
 }
 
 .newTag{
-    border: 2px solid #d0d0d0;
+    border: 2px solid #ededed;
     background-color: #ffffff;
     border-radius: 5px;
     width: 116px;
@@ -444,6 +458,7 @@ div.treePlace > p {
     border: 2px solid;
     border-radius: 5px;
     margin-left: 10px;
+    margin-bottom: 2px;
 }
 
 .themeBorder {
@@ -452,18 +467,20 @@ div.treePlace > p {
 
 #tags > p {
     display: inline-block;
-    font-size: 10px;
-    margin-top: 5px;
-    margin-bottom: 5px;
+    font-size: 11px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    color: #d0d0d0;
+    font-weight: 500;
 }
 
 .tag > p {
-    font-size: 10px;
+    font-size: 11px;
     margin: 3px 5px 3px 5px;
 }
 
 .modal div.treePlace{
-    background-color: #f9f9f9;
+    background-color: #fcfcfc;
     height: 36px;
 }
 
@@ -473,7 +490,7 @@ div.treePlace > p {
 }
 
 .preview{
-    border: 2px solid #d0d0d0;
+    border: 2px solid #ededed;
     border-radius: 5px;
     padding: 10px;
 }
@@ -509,13 +526,18 @@ label > p {
 }
 
 .setPublished{
+    display: inline-block;
+    width: 100%;
+    vertical-align: bottom; 
+}
+
+.setPublished p {
     font-style: italic;
     text-align: right;
-    display: block;
-    margin-right: 10px;
-    width: auto;
+    margin-right: 20px;
     font-size: 12px;
-    vertical-align: bottom;
+    float: right;
+    
 }
 
 fieldset {

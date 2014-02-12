@@ -304,11 +304,11 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             return undefined;
         },
 
-        setUrl: function(product) {
-            if (!product) {
-                product = this.get("currentProductName");
+        setUrl: function(productName) {
+            if (!productName) {
+                productName = this.get("currentProductName");
             }
-            var url = this.findUrl(product);
+            var url = this.findUrl(productName);
             if (url) {
                 this.set('URL', Dash.urlEscape(url));
             }

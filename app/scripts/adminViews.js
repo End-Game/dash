@@ -35,7 +35,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
     };
 
     Dash.getThemeStyleText = function(colour, selector) {
-        var lighterColour = Dash.shadeColor(colour, 20);
+        var lighterColour = Dash.shadeColor(colour, 25);
         if (!selector) {
             selector = '';
         }
@@ -322,7 +322,13 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         }
     });
 
-    Dash.View.Admin.Section = Dash.View.Tag.extend({});
+    Dash.View.Admin.Tag = Dash.View.Tag.extend({
+        renderSidebar: function() {
+            // var sideBar = new Dash.AdminSideBar.Tag({
+            //     model: this.model
+            // });
+            // this.$el.append(sideBar.render().el);
+        }});
 
     Dash.View.Admin.SiteMap = Dash.View.SiteMap.extend({
         setPublishedTemplate: Dash.Template.siteMapSetPublished,
@@ -333,7 +339,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         },
 
         events: {
-            'click .setPublished': 'setPublished',
+            'click .setPublished p': 'setPublished',
         },
 
         render: function() {
@@ -849,9 +855,9 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         render: function() {
             this.$el.empty();
             this.$el.html(this.template(this.model.toJSON()));
-            this.renderSidebar();
+           // this.renderSidebar();
             this.renderTags();
-            this.renderRelevantArticles();
+           this.renderRelevantArticles();
             this.$el.prepend(this.backButtonTemplate({
                 text: "Exit Preview"
             }));
@@ -931,7 +937,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             var input = e.target;
             var productName = input.nextSibling.textContent;
             var li = input.parentElement.parentElement;
-            this.$(li).find('div').toggle();
+            this.$(li).find('.treePlaceContainer, div.treePlace').toggle();
             var product = Dash.products.findWhere({
                 name: productName
             });
@@ -944,7 +950,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         },
 
         treePlace: function(e) {
-            var productName = $($(e.currentTarget.parentElement.parentElement).find('label')[0]).text();
+            var productName = this.$(e.currentTarget).parent().parent().find('label').first().text();
             var product = Dash.products.findWhere({
                 name: productName
             });

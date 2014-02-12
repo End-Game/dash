@@ -147,6 +147,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                     this$.parent().css('padding-bottom', (150 - this$.height())/2);
                 }
             });
+            this.$('h1, h2, h3, h4, h5, h6').css('color', this.model.get('themeColour'));
             return this;
         },
 
@@ -169,6 +170,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
 
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
+            this.$('h1, h2, h3, h4, h5, h6').css('color', this.model.get('themeColour'));
             return this;
         }
     });
@@ -354,6 +356,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             var that = this;
             this.model.get('tagJoins').each(function(tagJoin) {
                 var tag = tagJoin.get('tag');
+                tag.set('URL', Dash.urlEscape(that.model.get('currentProductName') + '/tag/' + tag.get('name')));
                 var tagListItem = new Dash.TagView({
                     model: tag
                 });
@@ -465,11 +468,13 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
     Dash.View.Tag = Dash.View.extend({
         el: "#Article",
         template: Dash.Template.section,
+        breadCrumbTemplate: Dash.Template.breadCrumb,
         
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
             this.renderSections();
-          //  this.renderSidebar();
+            this.renderSidebar();
+            this.renderBreadCrumb();
             return this;
         },
 
@@ -498,6 +503,12 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             });
             this.$el.append(sideBar.render().el);
         },
+        
+        renderBreadCrumb: function() {
+            var product = Dash.products.findProduct(this.model.get('currentProductName'));
+            var crumbText = this.breadCrumbTemplate(product.toJSON());
+            this.$('.breadCrumb').html(crumbText);
+        }
     });
 
     Dash.View.Search = Dash.View.extend({
@@ -600,13 +611,6 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             modelJSON.currentProductName = Dash.urlEscape(modelJSON.currentProductName);
             this.$el.html(this.template(modelJSON));
             var that = this;
-            var url = window.location.hash.substring(1);
-            if (url.charAt(url.length - 1) === '/') {
-                url = url.substring(0, url.length - 1);
-            }
-            if (url.charAt(0) === '!') {
-                url = url.substring(1);
-            }
             this.renderSiteMap();
             this.renderList(this.model.getTaggedArticles().where({
                 type: 'faq'
@@ -614,7 +618,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             this.renderList(this.model.getTaggedArticles().where({
                 type: 'howDoI'
             }), "#howDoIList", "#howDoIs");
-            this.renderOtherArticles(url);
+            this.renderOtherArticles();
             return this;
         },
 
@@ -627,7 +631,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             _.each(list, function(item) {
                 if (item.get('published') || Dash.admin) {
                     item.set("currentProductName", that.model.get('currentProductName'));
-                    item.setUrl(Dash.urlEscape(that.model.get('currentProductName')));
+                    item.setUrl();
                     // if (item.get('URL') === undefined) {
                     //     item.set("URL", url + "/" + item.get('name').replace(/\s/g, ""));
                     // }
@@ -643,9 +647,9 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
         },
 
 
-        renderOtherArticles: function(url) {
+        renderOtherArticles: function() {
             var that = this;
-            var path = url.split('/');
+            var path = this.model.get('URL').split('/');
             var toRender = new Dash.Sections();
             if (path.length > 2) {
                 var section = this.model.getSection(path[path.length - 2]);
@@ -683,7 +687,6 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             modelJSON.currentProductName = Dash.urlEscape(modelJSON.currentProductName);
             this.$el.html(this.template(modelJSON));
             var that = this;
-            var url = this.model.get('URL');
             this.renderSiteMap();
             var children = this.model.getChildren();
             // render list of sections?
@@ -700,9 +703,24 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
         }
     });
 
-    // Dash.SideBar.Tag = Dash.SideBar.Article.extend({
-    // });
-    Dash.SideBar.Tag = Backbone.View.extend({});
+    Dash.SideBar.Tag = Dash.SideBar.Article.extend({
+        template: Dash.Template.tagSideBar,
+        render: function() {
+            var modelJSON = this.model.toJSON();
+            modelJSON.currentProductName = Dash.urlEscape(modelJSON.currentProductName);
+            this.$el.html(this.template(modelJSON));
+            var that = this;
+            var articles = this.model.getArticlesFromProduct();
+            this.renderList(articles.where({
+                type: 'faq'
+            }), "#faqList", "#faqs");
+            this.renderList(articles.where({
+                type: 'howDoI'
+            }), "#howDoIList", "#howDoIs");
+            return this;
+        }
+        
+    });
 
     Dash.SideBar.SiteMap = Dash.SideBar.Product.extend({
         template: Dash.Template.siteMapSideBar,

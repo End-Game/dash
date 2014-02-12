@@ -56,7 +56,7 @@ define(['dash', 'underscore'], function(Dash, _) {
             "<hr>" +
             "<div id='article'>" +
                 "<div id='tags'>" +
-                    "<p class='bold'>PUBLISHED <%-date%></p>" +
+                    "<p>PUBLISHED <%-date%></p>" +
                 "</div>" +
                 "<p><%-content%></p>" +
                 "<hr>" +
@@ -88,7 +88,7 @@ define(['dash', 'underscore'], function(Dash, _) {
     );
     
     Dash.Template.tag = _.template(
-        "<p class='themeText'><%-name%></p>"
+        "<p><a class='themeText' href='#!<%-URL%>'><%-name%></a></p>"
     );
 
     Dash.Template.section = _.template(
@@ -161,6 +161,29 @@ define(['dash', 'underscore'], function(Dash, _) {
     Dash.Template.sectionSideBar = _.template(
         "<!--insert mini site map-->" +
         "<hr>" +
+        "<a href='#!<%-currentProductName%>/sitemap'>" +
+            "<div>" +
+                "<img src='images/sitemap.png'/>" +
+                "<h4 class='bold'>View Full Site Map</h4>" +
+            "</div>" +
+        "</a>" +
+        "<hr>" +
+        "<div id='faqs'>" +
+            "<h4>FAQ&#39;s</h4>" +
+            "<ul id='faqList'>" +
+            "</ul>" +
+        "</div>" +
+        "<hr>" +
+        "<div id='howDoIs'>" +
+            "<h4>How Do I&#39;s</h4>" +
+            "<ul id='howDoIList'>" +
+            "</ul>" +
+        "</div>" +
+        "<button type='button' class='support themeButton'>" +
+        "<img src='images/support.png'/> Request Support</button>"
+    );    
+    
+    Dash.Template.tagSideBar = _.template(
         "<a href='#!<%-currentProductName%>/sitemap'>" +
             "<div>" +
                 "<img src='images/sitemap.png'/>" +
@@ -355,11 +378,11 @@ define(['dash', 'underscore'], function(Dash, _) {
         "<label>" +
             "<input class='checkbox' type='checkbox'><%-name%>" + 
         "</label>" +
-        "<div id='_<%-_id%>'>" +
+        "<div class='treePlaceContainer' id='_<%-_id%>'>" +
             "<button class='treePlace' type='button'>Place in Tree</button>" +
             "<div class='treePlace'>" +
                 "<p></p>" +
-                "<img src='images/sitemap.png'>" +
+                "<div><img src='images/sitemap.png'></div>" +
             "</div>" +
         "</div>"
     );
@@ -474,7 +497,7 @@ define(['dash', 'underscore'], function(Dash, _) {
     );
     
     Dash.Template.siteMapSetPublished = _.template(
-        "<p class='setPublished'>Set Selected to Published</p>"
+        "<div class='setPublished'><p>Set Selected to Published</p><div>"
     );
     
     Dash.Template.login = _.template(
