@@ -334,7 +334,6 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
     Dash.View.Admin.SiteMap = Dash.View.SiteMap.extend({
         setPublishedTemplate: Dash.Template.siteMapSetPublished,
         listHeaderTemplate: Dash.Template.adminMapListHeader,
-        mapListToggleTemplate: Dash.Template.mapListToggle,
 
         start: function() {
             this.model.on('newSection', this.changed, this);
@@ -348,29 +347,27 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
         events: {
             'click .setPublished p': 'setPublished',
-            'click .toggle' : 'toggleMap'
+            'click .toggle': 'toggleMap'
         },
 
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
-            this.$('h1').first().after(this.mapListToggleTemplate());
+            this.$('.map').addClass('admin');
+            //this.$('h1').first().after(this.mapListToggleTemplate());
             if (this.model.get('sectionJoins').length) {
                 var map;
                 if (this.isList) {
                     this.$('.map').append(this.listHeaderTemplate());
+                    this.$('.toggle > div').last().addClass('themeButton');
                     map = new Dash.SiteMap.AdminList({
                         model: this.model
                     });
-                    this.$('.toggle > div').last().addClass('themeButton');
+                    this.$('.map').append(map.render().$(' > div'));
                 } else {
+                    this.$('.toggle > div').first().addClass('themeButton');
                     map = new Dash.SiteMap.AdminMap({
                         model: this.model
                     });
-                    this.$('.toggle > div').first().addClass('themeButton');
-                }
-                if (this.isList) {
-                    this.$('.map').append(map.render().$(' > div'));
-                } else {
                     this.$('.map').append(map.render().el);
                 }
                 this.$('.map').append(Dash.Template.siteMapSetPublished());
@@ -411,12 +408,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         changed: function() {
             this.render();
         },
-        
-        toggleMap:function(){
-            this.isList = !this.isList;
-            Dash.router.navigate('!' + this.model.get('URL') + '/sitemap/' + (this.isList? 'list':''));
-            this.render();
-        }
+
     });
 
     Dash.View.Admin.Login = Dash.View.Admin.extend({
@@ -535,27 +527,12 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
     });
 
     Dash.SiteMap.AdminMap = Dash.SiteMap.Map.extend({
-        renderSection: function(section) {
-            if (this.model.get('_type') === 'product') {
-                section.set('currentProductName', this.model.get('name'));
-            } else {
-                section.set('currentProductName', this.model.get('currentProductName'));
-            }
-            var url = this.model.get('URL');
-            if (url.charAt(url.length - 1) === '/') {
-                url = url.substring(0, url.length - 1);
-            }
-            url = Dash.urlEscape(url + "/" + section.get("name"));
-            section.set('URL', url);
-            if (section.get('_type') === 'section') {
-                this.renderListItem(section);
-                var map = new Dash.SiteMap.AdminMap({
-                    model: section
-                });
-                this.$("li").last().append(map.render().el);
-            } else if (section.get('published') || Dash.admin) {
-                this.renderListItem(section);
-            }
+
+        renderInnerMap: function(section) {
+            var map = new Dash.SiteMap.AdminMap({
+                model: section
+            });
+            this.$("li").last().append(map.render().el);
         },
 
         renderListItem: function(item) {
@@ -576,38 +553,11 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         },
     });
 
-    Dash.SiteMap.AdminList = Dash.SiteMap.extend({
-
-        renderSection: function(section, sectionFrom) {
-            if (this.model.get('_type') === 'product') {
-                section.set('currentProductName', this.model.get('name'));
-            } else {
-                section.set('currentProductName', this.model.get('currentProductName'));
-            }
-            if (!sectionFrom) {
-                sectionFrom = this.model;
-            }
-            var url = sectionFrom.get('URL');
-            url = url + "/" + section.get("name");
-            section.set('URL', Dash.urlEscape(url));
-            if (section.get('_type') === 'section') {
-                var children = section.getChildren();
-                children.each(function(child) {
-                    this.renderSection(child, section);
-                }, this);
-            } else if (section.get('published') || Dash.admin) {
-                section.set({
-                    sectionName: sectionFrom.get('name'),
-                    sectionURL: sectionFrom.get('URL')
-                });
-                this.renderListItem(section);
-            }
-        },
-
+    Dash.SiteMap.AdminList = Dash.SiteMap.List.extend({
         renderListItem: function(item) {
             var listItem;
             listItem = new Dash.AdminMapListItem({
-                model: item
+                model: item 
             });
             if (listItem) {
                 this.$el.append(listItem.render().el);

@@ -109,6 +109,11 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
         template: Dash.Template.nonLinkListItem
     });
 
+    Dash.MapListItem = Dash.ListItem.extend({
+        tagName: 'div',
+        template: Dash.Template.mapListItem
+    });
+
     Dash.TagView = Dash.ListItem.extend({
         template: Dash.Template.tag,
         tagName: "div",
@@ -777,16 +782,39 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
     Dash.View.SiteMap = Dash.View.extend({
         el: "#SiteMap",
         template: Dash.Template.siteMap,
-        // sitemap - map or list
-        // sidebar
+        listHeaderTemplate: Dash.Template.mapListHeader,
+
+        events: {
+            'click .setPublished p': 'setPublished',
+            'click .toggle': 'toggleMap'
+        },
+
+        start: function() {
+            var url = window.location.hash;
+            if (url.charAt(url.length - 1) === '/') {
+                url = url.substring(0, url.length - 1);
+            }
+            var pathSplit = url.split('/');
+            this.isList = 'list'.equalsIgnoreUrl(pathSplit[pathSplit.length - 1]);
+        },
+
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
-            var map = this.isList ? new Dash.SiteMap.List({
-                model: this.model
-            }) : new Dash.SiteMap.Map({
-                model: this.model
-            });
-            this.$('.map').append(map.render().el);
+            var map;
+            if (this.isList) {
+                this.$('.map').append(this.listHeaderTemplate());
+                this.$('.toggle > div').last().addClass('themeButton');
+                map = new Dash.SiteMap.List({
+                    model: this.model
+                });
+                this.$('.map').append(map.render().$(' > div'));
+            } else {
+                this.$('.toggle > div').first().addClass('themeButton');
+                map = new Dash.SiteMap.Map({
+                    model: this.model
+                });
+                this.$('.map').append(map.render().el);
+            }
             this.renderSidebar();
             return this;
         },
@@ -797,6 +825,12 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                 model: this.model,
             });
             this.$el.append(sideBar.render().el);
+        },
+
+        toggleMap: function() {
+            this.isList = !this.isList;
+            Dash.router.navigate('!' + this.model.get('URL') + '/sitemap/' + (this.isList ? 'list' : ''));
+            this.render();
         }
     });
 
@@ -829,25 +863,26 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             if (url.charAt(url.length - 1) === '/') {
                 url = url.substring(0, url.length - 1);
             }
-            if (url.charAt(0) === '!') {
-                url = url.substring(1);
-            }
             url = url + "/" + section.get("name");
             section.set('URL', Dash.urlEscape(url));
             if (section.get('_type') === 'section') {
                 this.renderListItem(section);
-                var map = new Dash.SiteMap.Map({
-                    model: section
-                });
-                this.$("li").last().append(map.render().el);
+                this.renderInnerMap(section);
             } else if (section.get('published') || Dash.admin) {
                 this.renderListItem(section);
             }
         },
 
+        renderInnerMap: function(section) {
+            var map = new Dash.SiteMap.Map({
+                model: section
+            });
+            this.$("li").last().append(map.render().el);
+        },
+
         renderListItem: function(item) {
             var listItem;
-            if (item.get("_type") === "article" && (item.get('published') || Dash.admin)) {
+            if (item.get("_type") === "article" && item.get('published')) {
                 listItem = new Dash.ListItem({
                     model: item
                 });
@@ -863,11 +898,48 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
         },
     });
 
+    Dash.SiteMap.List = Dash.SiteMap.extend({
 
+        renderSection: function(section, sectionFrom) {
+            if (this.model.get('_type') === 'product') {
+                section.set('currentProductName', this.model.get('name'));
+            } else {
+                section.set('currentProductName', this.model.get('currentProductName'));
+            }
+            if (!sectionFrom) {
+                sectionFrom = this.model;
+            }
+            var url = sectionFrom.get('URL');
+            url = url + "/" + section.get("name");
+            section.set('URL', Dash.urlEscape(url));
+            if (section.get('_type') === 'section') {
+                var children = section.getChildren();
+                children.each(function(child) {
+                    this.renderSection(child, section);
+                }, this);
+            } else if (section.get('published') || Dash.admin) {
+                section.set({
+                    sectionName: sectionFrom.get('name'),
+                    sectionURL: sectionFrom.get('URL')
+                });
+                this.renderListItem(section);
+            }
+        },
+
+        renderListItem: function(item) {
+            var listItem;
+            listItem = new Dash.MapListItem({
+                model: item
+            });
+            if (listItem) {
+                this.$el.append(listItem.render().el);
+            }
+        }
+    });
 
     Dash.SiteMap.SectionMap = Dash.SiteMap.Map.extend({
         tagName: "ul",
-        
+
         render: function() {
             var sections = new Dash.Sections();
             if (this.model.get('_type') === 'product') {

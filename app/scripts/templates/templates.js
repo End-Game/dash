@@ -232,7 +232,17 @@ define(['dash', 'underscore'], function(Dash, _) {
     );
 
     Dash.Template.siteMap = _.template(
-        "<div class='twoThird'><h1><%-name%></h1></div>" +
+        "<div class='twoThird'>" +
+            "<h1><%-name%></h1>" +
+            "<div class='toggle'>" +
+                "<div class='toggleMap'>" +
+                    "<p>Map</p>" + 
+                "</div>" + 
+                "<div class='toggleList'>" +
+                    "<p>List</p>" + 
+                "</div>" + 
+            "</div>" +
+        "</div>" +
         "<div class='map inlineDiv twoThird'>" +
         "</div>"
     );
@@ -580,19 +590,21 @@ define(['dash', 'underscore'], function(Dash, _) {
         '</div>'
     );
     
+    Dash.Template.mapListHeader = _.template(
+        '<div>' + 
+            '<div><h3>Article</h3></div>' +
+            '<div><h3>Section</h3></div>' +
+            '<hr>' +
+        '</div>'
+    );
+    
     Dash.Template.adminMapListItem = _.template(
         "<div><a href='#!<%-URL%>'><%-name%></a></div>" +
         "<div><a class='lightText' href='#!<%-sectionURL%>'><%-sectionName%></a></div>"
     );
     
-    Dash.Template.mapListToggle = _.template(
-        "<div class='toggle'>" +
-            "<div class='toggleMap'>" +
-                "<p>Map</p>" + 
-            "</div>" + 
-            "<div class='toggleList'>" +
-                "<p>List</p>" + 
-            "</div>" + 
-        "</div>"
+    Dash.Template.mapListItem = _.template(
+        "<div><a href='#!<%-URL%>'><%-name%></a></div>" +
+        "<div><a class='lightText' href='#!<%-sectionURL%>'><%-sectionName%></a></div>"
     );
 });
