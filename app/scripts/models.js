@@ -614,7 +614,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                 var child = childJoin.get("child");
                 if (child.get("_type") === "section") {
                     sections.add(child);
-                    sections.add(child.getSections().get('models'));
+                    sections.add(child.getSections().models);
                 }
             });
             return sections;
