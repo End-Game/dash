@@ -322,10 +322,14 @@ define(['dash', 'underscore'], function(Dash, _) {
             "<hr>" +
             "<h4>Choose Primary Colour</h4>" +
             // insert drop down for colour
-            "<input type='text' class='primary' placeholder='Enter Hex Code' />" +
+            "<input type='text' class='primary .smallText' placeholder='Enter Hex Code' />" +
             "<h4>Choose Secondary Colour</h4>" +
             // insert drop down for colour
-            "<input type='text' class='secondary' placeholder='Enter Hex Code' />" +
+            "<input type='text' class='secondary .smallText' placeholder='Enter Hex Code' />" +
+            "<hr>" +
+            "<label>" +
+                "<input id='discussion' class='checkbox' type='checkbox'>Enable Discussion" + 
+            "</label>" +
             "<hr>" +
             "<button class='themeButton save half' type='button'>Save Changes</button>" +
             "<button class='themeButton cancel half' type='button'>Cancel</button>" +

@@ -351,6 +351,9 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             this.renderTags();
             this.renderRelevantArticles();
             this.renderBreadCrumb();
+            if(this.model.get('discussion')){
+                this.renderDiscussion();
+            }
             return this;
         },
 
@@ -407,6 +410,10 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             });
             this.$(tag).append(listItem.render().el);
         },
+        
+        renderDiscussion: function(){
+            
+        }
 
     });
 

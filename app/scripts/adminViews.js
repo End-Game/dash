@@ -352,11 +352,11 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
-            this.$('.map').addClass('admin');
             //this.$('h1').first().after(this.mapListToggleTemplate());
             if (this.model.get('sectionJoins').length) {
                 var map;
                 if (this.isList) {
+                    this.$('.map').addClass('admin');
                     this.$('.map').append(this.listHeaderTemplate());
                     this.$('.toggle > div').last().addClass('themeButton');
                     map = new Dash.SiteMap.AdminList({
@@ -505,66 +505,6 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         }
     });
 
-    Dash.AdminMapItem = Dash.ListItem.extend({
-        publishedTemplate: Dash.Template.adminMapItemPublished,
-        unpublishedTemplate: Dash.Template.adminMapItemUnpublished,
-
-        render: function() {
-            //console.log(this.template);
-            this.$el.html(this.template(this.model.toJSON()));
-            if (this.model.get('published')) {
-                this.$el.append(this.publishedTemplate(this.model.toJSON()));
-            } else {
-                this.$el.append(this.unpublishedTemplate(this.model.toJSON()));
-            }
-            return this;
-        }
-    });
-
-    Dash.AdminMapListItem = Dash.AdminMapItem.extend({
-        tagName: 'div',
-        template: Dash.Template.adminMapListItem
-    });
-
-    Dash.SiteMap.AdminMap = Dash.SiteMap.Map.extend({
-
-        renderInnerMap: function(section) {
-            var map = new Dash.SiteMap.AdminMap({
-                model: section
-            });
-            this.$("li").last().append(map.render().el);
-        },
-
-        renderListItem: function(item) {
-            var listItem;
-            if (item.get("_type") === "article") {
-                listItem = new Dash.AdminMapItem({
-                    model: item,
-                });
-                //console.log(listItem.render().el);
-            }
-            if (item.get("_type") === "section") {
-                listItem = new Dash.ListItem({
-                    model: item,
-                    className: 'bold'
-                });
-            }
-            this.$el.append(listItem.render().el);
-        },
-    });
-
-    Dash.SiteMap.AdminList = Dash.SiteMap.List.extend({
-        renderListItem: function(item) {
-            var listItem;
-            listItem = new Dash.AdminMapListItem({
-                model: item 
-            });
-            if (listItem) {
-                this.$el.append(listItem.render().el);
-            }
-        }
-    });
-
     Dash.View.Admin.NewArticle = Dash.View.Admin.extend({
         el: "#Article",
         template: Dash.Template.newArticle,
@@ -703,9 +643,9 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         },
 
         getType: function() {
-            if ($('#isFaq').is(':checked')) {
-                if ($('#isHowTo').is(':checked')) {
-                    $('#isFaq').before(Dash.Template.errorText({
+            if (this.$('#isFaq').is(':checked')) {
+                if (this.$('#isHowTo').is(':checked')) {
+                    this.$('#isFaq').before(Dash.Template.errorText({
                         errorText: "Cannot have more than one article type"
                     }));
                     return null;
@@ -788,10 +728,6 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
     });
 
     Dash.View.Admin.EditArticle = Dash.View.Admin.NewArticle.extend({
-
-        start: function() {
-            console.log(this.model);
-        },
 
         afterRender: function() {
             this.$('h1').text('Edit Article');
@@ -899,6 +835,66 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             this.model.destroy();
             this.$el.hide();
             $('#Article').show();
+        }
+    });
+
+    Dash.AdminMapItem = Dash.ListItem.extend({
+        publishedTemplate: Dash.Template.adminMapItemPublished,
+        unpublishedTemplate: Dash.Template.adminMapItemUnpublished,
+
+        render: function() {
+            //console.log(this.template);
+            this.$el.html(this.template(this.model.toJSON()));
+            if (this.model.get('published')) {
+                this.$el.append(this.publishedTemplate(this.model.toJSON()));
+            } else {
+                this.$el.append(this.unpublishedTemplate(this.model.toJSON()));
+            }
+            return this;
+        }
+    });
+
+    Dash.AdminMapListItem = Dash.AdminMapItem.extend({
+        tagName: 'div',
+        template: Dash.Template.adminMapListItem
+    });
+
+    Dash.SiteMap.AdminMap = Dash.SiteMap.Map.extend({
+
+        renderInnerMap: function(section) {
+            var map = new Dash.SiteMap.AdminMap({
+                model: section
+            });
+            this.$("li").last().append(map.render().el);
+        },
+
+        renderListItem: function(item) {
+            var listItem;
+            if (item.get("_type") === "article") {
+                listItem = new Dash.AdminMapItem({
+                    model: item,
+                });
+                //console.log(listItem.render().el);
+            }
+            if (item.get("_type") === "section") {
+                listItem = new Dash.ListItem({
+                    model: item,
+                    className: 'bold'
+                });
+            }
+            this.$el.append(listItem.render().el);
+        },
+    });
+
+    Dash.SiteMap.AdminList = Dash.SiteMap.List.extend({
+        renderListItem: function(item) {
+            var listItem;
+            listItem = new Dash.AdminMapListItem({
+                model: item
+            });
+            if (listItem) {
+                this.$el.append(listItem.render().el);
+            }
         }
     });
 
@@ -1314,6 +1310,9 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
+            this.$('.primary').val(this.model.get('themeColour'));
+            this.$('.secondary').val(this.model.get('secondaryTheme'));
+            this.$('#discussion').prop("checked", this.model.get('discussion'));
             this.$(':file').hide();
             return this;
         },
@@ -1329,6 +1328,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             if (secondary) {
                 this.model.set('secondaryTheme', secondary);
             }
+            this.model.set('discussion', this.$('#discussion').is(':checked'));
             var file = this.$(':file')[0].files[0];
             Dash.postModel('product', this.model, function() {
                 if (file) {

@@ -41,6 +41,8 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
         defaults: {
             shortDescription: "",
             themeColour: "#3080C8",
+            secondaryTheme: "#3080C8",
+            discussion: false,
             logoURL: "",
             _type: "product"
         },
@@ -303,7 +305,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             }
             return undefined;
         },
-        
+
         getSection: function(sectionName) {
             var parentJoins = this.get('parentJoins');
             for (var i = 0; i < parentJoins.length; i++) {
@@ -369,7 +371,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
         },
 
         getAllUrls: function(toHere) {
-            if(!toHere){
+            if (!toHere) {
                 toHere = "";
             }
             var urls = [];
@@ -385,7 +387,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                     urls[i] = urls[i].substring(0, urls[i].length - 1);
                 }
             }
-            for(i=0; i<urls.length; i++){
+            for (i = 0; i < urls.length; i++) {
                 urls[i] = Dash.urlEscape(urls[i]);
             }
             return urls;
@@ -478,7 +480,18 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                 key: 'article',
                 includeInJSON: true
             }
-
+        }, {
+            type: Backbone.HasMany,
+            key: 'comments',
+            relatedModel: 'Comment',
+            collectionType: 'Comments',
+            includeInJSON: '_id',
+            keyDestination: 'comments',
+            autofetch: false,
+            reverseRelation: {
+                key: 'article',
+                includeInJSON: false
+            }
         }],
 
         defaults: {
@@ -726,7 +739,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
         },
 
         getArticlesFromProduct: function(productName) {
-            if(!productName){
+            if (!productName) {
                 productName = this.get('currentProductName');
             }
             var articles = new Dash.Sections();
@@ -764,7 +777,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
 
     Dash.Tags = Backbone.Collection.extend({
         model: Dash.Tag,
-        
+
         findTag: function(name) {
             for (var i = 0; i < this.models.length; i++) {
                 if (this.at(i).get('name').equalsIgnoreUrl(name)) {
@@ -773,6 +786,34 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             }
             return undefined;
         }
+    });
+
+    Dash.Comment = Backbone.RelationalModel.extend({
+
+        idAttribute: "_id",
+
+        relations: [{
+            type: Backbone.HasMany,
+            key: 'replies',
+            relatedModel: 'Comment',
+            collectionType: 'Comments',
+            includeInJSON: '_id',
+            keyDestination: 'replies',
+            autofetch: false,
+            reverseRelation: {
+                key: 'comment',
+                includeInJSON: false
+            }
+        }],
+
+        defaults: {
+            author: '',
+            content: ''
+        }
+    });
+
+    Dash.Comments = Backbone.Collection.extend({
+        model: Dash.Comment
     });
     // Dash.articles = new Dash.Sections(Dash.testJson.articles);
     // Dash.sections = new Dash.Sections(Dash.testJson.sections, {

@@ -129,6 +129,7 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                     section.set("currentProductName", product.get("name"));
                     section.set('URL', path);
                     if (section.get("_type") === "article") {
+                        section.set('discussion', product.get('discussion'));
                         new Dash.View.Admin.Article({
                             model: section
                         });
