@@ -348,11 +348,12 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
         events: {
             'click .setPublished p': 'setPublished',
+            'click .toggle' : 'toggleMap'
         },
 
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
-            //this.$('h1').first().after(this.mapListToggleTemplate());
+            this.$('h1').first().after(this.mapListToggleTemplate());
             if (this.model.get('sectionJoins').length) {
                 var map;
                 if (this.isList) {
@@ -360,10 +361,12 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                     map = new Dash.SiteMap.AdminList({
                         model: this.model
                     });
+                    this.$('.toggle > div').last().addClass('themeButton');
                 } else {
                     map = new Dash.SiteMap.AdminMap({
                         model: this.model
                     });
+                    this.$('.toggle > div').first().addClass('themeButton');
                 }
                 if (this.isList) {
                     this.$('.map').append(map.render().$(' > div'));
@@ -406,9 +409,14 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         },
 
         changed: function() {
-            console.log('changed');
             this.render();
         },
+        
+        toggleMap:function(){
+            this.isList = !this.isList;
+            Dash.router.navigate('!' + this.model.get('URL') + '/sitemap/' + (this.isList? 'list':''));
+            this.render();
+        }
     });
 
     Dash.View.Admin.Login = Dash.View.Admin.extend({

@@ -586,10 +586,11 @@ define(['dash', 'underscore'], function(Dash, _) {
     );
     
     Dash.Template.mapListToggle = _.template(
-        "<div>" +
-            "<div>" +
-                "<p class='themeButton'>Map</p>" + 
-            "<div>" +
+        "<div class='toggle'>" +
+            "<div class='toggleMap'>" +
+                "<p>Map</p>" + 
+            "</div>" + 
+            "<div class='toggleList'>" +
                 "<p>List</p>" + 
             "</div>" + 
         "</div>"

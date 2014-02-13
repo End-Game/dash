@@ -631,3 +631,45 @@ fieldset {
     margin-bottom: 0px;
     font-weight: 400;
 }
+
+#SiteMap h1 {
+    display: inline-block;
+    width: 80%;
+}
+
+.toggle {
+    display: inline-block;
+    width: 20%;
+    vertical-align: bottom;
+    margin-bottom: 15px;
+}
+
+.toggle div {
+    display: inline-block;
+    width: 50%;
+    background-color: #fcfcfc;
+    
+}
+
+.toggle p {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    text-align: center;
+}
+
+.toggleMap {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    border-radius: 5px 0px 0px 5px;
+    border: 2px solid #efefef;
+    border-right: none;
+}
+
+.toggleList {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    border-radius: 0px 5px 5px 0px;
+    border: 2px solid #efefef;
+    border-left: none;
+}
