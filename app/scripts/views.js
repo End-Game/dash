@@ -145,7 +145,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                     this$.parent().css('padding-top', 0);
                     this$.parent().css('padding-bottom', 0);
                 } else {
-                    this$.css('width', 300);
+                    this$.css('width', 250);
                     this$.parent().css('height', 'auto');
                     this$.parent().css('padding-top', (150 - this$.height()) / 2);
                     this$.parent().css('padding-bottom', (150 - this$.height()) / 2);
@@ -420,13 +420,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
 
         renderSections: function() {
             var that = this;
-            var url = window.location.hash.substring(1);
-            if (url.charAt(url.length - 1) !== '/') {
-                url = url + "/";
-            }
-            if (url.charAt(0) === '!') {
-                url = url.substring(1);
-            }
+            var url = this.model.get('URL');
             this.model.getChildren().each(function(child) {
                 if (child.get('_type') === 'section' || (child.get('published') && child.get('type') === 'article') || Dash.admin) {
                     child.set("currentProductName", that.model.get('currentProductName'));
@@ -808,7 +802,6 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
 
     Dash.SiteMap = Backbone.View.extend({
         render: function() {
-            this.$el.empty();
             var sections = new Dash.Sections();
             if (this.model.get('_type') === 'product') {
                 sections = this.model.getSections();
@@ -870,15 +863,11 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
         },
     });
 
-    Dash.SiteMap.List = Dash.SiteMap.extend({
-        render: function() {
 
-        }
-    });
 
     Dash.SiteMap.SectionMap = Dash.SiteMap.Map.extend({
         tagName: "ul",
-
+        
         render: function() {
             var sections = new Dash.Sections();
             if (this.model.get('_type') === 'product') {

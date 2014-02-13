@@ -328,14 +328,22 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             //     model: this.model
             // });
             // this.$el.append(sideBar.render().el);
-        }});
+        }
+    });
 
     Dash.View.Admin.SiteMap = Dash.View.SiteMap.extend({
         setPublishedTemplate: Dash.Template.siteMapSetPublished,
-
+        listHeaderTemplate: Dash.Template.adminMapListHeader,
+        mapListToggleTemplate: Dash.Template.mapListToggle,
 
         start: function() {
             this.model.on('newSection', this.changed, this);
+            var url = window.location.hash;
+            if (url.charAt(url.length - 1) === '/') {
+                url = url.substring(0, url.length - 1);
+            }
+            var pathSplit = url.split('/');
+            this.isList = 'list'.equalsIgnoreUrl(pathSplit[pathSplit.length - 1]);
         },
 
         events: {
@@ -344,13 +352,24 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
+            //this.$('h1').first().after(this.mapListToggleTemplate());
             if (this.model.get('sectionJoins').length) {
-                var map = this.isList ? new Dash.SiteMap.List({
-                    model: this.model
-                }) : new Dash.SiteMap.AdminMap({
-                    model: this.model
-                });
-                this.$('.map').append(map.render().el);
+                var map;
+                if (this.isList) {
+                    this.$('.map').append(this.listHeaderTemplate());
+                    map = new Dash.SiteMap.AdminList({
+                        model: this.model
+                    });
+                } else {
+                    map = new Dash.SiteMap.AdminMap({
+                        model: this.model
+                    });
+                }
+                if (this.isList) {
+                    this.$('.map').append(map.render().$(' > div'));
+                } else {
+                    this.$('.map').append(map.render().el);
+                }
                 this.$('.map').append(Dash.Template.siteMapSetPublished());
             } else {
                 this.$('.map').append(Dash.Template.adminEmptyProduct());
@@ -363,7 +382,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         setPublished: function() {
             var that = this;
             this.$('input:checked').each(function() {
-                var hash = that.$(this).closest('li').find('a')[0].hash;
+                var hash = that.$(this).closest('.published').parent().find('a')[0].hash;
                 hash = hash.substring(1);
                 if (hash.charAt(0) === '!') {
                     hash = hash.substring(1);
@@ -491,17 +510,23 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         unpublishedTemplate: Dash.Template.adminMapItemUnpublished,
 
         render: function() {
+            //console.log(this.template);
+            this.$el.html(this.template(this.model.toJSON()));
             if (this.model.get('published')) {
-                this.$el.html(this.publishedTemplate(this.model.toJSON()));
+                this.$el.append(this.publishedTemplate(this.model.toJSON()));
             } else {
-                this.$el.html(this.unpublishedTemplate(this.model.toJSON()));
+                this.$el.append(this.unpublishedTemplate(this.model.toJSON()));
             }
             return this;
         }
     });
 
-    Dash.SiteMap.AdminMap = Dash.SiteMap.Map.extend({
+    Dash.AdminMapListItem = Dash.AdminMapItem.extend({
+        tagName: 'div',
+        template: Dash.Template.adminMapListItem
+    });
 
+    Dash.SiteMap.AdminMap = Dash.SiteMap.Map.extend({
         renderSection: function(section) {
             if (this.model.get('_type') === 'product') {
                 section.set('currentProductName', this.model.get('name'));
@@ -541,6 +566,45 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             }
             this.$el.append(listItem.render().el);
         },
+    });
+
+    Dash.SiteMap.AdminList = Dash.SiteMap.extend({
+
+        renderSection: function(section, sectionFrom) {
+            if (this.model.get('_type') === 'product') {
+                section.set('currentProductName', this.model.get('name'));
+            } else {
+                section.set('currentProductName', this.model.get('currentProductName'));
+            }
+            if (!sectionFrom) {
+                sectionFrom = this.model;
+            }
+            var url = sectionFrom.get('URL');
+            url = url + "/" + section.get("name");
+            section.set('URL', Dash.urlEscape(url));
+            if (section.get('_type') === 'section') {
+                var children = section.getChildren();
+                children.each(function(child) {
+                    this.renderSection(child, section);
+                }, this);
+            } else if (section.get('published') || Dash.admin) {
+                section.set({
+                    sectionName: sectionFrom.get('name'),
+                    sectionURL: sectionFrom.get('URL')
+                });
+                this.renderListItem(section);
+            }
+        },
+
+        renderListItem: function(item) {
+            var listItem;
+            listItem = new Dash.AdminMapListItem({
+                model: item
+            });
+            if (listItem) {
+                this.$el.append(listItem.render().el);
+            }
+        }
     });
 
     Dash.View.Admin.NewArticle = Dash.View.Admin.extend({
@@ -855,9 +919,9 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         render: function() {
             this.$el.empty();
             this.$el.html(this.template(this.model.toJSON()));
-           // this.renderSidebar();
+            // this.renderSidebar();
             this.renderTags();
-           this.renderRelevantArticles();
+            this.renderRelevantArticles();
             this.$el.prepend(this.backButtonTemplate({
                 text: "Exit Preview"
             }));

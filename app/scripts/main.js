@@ -32,7 +32,7 @@ require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone
     Hoist.apiKey('TVGDGQGQSETLPLSSKRL[');
     // put somewhere to show that user is admin, maybe after login
     // maybe make a link to a login page
-    app.dash.admin = false;
+    app.dash.admin = true;
     Hoist.get({
         tags: "tag",
         articles: "article",
@@ -74,11 +74,9 @@ require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone
                 app.dash.articles.remove(article);
                 console.log(app.dash.articles);
             } else {
-                //to make half the articles unpublished
-                // console.log('here main');
+                // //to make half the articles unpublished
                 // article.set('published', (Math.random() > 0.5) ? true : false);
                 // Hoist.post('article', article);
-                // console.log('here main');
             }
         });
         app.dash.tags.each(function(tag) {

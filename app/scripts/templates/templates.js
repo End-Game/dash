@@ -232,7 +232,7 @@ define(['dash', 'underscore'], function(Dash, _) {
     );
 
     Dash.Template.siteMap = _.template(
-        "<h1><%-name%></h1>" +
+        "<div class='twoThird'><h1><%-name%></h1></div>" +
         "<div class='map inlineDiv twoThird'>" +
         "</div>"
     );
@@ -265,7 +265,7 @@ define(['dash', 'underscore'], function(Dash, _) {
             "<div id='article'>" +
                 "<div id='tags'>" +
                     "<p class='bold'><%-published ? " + 
-                        '"PUBLISHED":"UNPUBLISHED"%>' + " <%-date%></p>" +
+                        '"PUBLISHED":"NOT PUBLISHED"%>' + " <%-date%></p>" +
                 "</div>" +
                 "<p><%-content%></p>" +
                 "<hr>" +
@@ -437,7 +437,7 @@ define(['dash', 'underscore'], function(Dash, _) {
             "<h4>Article Status</h4>" +
             "<select id='published'>" +
                 "<option value='published'>Published</option>" +
-                "<option value='unpublished'>Unpublished</option>" +
+                "<option value='unpublished'>Not published</option>" +
             "</select>" +
         "</div>" +
         "<button type='button' class='save themeButton'>Save</button>"
@@ -492,15 +492,18 @@ define(['dash', 'underscore'], function(Dash, _) {
     );
     
     Dash.Template.adminMapItemPublished = _.template(
-        "<a href='#!<%-URL%>'><%-name%></a>" +
-        "<p class='themeText bold small'>&#10003; PUBLISHED</p>"
+        "<div class='published'><p class='themeText bold small'>&#10003; PUBLISHED</p></div>"
     );
     
+    // Dash.Template.adminMapItemPublished = _.template(
+    //     "<a href='#!<%-URL%>'><%-name%></a>" +
+    //     "<p class='themeText bold small'>&#10003; PUBLISHED</p>"
+    // );
+    
     Dash.Template.adminMapItemUnpublished = _.template(
-        "<a href='#!<%-URL%>'><%-name%></a>" +
-        "<div>" +
+        "<div class='published'>" +
             "<label>" +
-                "<p class='themeText bold small'>&times; UNPUBLISHED</p>" +
+                "<p class='themeText bold small'>&times; NOT PUBLISHED</p>" +
                 "<input class='checkbox' type='checkbox'>" +
             "</label>" +
         "</div>"
@@ -566,5 +569,29 @@ define(['dash', 'underscore'], function(Dash, _) {
             "<hr>" +
             "<p>To get your site map underway, click on the ‘Add New Section’ button to the right.</p>" +
         "</div>"
-    )
+    );
+    
+    Dash.Template.adminMapListHeader = _.template(
+        '<div>' + 
+            '<div><h3>Article</h3></div>' +
+            '<div><h3>Section</h3></div>' +
+            '<div><h3>Status</h3></div>' +
+            '<hr>' +
+        '</div>'
+    );
+    
+    Dash.Template.adminMapListItem = _.template(
+        "<div><a href='#!<%-URL%>'><%-name%></a></div>" +
+        "<div><a class='lightText' href='#!<%-sectionURL%>'><%-sectionName%></a></div>"
+    );
+    
+    Dash.Template.mapListToggle = _.template(
+        "<div>" +
+            "<div>" +
+                "<p class='themeButton'>Map</p>" + 
+            "<div>" +
+                "<p>List</p>" + 
+            "</div>" + 
+        "</div>"
+    );
 });
