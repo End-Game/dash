@@ -7,10 +7,20 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
         },
 
         find: function(path) {
+            $('#theme').html(Dash.getThemeStyleText(defaultColour));
+            $('#logo').attr('src', 'images/logo.jpg', '');
             // console.log(window.location);
             // console.log(path);
             var loadHome = false;
             var pathSplit;
+            var menuProduct = new Dash.MenuProduct();
+            if (Dash.admin) {
+                new Dash.AdminMenu({
+                    model: menuProduct
+                });
+            } else {
+                $('#Menu').hide();
+            }
             if (path) {
                 if (path.charAt(0) === "/" || path.charAt(0) === "#") {
                     path = path.substring(1, path.length);
@@ -40,6 +50,7 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
             } else {
                 var product = Dash.products.findProduct(pathSplit[0]);
                 if (product) {
+                    menuProduct.set('product', product);
                     $('#theme').html(Dash.getThemeStyleText(product.get('themeColour')));
                     product.on('change:logoURL', function() {
                         $('#logo').attr('src', product.get('logoURL'));
@@ -56,8 +67,6 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                 }
             }
             if (loadHome) {
-                $('#theme').html(Dash.getThemeStyleText(defaultColour));
-                $('#logo').attr('src', 'images/logo.jpg');
                 var view = Dash.admin ? new Dash.View.Admin.Home() : new Dash.View.Home();
             }
         },

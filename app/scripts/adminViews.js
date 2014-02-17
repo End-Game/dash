@@ -51,6 +51,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             'background: -webkit-gradient(linear, left top, left bottom, from(' + lighterColour + '), to(' + colour + '));' +
             'background: -moz-linear-gradient(top, ' + lighterColour + ', ' + colour + ');' +
             'filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr="' + lighterColour + '", endColorstr="' + colour + '");' +
+            'background: linear-gradient(top, ' + lighterColour + ', ' + colour + ');' +
             '}' +
             selector + '.themeBorder {' +
             'border-color: ' + colour + ';' +
@@ -227,6 +228,44 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         });
     };
 
+    Dash.AdminMenu = Dash.View.extend({
+        el: '#Menu',
+        template: Dash.Template.adminMenu,
+
+        start: function() {
+            this.model.on('change', this.render, this);
+        },
+
+        render: function() {
+            this.$el.html(this.template(this.model.toJSON()));
+        },
+
+        events: {
+            'click .logout': 'logout',
+            'click .arrow': 'productSelect',
+            'click .productSelect p': 'productNavigate',
+        },
+
+        logout: function() {
+            console.log('logout');
+        },
+
+        productNavigate: function(e) {
+            var product = this.model.get('product');
+            if (product) {
+                Dash.router.navigate('#!' + product.get('URL'));
+                Dash.router.find(product.get('URL'));
+            } else {
+                this.productSelect(e);
+            }
+        },
+
+        productSelect: function(e) {
+            e.preventDefault();
+            console.log('here');
+        }
+    });
+
     Dash.CheckboxItem = Dash.ListItem.extend({
         template: Dash.Template.checkboxProduct,
     });
@@ -241,6 +280,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             return this;
         },
     });
+
 
     Dash.View.Admin = Dash.View.extend({});
 
@@ -301,7 +341,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         template: Dash.Template.adminArticle,
 
         start: function() {
-            this.model.on('change', this.render, this);
+            this.model.on('change:published', this.render, this);
         },
 
         renderSidebar: function() {
@@ -362,12 +402,16 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                     map = new Dash.SiteMap.AdminList({
                         model: this.model
                     });
+                    this.$('.toggleMap img').attr('src', 'images/map_grey.png');
+                    this.$('.toggleList img').attr('src', 'images/list_white.png');
                     this.$('.map').append(map.render().$(' > div'));
                 } else {
                     this.$('.toggle > div').first().addClass('themeButton');
                     map = new Dash.SiteMap.AdminMap({
                         model: this.model
                     });
+                    this.$('.toggleMap img').attr('src', 'images/map_white.png');
+                    this.$('.toggleList img').attr('src', 'images/list_grey.png');
                     this.$('.map').append(map.render().el);
                 }
                 this.$('.map').append(Dash.Template.siteMapSetPublished());
@@ -689,6 +733,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
         addToSections: function(article) {
             var treePlaces = this.sideBar.treePlaces;
+            var sections = [];
             for (var i = 0; i < treePlaces.length(); i++) {
                 var section = treePlaces.sections[i];
                 if (section.get('_type') === 'section') {
@@ -701,8 +746,9 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                     var index = section.indexOfSection(addBefore);
                     section.addChild(article, index);
                 }
-                Dash.postModel('section', section);
+                sections.push(section);
             }
+            Dash.postModel('section', sections);
         },
 
         fullPreview: function() {
@@ -801,7 +847,9 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             oldSections.remove(sections.models);
             article.removeSections(oldSections);
             sections.add(oldSections.models);
-            Dash.postModel('section', sections);
+            if (sections.length) {
+                Dash.postModel('section', sections);
+            }
         },
 
     });
@@ -1090,7 +1138,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         events: {
             'click button.newSection': 'newSection',
             'click button.newArticle': 'newArticle',
-            'click button.productSettings': 'settings',
+            'click button.settings': 'settings',
             'click button.personalise': 'personalise',
         },
 
@@ -1102,7 +1150,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         },
 
         newArticle: function() {
-            Dash.router.navigate("newArticle");
+            Dash.router.navigate("newarticle");
             var that = this;
             new Dash.View.Admin.NewArticle();
         },
@@ -1182,6 +1230,8 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             this.model.set('published', !this.model.get('published'));
             this.model.set('date', Dash.getDateString());
             Dash.postModel('article', this.model);
+            // this.$('.publishArticle img').attr('src', 'images/'+ (this.model.get('published') ?'un':'') + 'publish.png');
+            // this.$('.publishArticle p').text(this.model.get('published') ?'Unpublish Article':'Publish Article');
         },
 
     });

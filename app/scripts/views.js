@@ -351,7 +351,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             this.renderTags();
             this.renderRelevantArticles();
             this.renderBreadCrumb();
-            if(this.model.get('discussion')){
+            if (this.model.get('discussion')) {
                 this.renderDiscussion();
             }
             return this;
@@ -410,9 +410,9 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             });
             this.$(tag).append(listItem.render().el);
         },
-        
-        renderDiscussion: function(){
-            
+
+        renderDiscussion: function() {
+
         }
 
     });
@@ -436,7 +436,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             this.model.getChildren().each(function(child) {
                 if (child.get('_type') === 'section' || (child.get('published') && child.get('type') === 'article') || Dash.admin) {
                     child.set("currentProductName", that.model.get('currentProductName'));
-                    child.set("URL", Dash.urlEscape(url + child.get('name')));
+                    child.set("URL", Dash.urlEscape(url + '/' + child.get('name')));
                     that.renderListItem(child, "#children");
                 }
             });
@@ -810,17 +810,21 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             var map;
             if (this.isList) {
                 this.$('.map').append(this.listHeaderTemplate());
-                this.$('.toggle > div').last().addClass('themeButton');
                 map = new Dash.SiteMap.List({
                     model: this.model
                 });
                 this.$('.map').append(map.render().$(' > div'));
+                this.$('.toggleList').addClass('themeButton');
+                this.$('.toggleMap img').attr('src', 'images/map_grey.png');
+                this.$('.toggleList img').attr('src', 'images/list_white.png');
             } else {
-                this.$('.toggle > div').first().addClass('themeButton');
                 map = new Dash.SiteMap.Map({
                     model: this.model
                 });
                 this.$('.map').append(map.render().el);
+                this.$('.toggleMap img').attr('src', 'images/map_white.png');
+                this.$('.toggleList img').attr('src', 'images/list_grey.png');
+                this.$('.toggleMap').addClass('themeButton');
             }
             this.renderSidebar();
             return this;

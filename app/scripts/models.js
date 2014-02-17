@@ -483,7 +483,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
         }, {
             type: Backbone.HasMany,
             key: 'comments',
-            relatedModel: 'Comment',
+            relatedModel: 'ArticleComment',
             collectionType: 'Comments',
             includeInJSON: '_id',
             keyDestination: 'comments',
@@ -788,14 +788,13 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
         }
     });
 
-    Dash.Comment = Backbone.RelationalModel.extend({
-
+    Dash.ArticleComment = Backbone.RelationalModel.extend({
         idAttribute: "_id",
 
         relations: [{
             type: Backbone.HasMany,
             key: 'replies',
-            relatedModel: 'Comment',
+            relatedModel: 'ArticleComment',
             collectionType: 'Comments',
             includeInJSON: '_id',
             keyDestination: 'replies',
@@ -813,16 +812,22 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
     });
 
     Dash.Comments = Backbone.Collection.extend({
-        model: Dash.Comment
+        model: Dash.ArticleComment
     });
-    // Dash.articles = new Dash.Sections(Dash.testJson.articles);
-    // Dash.sections = new Dash.Sections(Dash.testJson.sections, {
-    //     parse: true
-    // });
-
-    // Dash.products = new Dash.Products(Dash.testJson.products, {
-    //     parse: true
-    // });
+    
+    Dash.MenuProduct = Backbone.RelationalModel.extend({
+        
+        relations: [{
+            type: Backbone.HasOne,
+            key: 'product',
+            relatedModel: 'Product',
+            autofetch: false
+        }],
+        
+        // defaults: {
+        //     product: ''
+        // }
+    });
 
     return Dash;
 });

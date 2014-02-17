@@ -112,7 +112,7 @@ define(['dash', 'underscore'], function(Dash, _) {
     Dash.Template.productSideBar = _.template(
         "<a href='#!<%-URL%>/sitemap'>" +
             "<div>" +
-                "<img src='images/sitemap.png'/>" +
+                "<img class='themeColour' src='images/view.png'/>" +
                 "<h4 class='bold'>View Site Map</h4>" +
             "</div>" +
         "</a>" +
@@ -125,7 +125,7 @@ define(['dash', 'underscore'], function(Dash, _) {
         "<hr>" +
         "<a href='#!'>" +
             "<div>" +
-                "<img src='images/sitemap.png'/>" +
+                "<img src='images/view_grey.png'/>" +
                 "<p class='bold'>View Other Products</p>" +
             "</div>" +
         "</a>"
@@ -139,7 +139,7 @@ define(['dash', 'underscore'], function(Dash, _) {
         "<hr>" +
         "<a href='#!<%-currentProductName%>/sitemap'>" +
             "<div>" +
-                "<img src='images/sitemap.png'/>" +
+                "<img class='themeColour' src='images/view.png'/>" +
                 "<h4 class='bold'>View Full Site Map</h4>" +
             "</div>" +
         "</a>" +
@@ -162,7 +162,7 @@ define(['dash', 'underscore'], function(Dash, _) {
             "</ul>" +
         "</div>" +
         "<button type='button' class='support themeButton'>" +
-        "<img src='images/support.png'/> Request Support</button>"
+            "<img src='images/help.png'/><p>Request Support</p></button>"
     );
     
     Dash.Template.sectionSideBar = _.template(
@@ -173,7 +173,7 @@ define(['dash', 'underscore'], function(Dash, _) {
         "<hr>" +
         "<a href='#!<%-currentProductName%>/sitemap'>" +
             "<div>" +
-                "<img src='images/sitemap.png'/>" +
+                "<img class='themeColour' src='images/view.png'/>" +
                 "<h4 class='bold'>View Full Site Map</h4>" +
             "</div>" +
         "</a>" +
@@ -190,7 +190,7 @@ define(['dash', 'underscore'], function(Dash, _) {
             "</ul>" +
         "</div>" +
         "<button type='button' class='support themeButton'>" +
-        "<img src='images/support.png'/> Request Support</button>"
+        "<img src='images/help.png'/><p>Request Support</p></button>"
     );    
     
     Dash.Template.tagSideBar = _.template(
@@ -213,7 +213,7 @@ define(['dash', 'underscore'], function(Dash, _) {
             "</ul>" +
         "</div>" +
         "<button type='button' class='support themeButton'>" +
-        "<img src='images/support.png'/> Request Support</button>"
+        "<img src='images/help.png'/><p>Request Support</p></button>"
     );
 
     Dash.Template.siteMapSideBar = _.template(
@@ -225,7 +225,7 @@ define(['dash', 'underscore'], function(Dash, _) {
         "<hr>" +
         "<a href='#!'>" +
             "<div>" +
-                "<img src='images/sitemap.png'/>" +
+                "<img src='images/view_grey.png'/>" +
                 "<p class='bold'>View Other Products</p>" +
             "</div>" +
         "</a>"
@@ -236,9 +236,11 @@ define(['dash', 'underscore'], function(Dash, _) {
             "<h1><%-name%></h1>" +
             "<div class='toggle'>" +
                 "<div class='toggleMap'>" +
+                    "<img src='images/map_white.png'/>" +
                     "<p>Map</p>" + 
                 "</div>" + 
                 "<div class='toggleList'>" +
+                    "<img src='images/list_white.png'/>" +
                     "<p>List</p>" + 
                 "</div>" + 
             "</div>" +
@@ -260,7 +262,8 @@ define(['dash', 'underscore'], function(Dash, _) {
     Dash.Template.adminHome = _.template(
         "<div class='buttonContainer container'>" +
             "<button class='themeButton' type='button'>" +
-            "<img src='images/support.png'/>Add New Product</button>" +
+                "<img src='images/new_white.png'/><p>Add New Product</p>" +
+            "</button>" +
         "</div>" +
         "<hr>" +
         "<div id='products' class='container'>" +
@@ -274,8 +277,7 @@ define(['dash', 'underscore'], function(Dash, _) {
             "<hr>" +
             "<div id='article'>" +
                 "<div id='tags'>" +
-                    "<p class='bold'><%-published ? " + 
-                        '"PUBLISHED":"NOT PUBLISHED"%>' + " <%-date%></p>" +
+                    "<p class='bold'><%-published ? 'PUBLISHED':'NOT PUBLISHED'%> <%-date%></p>" +
                 "</div>" +
                 "<p><%-content%></p>" +
                 "<hr>" +
@@ -304,8 +306,8 @@ define(['dash', 'underscore'], function(Dash, _) {
             "</div>" +
             "<input type='file'/>" +
             "<hr>" +
-            "<button class='themeButton save half' type='button'>Save Product</button>" +
-            "<button class='themeButton cancel half' type='button'>Cancel</button>" +
+            "<button class='themeButton save half' type='button'><p>Save Product</p></button>" +
+            "<button class='themeButton cancel half' type='button'><p>Cancel</p></button>" +
         "</div>"
     );
     
@@ -331,8 +333,8 @@ define(['dash', 'underscore'], function(Dash, _) {
                 "<input id='discussion' class='checkbox' type='checkbox'>Enable Discussion" + 
             "</label>" +
             "<hr>" +
-            "<button class='themeButton save half' type='button'>Save Changes</button>" +
-            "<button class='themeButton cancel half' type='button'>Cancel</button>" +
+            "<button class='themeButton save half' type='button'><p>Save Changes</p></button>" +
+            "<button class='themeButton cancel half' type='button'><p>Cancel</p></button>" +
         "</div>"
     );
 
@@ -342,23 +344,23 @@ define(['dash', 'underscore'], function(Dash, _) {
             "<hr>" +
             "<div id='menu'>" +
             "<div>" +
-                "<img src='images/sitemap.png'>" +
+                "<img class='themeColour' src='images/heading.png'>" +
                 "<p>Format As Heading</p>" +
             "</div>" +
             "<div>" +
-                "<img src='images/sitemap.png'>" +
+                "<img class='themeColour' src='images/subheading.png'>" +
                 "<p>Format As Sub Heading</p>" +
             "</div>" +
             "<div>" +
-                "<img src='images/sitemap.png'>" +
+                "<img class='themeColour' src='images/body.png'>" +
                 "<p>Format As Body Text</p>" +
             "</div>" +
             "<div>" +
-                "<img src='images/sitemap.png'>" +
+                "<img class='themeColour' src='images/image.png'>" +
                 "<p>Upload Image</p>" +
             "</div>" +
             "<div>" +
-                "<img src='images/sitemap.png'>" +
+                "<img class='themeColour' src='images/video.png'>" +
                 "<p>Add Video</p>" +
             "</div>" +
             "</div>" +
@@ -370,7 +372,7 @@ define(['dash', 'underscore'], function(Dash, _) {
               "<h3>Preview</h3>" +
             "<div class='preview'></div>" +
             "<button class='half offwhite fullPreview' type='button'>" +
-                "<img src='images/sitemap.png'> View Full Preview" +
+                "<img src='images/view_grey.png'><p>View Full Preview</p>" +
             "</button>" +
         "</div>"
     );
@@ -388,7 +390,7 @@ define(['dash', 'underscore'], function(Dash, _) {
 
     Dash.Template.backButton = _.template(
         "<button class='third back' type='button'>" +
-            "<%-text%>" +
+            "<p><%-text%></p>" +
         "</button>"
     );
 
@@ -403,10 +405,10 @@ define(['dash', 'underscore'], function(Dash, _) {
             "<input class='checkbox' type='checkbox'><%-name%>" + 
         "</label>" +
         "<div class='treePlaceContainer' id='_<%-_id%>'>" +
-            "<button class='treePlace' type='button'>Place in Tree</button>" +
+            "<button class='treePlace' type='button'><img src='images/place.png'><p>Place in Tree</p></button>" +
             "<div class='treePlace'>" +
                 "<p></p>" +
-                "<div><img src='images/sitemap.png'></div>" +
+                "<div><img src='images/pencil.png'></div>" +
             "</div>" +
         "</div>"
     );
@@ -417,8 +419,8 @@ define(['dash', 'underscore'], function(Dash, _) {
             "<hr>" +
             "<div class='map'>" +
             "</div>" +
-            "<button class='themeButton inlineDiv half save' type='button'>Save</button>" +
-            "<button class='themeButton inlineDiv half cancel' type='button'>Cancel</button>" +
+            "<button class='themeButton inlineDiv half save' type='button'><p>Save</p></button>" +
+            "<button class='themeButton inlineDiv half cancel' type='button'><p>Cancel</p></button>" +
         "</div>"
     );
 
@@ -454,29 +456,29 @@ define(['dash', 'underscore'], function(Dash, _) {
                 "<option value='unpublished'>Not published</option>" +
             "</select>" +
         "</div>" +
-        "<button type='button' class='save themeButton'>Save</button>"
+        "<button type='button' class='save themeButton'><p>Save</p></button>"
     );
 
     Dash.Template.adminProductSideBar = _.template(
-        "<button class='themeButton newSection' type='button'> Add New Section</button>" +
+        "<button class='themeButton newSection' type='button'><img src='images/new_white.png'/><p>Add New Section</p></button>" +
         "<hr>" +
-        "<button type='button' class='newArticle'> Add New Article</button>" +
-        "<button type='button' class='productSettings'> Product Settings</button>" +
-        "<button type='button' class='personalise'> Personalise</button>"
+        "<button type='button' class='newArticle'><img src='images/article_grey.png'/><p>Add New Article</p></button>" +
+        "<button type='button' class='settings'><img src='images/settings.png'/><p>Product Settings</p></button>" +
+        "<button type='button' class='personalise'><img src='images/personalise.png'/><p>Personalise</p></button>"
     );
     
     Dash.Template.adminArticleSideBar = _.template(
-        "<button class='themeButton editArticle' type='button'> Edit Article</button>" +
+        "<button class='themeButton editArticle' type='button'><img src='images/edit_white.png'/><p>Edit Article</p></button>" +
         "<hr>" +
-        "<button type='button' class='newArticle'> Add New Article</button>" +
+        "<button type='button' class='newArticle'><img src='images/article_grey.png'/><p>Add New Article</p></button>" +
         
-        "<button type='button' class='publishArticle'> <%-published ?  'Unpublish Article':'Publish Article' %></button>" 
+        "<button type='button' class='publishArticle'><img src='images/<%-published ?'un':''%>publish.png'/><p><%-published ?  'Unpublish Article':'Publish Article' %></p></button>" 
     );
     
     Dash.Template.adminSectionSideBar = _.template(
-        "<button class='themeButton newArticle' type='button'> Add New Article</button>" +
+        "<button class='themeButton newArticle' type='button'><img src='images/article.png'/><p>Add New Article</p></button>" +
         "<hr>" +
-        "<button type='button' class='newSection'> Add New Section</button>"
+        "<button type='button' class='newSection'><img src='images/new.png'/><p>Add New Section</p></button>"
     );
     
     Dash.Template.errorText = _.template(
@@ -484,7 +486,7 @@ define(['dash', 'underscore'], function(Dash, _) {
     );
     
     Dash.Template.newTag = _.template(
-        "<div class='delete themeBorder themeButton'><p>&times;</p></div>" +
+        "<div class='delete themeBorder themeButton'><img src='images/cross_white-33.png'></div>" +
         "<p class='smallText'><%-name%></p>"
     );
     
@@ -494,19 +496,22 @@ define(['dash', 'underscore'], function(Dash, _) {
             "<hr>" +
             "<input type='text' id='name' placeholder='Name of Section...' />" +
             "<hr>" +
-            "<button class='treePlace' type='button'>Place in Tree</button>" +
+            "<button class='treePlace' type='button'><img src='images/place.png'><p>Place in Tree</p></button>" +
             "<div class='treePlace'>" +
                 "<p></p>" +
-                "<img src='images/sitemap.png'>" +
+                "<img src='images/place.png'>" +
             "</div>" +
             "<hr>" +
-            "<button class='themeButton save half' type='button'>Save Section</button>" +
-            "<button class='themeButton cancel half' type='button'>Cancel</button>" +
+            "<button class='themeButton save half' type='button'><p>Save Section</p></button>" +
+            "<button class='themeButton cancel half' type='button'><p>Cancel</p></button>" +
         "</div>"
     );
     
     Dash.Template.adminMapItemPublished = _.template(
-        "<div class='published'><p class='themeText bold small'>&#10003; PUBLISHED</p></div>"
+        "<div class='published'>" + 
+            "<img class='themeColour' src='images/tick.png'>" +
+            "<p class='themeText bold small'> PUBLISHED</p>" +
+        "</div>"
     );
     
     // Dash.Template.adminMapItemPublished = _.template(
@@ -517,7 +522,8 @@ define(['dash', 'underscore'], function(Dash, _) {
     Dash.Template.adminMapItemUnpublished = _.template(
         "<div class='published'>" +
             "<label>" +
-                "<p class='themeText bold small'>&times; NOT PUBLISHED</p>" +
+                "<img class='themeColour' src='images/cross.png'>" +
+                "<p class='themeText bold small'> NOT PUBLISHED</p>" +
                 "<input class='checkbox' type='checkbox'>" +
             "</label>" +
         "</div>"
@@ -542,7 +548,7 @@ define(['dash', 'underscore'], function(Dash, _) {
                     "<input type='password' id='Password' name='Password' />" +
                 "</div>" +
             "</fieldset>" +
-            "<button class='login third themeButton centre' type='button'>Log in</button>" +
+            "<button class='login third themeButton centre' type='button'><p>Log in</p></button>" +
         "</div>"
     );
     
@@ -573,7 +579,7 @@ define(['dash', 'underscore'], function(Dash, _) {
                     "<input type='password' id='RepeatPassword' name='RepeatPassword' />" +
                 "</div>" +
             "</fieldset>" +
-            "<button class='signup third themeButton centre' type='button'>Sign Up</button>" +
+            "<button class='signup third themeButton centre' type='button'><p>Sign Up</p></button>" +
         "</div>"
     );
     
@@ -610,5 +616,15 @@ define(['dash', 'underscore'], function(Dash, _) {
     Dash.Template.mapListItem = _.template(
         "<div><a href='#!<%-URL%>'><%-name%></a></div>" +
         "<div><a class='lightText' href='#!<%-sectionURL%>'><%-sectionName%></a></div>"
+    );
+    
+    Dash.Template.adminMenu = _.template(
+        "<div class='container'>" +
+            "<div class='productSelect'>" +
+                "<p><%-product? product.name:'Select a Product'%></p>" + 
+                "<div class='arrow themeBorder'><img src='images/arrow_white.png'></div>" +
+            "</div>" +
+            "<div class='logout themeBorder'><p>Logout</p></div>" +
+        "</div>"
     );
 });
