@@ -24,7 +24,7 @@ h1, h2, h3, h4, h5, h6{
 }*/
 
 #logo {
-    display: block;
+    display: inline-block;
     height: 50px;
 } 
 
@@ -34,13 +34,20 @@ h1, h2, h3, h4, h5, h6{
 }
 
 .sideBar {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    -moz-box-sizing:border-box; /* Firefox */
     display: inline-block;
     border: 2px solid #ededed;
-    width: 31%;
+    width: 300px;
     margin-top: 5px;
     border-radius: 5px;
-    margin-left: 2%;
+    margin-left: 30px;
     background-color: #fcfcfc;
+}
+
+#SiteMap .sideBar, #SiteMap .adminSideBar {
+    margin-top: 7px;
 }
 
 div {
@@ -86,6 +93,13 @@ div {
 
 .twoThird {
     width: 65%;
+}
+
+.container > .twoThird {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    -moz-box-sizing:border-box; /* Firefox */
+    width: 630px;
 }
 
 .third {
@@ -175,6 +189,9 @@ div > .bold {
     font-weight: 600;
 }
 
+#SiteMap {
+    margin-top: -20px;
+}
 
 #SiteMap .map{
     display: inline-block;
@@ -331,10 +348,13 @@ textarea {
 
 
 .adminSideBar {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    -moz-box-sizing:border-box; /* Firefox */
     display: inline-block;
-    width: 32%;
+    width: 300px;
     margin-top: 5px;
-    margin-left: 2%;
+    margin-left: 30px;
 }
 
 #Article .bottomField {
@@ -456,10 +476,13 @@ div.treePlace > p {
 }
 
 .newTag{
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing:border-box; /* Firefox */
     border: 2px solid #ededed;
     background-color: #ffffff;
     border-radius: 5px;
-    width: 116px;
+    width: 120px;
     display: inline-block;
     margin-left: 0px;
     margin-right: 0px;
@@ -468,7 +491,7 @@ div.treePlace > p {
 }
 
 .newTag:nth-of-type(2n){
-    margin-left: 17px;
+    margin-left: 16px;
 }
 
 .newTag > div {
@@ -593,9 +616,15 @@ label > p {
 }
 
 li .published .checkbox {
-    margin-top: 8px;
+    margin-top: 3px;
     margin-left: 15px;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
+}
+
+
+li .published p {
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
 .map div .published .checkbox {
@@ -805,10 +834,17 @@ hr {
     border-left: none;
 }
 
-#Menu p {
+header p {
     font-size: 13px;
     margin-top: 15px;
     margin-bottom: 15px;
+}
+
+header .container div p {
+    font-size: 13px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    font-weight: 600;
 }
 
 .productSelect {
@@ -824,6 +860,30 @@ hr {
     width: 200px;
     display: inline-block;
 }
+
+#productMenu{
+    padding-left: 0px;
+    margin-top: 0px;
+    margin-left: -10px;
+    border-radius: 0px 0px 5px 5px;
+}
+
+#productMenu li:last-child {
+    border-radius: 0px 0px 5px 5px;
+}
+
+#productMenu li{
+    padding-left: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    list-style-type: none;
+}
+
+#productMenu li a{
+    color: #ffffff;
+    font-size: 13px;
+}
+
 
 .arrow {
     -webkit-box-sizing: border-box;
@@ -846,14 +906,23 @@ hr {
 
 .logout {
     padding-left: 15px;
+    padding-right: 5px;
     border-left: 1.5px solid;
     float: right;
 }
 
-#Menu {
+header {
+    position: absolute;
+    top: 0;
     width: 100%;
     height: 45px;
     /*vertical-align: top;*/
+}
+
+header .container > p{
+    display: inline-block;
+    float: right;
+    margin-right: 15px;
 }
 
 html, body{
@@ -868,6 +937,7 @@ html, body{
 }
 
 #body {
+    padding-top: 45px;
     padding-bottom: 100px;
 }
 
@@ -875,9 +945,9 @@ footer {
     border-top: 2px solid #ededed;
     font-size: 11px;
     background-color: #fcfcfc;
-    position : absolute;
-    bottom : 0;
-    height : 40px;
+    position: absolute;
+    bottom: 0;
+    height: 40px;
     width: 100%;
 }
 

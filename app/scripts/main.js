@@ -29,11 +29,11 @@ require.config({
 require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone) {
     'use strict';
     $('section').hide();
-    $('#Menu').hide();
+    $('header').hide();
     Hoist.apiKey('TVGDGQGQSETLPLSSKRL[');
     // put somewhere to show that user is admin, maybe after login
     // maybe make a link to a login page
-    app.dash.admin = false;
+    app.dash.admin = true;
     Hoist.get({
         tags: "tag",
         articles: "article",

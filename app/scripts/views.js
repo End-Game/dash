@@ -378,7 +378,8 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
 
         renderRelevantArticles: function() {
             var articles = this.model.getTaggedArticles().where({
-                type: 'article'
+                type: 'article',
+                published: true
             });
             var that = this;
             _.each(articles, function(article) {

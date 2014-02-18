@@ -58,6 +58,12 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             '}' +
             selector + 'h1, ' + selector + 'h2,' + selector + ' h3,' + selector + ' h4,' + selector + ' h5,' + selector + ' h6{' +
             'color: ' + colour + ';' +
+            '}' +
+            selector + '#productMenu {' +
+            'background: ' + lighterColour + ';' +
+            '}' +
+            selector + '#productMenu li:hover{' +
+            'background: ' + colour + ';' +
             '}';
     };
 
@@ -229,8 +235,9 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
     };
 
     Dash.AdminMenu = Dash.View.extend({
-        el: '#Menu',
+        el: '#Header',
         template: Dash.Template.adminMenu,
+        itemTemplate: Dash.Template.productMenuItem,
 
         start: function() {
             this.model.on('change', this.render, this);
@@ -242,27 +249,54 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
         events: {
             'click .logout': 'logout',
-            'click .arrow': 'productSelect',
+            'mouseenter .productSelect': 'productMenu',
+            'mouseleave .productSelect': 'removeProductMenu',
             'click .productSelect p': 'productNavigate',
+            'click li': 'selectProduct',
         },
 
         logout: function() {
-            console.log('logout');
+            if (Dash.admin) {
+                Hoist.logout(function() {}, function(res) {
+                    console.log('logout failed');
+                    console.log(res);
+                });
+            }
+            Dash.admin = false;
+            Dash.router.find(window.location.hash);
         },
 
-        productNavigate: function(e) {
-            var product = this.model.get('product');
-            if (product) {
-                Dash.router.navigate('#!' + product.get('URL'));
-                Dash.router.find(product.get('URL'));
+        productNavigate: function(e, productURL) {
+            if (!productURL) {
+                var product = this.model.get('product');
+                if(product){
+                    productURL = product.get('URL');
+                } 
+            }
+            if (productURL) {
+                Dash.router.navigate('#!' + productURL);
+                Dash.router.find(productURL);
             } else {
-                this.productSelect(e);
+                //this.productMenu(e);
             }
         },
 
-        productSelect: function(e) {
+        productMenu: function(e) {
             e.preventDefault();
-            console.log('here');
+            this.$('#productMenu').empty();
+            Dash.products.each(function(product) {
+                this.$('#productMenu').append(this.itemTemplate(product.toJSON()));
+            }, this);
+        },
+        
+        removeProductMenu: function(e) {
+            this.$('#productMenu').empty();
+        },
+        
+        selectProduct: function(e) {
+            e.preventDefault();
+            var target = this.$(e.currentTarget);
+            this.productNavigate(e, target.find('a').attr('href'));
         }
     });
 

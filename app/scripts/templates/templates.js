@@ -623,8 +623,16 @@ define(['dash', 'underscore'], function(Dash, _) {
             "<div class='productSelect'>" +
                 "<p><%-product? product.name:'Select a Product'%></p>" + 
                 "<div class='arrow themeBorder'><img src='images/arrow_white.png'></div>" +
+                "<ul id='productMenu'></ul>" +
             "</div>" +
             "<div class='logout themeBorder'><p>Logout</p></div>" +
+            "<p>Welcome Back <%-user%></p>" +
         "</div>"
+    );
+    
+    Dash.Template.productMenuItem = _.template(
+        "<li>" +
+            "<a href='#!<%-URL%>'><%-name%></a>" +
+        "</li>"
     );
 });

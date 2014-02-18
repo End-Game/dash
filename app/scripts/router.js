@@ -1,6 +1,8 @@
 define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone, hoist) {
     'use strict';
     var defaultColour = '#3080C8';
+    var adminMenu;
+    var menuProduct = new Dash.MenuProduct();
     Dash.Router = Backbone.Router.extend({
         routes: {
             "*path": "find"
@@ -13,13 +15,14 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
             // console.log(path);
             var loadHome = false;
             var pathSplit;
-            var menuProduct = new Dash.MenuProduct();
             if (Dash.admin) {
-                new Dash.AdminMenu({
-                    model: menuProduct
-                });
+                if (!adminMenu) {
+                    adminMenu = new Dash.AdminMenu({
+                        model: menuProduct
+                    });
+                }
             } else {
-                $('#Menu').hide();
+                $('header').hide();
             }
             if (path) {
                 if (path.charAt(0) === "/" || path.charAt(0) === "#") {

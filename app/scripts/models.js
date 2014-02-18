@@ -824,9 +824,9 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             autofetch: false
         }],
         
-        // defaults: {
-        //     product: ''
-        // }
+        defaults: {
+            user: 'Simon'
+        }
     });
 
     return Dash;
