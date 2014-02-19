@@ -5,10 +5,20 @@ define(['dash', 'underscore'], function(Dash, _) {
     
     Dash.Template.home = _.template(
         "<hr>" +
-        "<div id='products' class='container'>" +
+        "<div class='homeContainer'>" +
+            "<div class='leftCover'></div>" +
+            "<div class='rightCover'></div>" +
+            "<div class='container'>" +
+                "<div id='products'></div>" +
+            "</div>" +
         "</div>" +
         "<hr>" +
-        "<div id='keySections' class='container'>" +
+        "<div class='homeContainer'>" +
+            "<div class='leftCover'></div>" +
+            "<div class='rightCover'></div>" +
+            "<div class='container'>" +
+                "<div id='keySections'></div>" +
+            "</div>" +
         "</div>"
     );
 
@@ -258,6 +268,12 @@ define(['dash', 'underscore'], function(Dash, _) {
         "<a class='themeText' href='#!<%-URL%>'><%-name%></a>"
     );
     
+    Dash.Template.productsArrow = _.template(
+        "<div class='productsArrow <%=left? 'left':'right'%>'>" +
+            "<img src='images/arrow_grey_rotated_<%=left? 'left':'right'%>.png'/>" + 
+        "</div>"
+    );
+    
     // <!-- admin templates -->" +
     Dash.Template.adminHome = _.template(
         "<div class='buttonContainer container'>" +
@@ -266,7 +282,12 @@ define(['dash', 'underscore'], function(Dash, _) {
             "</button>" +
         "</div>" +
         "<hr>" +
-        "<div id='products' class='container'>" +
+        "<div class='homeContainer'>" +
+            "<div class='leftCover'></div>" +
+            "<div class='rightCover'></div>" +
+            "<div class='container'>" +
+                "<div id='products'></div>" +
+            "</div>" +
         "</div>"
     );
     

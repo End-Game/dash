@@ -239,10 +239,15 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
     Dash.View.Home = Dash.View.extend({
         el: "#Home",
         template: Dash.Template.home,
+        arrowTemplate: Dash.Template.productsArrow,
 
         start: function() {
             this.model = Dash.products;
             this.productCount = 0; // possibly use for rendering products > 3
+        },
+
+        events: {
+            "click .leftCover, .rightCover": "moveProducts",
         },
 
         render: function() {
@@ -251,6 +256,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             this.model.each(function(item) {
                 that.renderProduct(item);
             }, this);
+            this.resizeContainers();
             return this;
         },
 
@@ -258,24 +264,15 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             var homeProductView = new Dash.HomeProductView({
                 model: item
             });
-            if (this.productCount < 3) {
-                this.$("#products").append(homeProductView.render().el);
-            } else {
-                //this.$("#products").after(homeProductView.render().el);
-            }
+            this.$("#products").append(homeProductView.render().el);
             this.renderKeySections(item); // render bottom row of key sections
-            this.productCount++;
         },
 
         renderKeySections: function(item) {
             var keySections = new Dash.KeySectionsView({
                 model: item
             });
-            if (this.productCount < 3) {
-                this.$("#keySections").append(keySections.render().el);
-            } else {
-                //  this.$("#keySections").after(keySections.render().el);
-            }
+            this.$("#keySections").append(keySections.render().el);
             var that = this;
             var keySectionsList = item.getKeySections();
             keySectionsList.each(function(section) {
@@ -285,6 +282,67 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                     that.renderListItem(section, "#keySections" + item.get('_id'));
                 }
             }, this);
+        },
+
+        resizeContainers: function() {
+            var productsWidth = Dash.products.length * 320;
+            this.$('#keySections, #products').width(productsWidth);
+            var that = this;
+            this.$('img').first().load(function() {
+                var fullWidth = that.$('.homeContainer').width();
+                var coverWidth = (fullWidth - 960) / 2;
+                that.$('.leftCover, .rightCover').width(coverWidth);
+                that.$('.homeContainer').each(function() {
+                    var $this = that.$(this);
+                    var height = $this.height();
+                    $this.find('.leftCover, .rightCover').css('margin-bottom', height * -1);
+                    $this.find('.leftCover, .rightCover').height(height);
+                });
+            });
+            if (Dash.products.length > 3) {
+                this.renderArrows();
+            }
+        },
+
+        renderArrows: function() {
+            this.$('.productsArrow').remove();
+            if (Dash.products.length > 3) {
+                var productsWidth = Dash.products.length * 320;
+                var marginLeft = parseFloat(this.$('#products').css('margin-left'));
+                var offset = marginLeft / -320;
+                if (marginLeft < 0) {
+                    this.$('.homeProduct:eq(' + offset + ')').before(this.arrowTemplate({
+                        left: true
+                    }));
+                }
+                if ((productsWidth + marginLeft) > 960) {
+                    this.$('.homeProduct:eq(' + (2 + offset) + ')').after(this.arrowTemplate({
+                        left: false
+                    }));
+                }
+                var that = this;
+                this.$('.productsArrow img').load(function() {
+                    var $this = that.$(this);
+                    var arrowHeight = $this.height();
+                    var height = that.$('#products').height();
+                    $this.parent().css('padding-top', (height - arrowHeight) / 2);
+                    $this.parent().css('padding-bottom', (height - arrowHeight) / 2);
+                });
+            }
+        },
+
+        moveProducts: function(e) {
+            var target = this.$(e.target);
+            var productsWidth = Dash.products.length * 320;
+            var marginLeft = parseFloat(this.$('#products').css('margin-left'));
+            if (target.hasClass('leftCover') && (marginLeft < 0)) {
+                this.$('#products, #keySections').css('margin-left', '+=320');
+                this.renderArrows();
+            }
+            if (target.hasClass('rightCover') && ((productsWidth + marginLeft) > 960)) {
+                this.$('#products, #keySections').css('margin-left', '-=320');
+                this.renderArrows();
+            }
         },
 
         renderListItem: function(item, tag) {
@@ -894,7 +952,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
 
         renderListItem: function(item) {
             var listItem;
-            if (item.get("_type") === "article" && (item.get('published')||Dash.admin)) {
+            if (item.get("_type") === "article" && (item.get('published') || Dash.admin)) {
                 listItem = new Dash.ListItem({
                     model: item
                 });

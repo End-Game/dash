@@ -54,10 +54,59 @@ div {
     vertical-align: top;
 }
 
+.homeContainer {
+    position: relative;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+.leftCover {
+    position: absolute;
+    left: 0;
+    height: 100px;
+    margin-bottom: -100px;
+    background-image: -webkit-gradient(linear,right top,left top,color-stop(1, rgba(255,255,255,1)),color-stop(0, transparent));
+    background-image: -webkit-linear-gradient(to right, rgba(255,255,255,1), transparent);
+    background-image: -moz-linear-gradient(to right, rgba(255,255,255,1), transparent);
+    background-image: -ms-linear-gradient(to right, rgba(255,255,255,1), transparent);
+    background-image: -o-linear-gradient(to right, rgba(255,255,255,1), transparent);
+}
+
+.rightCover {
+    position: absolute;
+    right: 0;
+    height: 100px;
+    margin-bottom: -100px;
+    background-image: -webkit-gradient(linear,left top,right top,color-stop(0, transparent),color-stop(1, rgba(255,255,255,1)));
+    background-image: -webkit-linear-gradient(to right, transparent, rgba(255,255,255,1));
+    background-image: -moz-linear-gradient(to right, transparent, rgba(255,255,255,1));
+    background-image: -ms-linear-gradient(to right, transparent, rgba(255,255,255,1));
+    background-image: -o-linear-gradient(to right, transparent, rgba(255,255,255,1));
+}
+
+
+.productsArrow {
+    width: 20px;
+    display: inline-block;
+}
+
+.productsArrow.left {
+    margin-left: -20px;
+}
+
+.productsArrow.right {
+    margin-right: -20px;
+}
+
+.productsArrow  img {
+    width: 20px;
+}
+
 .homeProduct {
     display: inline-block;
     width: 300px;
-    margin-right: 20px;
+    margin-left: 10px;
+    margin-right: 10px;
     margin-top: 20px;
     text-align: center;
     vertical-align: top;
@@ -930,6 +979,7 @@ header .container div p {
 header {
     position: absolute;
     top: 0;
+    min-width: 960px;
     width: 100%;
     height: 45px;
     /*vertical-align: top;*/

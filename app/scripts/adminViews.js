@@ -360,19 +360,14 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
         events: {
             "click button": "addProduct",
+            "click .leftCover, .rightCover": "moveProducts",
         },
 
         renderProduct: function(item) {
             var homeProductView = new Dash.HomeProductView({
                 model: item
             });
-            if (this.productCount < 3) {
-                this.$("#products").append(homeProductView.render().el);
-            } else {
-                // this.$("#products").after(homeProductView.render().el);
-                this.$("#products").append(homeProductView.render().el);
-            }
-            this.productCount++;
+            this.$("#products").append(homeProductView.render().el);
         },
 
         addProduct: function() {
@@ -1673,8 +1668,8 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             var list = div.parentElement;
             var children = div.parentElement.children;
             var index;
-            for(var i = 0; i<children.length; i++){
-                if(children[i]===div){
+            for (var i = 0; i < children.length; i++) {
+                if (children[i] === div) {
                     index = i;
                 }
             }
