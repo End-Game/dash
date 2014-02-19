@@ -894,7 +894,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
 
         renderListItem: function(item) {
             var listItem;
-            if (item.get("_type") === "article" && item.get('published')) {
+            if (item.get("_type") === "article" && (item.get('published')||Dash.admin)) {
                 listItem = new Dash.ListItem({
                     model: item
                 });

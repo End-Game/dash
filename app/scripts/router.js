@@ -2,7 +2,7 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
     'use strict';
     var defaultColour = '#3080C8';
     var adminMenu;
-    var menuProduct = new Dash.MenuProduct();
+    Dash.menuProduct = new Dash.MenuProduct();
     Dash.Router = Backbone.Router.extend({
         routes: {
             "*path": "find"
@@ -10,7 +10,7 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
 
         find: function(path) {
             $('#theme').html(Dash.getThemeStyleText(defaultColour));
-            $('#logo').attr('src', 'images/logo.jpg', '');
+            $('#logo').attr('src', 'images/logo.jpg');
             // console.log(window.location);
             // console.log(path);
             var loadHome = false;
@@ -18,7 +18,7 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
             if (Dash.admin) {
                 if (!adminMenu) {
                     adminMenu = new Dash.AdminMenu({
-                        model: menuProduct
+                        model: Dash.menuProduct
                     });
                 }
             } else {
@@ -53,7 +53,7 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
             } else {
                 var product = Dash.products.findProduct(pathSplit[0]);
                 if (product) {
-                    menuProduct.set('product', product);
+                    Dash.menuProduct.set('product', product);
                     $('#theme').html(Dash.getThemeStyleText(product.get('themeColour')));
                     product.on('change:logoURL', function() {
                         $('#logo').attr('src', product.get('logoURL'));

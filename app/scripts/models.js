@@ -21,14 +21,11 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             key: 'sectionJoins',
             relatedModel: 'ProductSectionJoin',
             collectionType: 'ProductSectionJoins',
-            collectionOptions: {
-                silent: false
-            },
             keyDestination: 'sections',
             autofetch: false,
             reverseRelation: {
                 key: 'product',
-                includeInJSON: true
+                includeInJSON: false
             }
         }, {
             type: Backbone.HasMany,
@@ -36,6 +33,10 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             relatedModel: 'KeySectionJoin',
             keyDestination: 'keySections',
             autofetch: false,
+            reverseRelation: {
+                key: 'product',
+                includeInJSON: false
+            }
         }],
 
         defaults: {
@@ -163,6 +164,16 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             console.log(index);
             console.log(sectionJoins);
         },
+        
+        setKeySections: function(sections){
+            var keySections = [];
+            sections.each(function(section){
+                var join = new Dash.KeySectionJoin();
+                join.set('keySection', section);
+                keySections.push(join);
+            });
+            this.get('keySectionJoins').set(keySections);
+        }
     });
 
     Dash.Products = Backbone.Collection.extend({
@@ -205,6 +216,10 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             type: Backbone.HasOne,
             key: 'keySection',
             relatedModel: 'Section',
+            reverseRelation: {
+                key: 'keyProductJoins',
+                includeInJSON: false
+            }
         }],
 
         toJSON: function() {
@@ -215,30 +230,13 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
     Dash.ProductSectionJoins = Backbone.Collection.extend({
         model: Dash.ProductSectionJoin,
 
-        initialize: function(models) {
+        initialize: function() {
             this.on('add', this.onAdd, this);
-
-            // this.on('reset', this.onReset, this);
-
-            // this.on('relational', function(){
-            //     console.log('reset');}, this);
-            // console.log('models');
-            // console.log(arguments);
-            // console.log('done');
         },
 
         onAdd: function(model) {
-            // console.log('here psj');
             model.listenTo(model.get("section"), 'newSection', model.changeSection);
         },
-
-        // onReset: function(){
-        //     console.log('reset');
-        //     this.each(function(model){
-        //         console.log(model);
-        //         model.listenTo(model.get("section"), 'newSection', model.changeSection);
-        //     });
-        // }
     });
 
     Dash.Section = Backbone.RelationalModel.extend({
