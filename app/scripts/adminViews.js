@@ -1308,10 +1308,6 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
     });
 
-    Dash.View.Modal = Dash.View.extend({
-        el: "#Modal",
-    });
-
     Dash.View.Modal.ProductSetup = Dash.View.Modal.extend({
         template: Dash.Template.productSetup,
 

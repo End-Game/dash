@@ -138,7 +138,11 @@ define(['dash', 'underscore'], function(Dash, _) {
                 "<img src='images/view_grey.png'/>" +
                 "<p class='bold'>View Other Products</p>" +
             "</div>" +
-        "</a>"
+        "</a>" +
+        "<hr>" +
+        "<button type='button' class='support themeButton'>" +
+            "<img src='images/help.png'/><p>Request Support</p>" +
+        "</button>"
     );
 
     Dash.Template.articleSideBar = _.template(
@@ -172,7 +176,8 @@ define(['dash', 'underscore'], function(Dash, _) {
             "</ul>" +
         "</div>" +
         "<button type='button' class='support themeButton'>" +
-            "<img src='images/help.png'/><p>Request Support</p></button>"
+            "<img src='images/help.png'/><p>Request Support</p>" +
+        "</button>"
     );
     
     Dash.Template.sectionSideBar = _.template(
@@ -200,13 +205,14 @@ define(['dash', 'underscore'], function(Dash, _) {
             "</ul>" +
         "</div>" +
         "<button type='button' class='support themeButton'>" +
-        "<img src='images/help.png'/><p>Request Support</p></button>"
+            "<img src='images/help.png'/><p>Request Support</p>" +
+        "</button>"
     );    
     
     Dash.Template.tagSideBar = _.template(
         "<a href='#!<%-currentProductName%>/sitemap'>" +
             "<div>" +
-                "<img src='images/sitemap.png'/>" +
+                "<img class='themeColour' src='images/view.png'/>" +
                 "<h4 class='bold'>View Full Site Map</h4>" +
             "</div>" +
         "</a>" +
@@ -271,6 +277,27 @@ define(['dash', 'underscore'], function(Dash, _) {
     Dash.Template.productsArrow = _.template(
         "<div class='productsArrow <%=left? 'left':'right'%>'>" +
             "<img src='images/arrow_grey_rotated_<%=left? 'left':'right'%>.png'/>" + 
+        "</div>"
+    );
+    
+    Dash.Template.supportModal = _.template(
+        "<div class='content'>" +
+            "<h1>Request Support</h1>" +
+            "<p style='margin-bottom:15px;'>We'd love to hear from you if you have any questions, suggestions or problems. Or just send us a note.</p>" +
+            "<div>" +
+                "<label>Your Name</label>" +
+                "<input type='text' value='' id='name' name='Name'></input>" +
+            "</div>" +
+            "<div>" +
+                "<label>Your Email Address</label>" +
+                "<input type='text' value='' id='emailAddress' name='EmailAddress'></input>" +
+            "</div>" +
+            "<div>" +
+                "<label>Your Message</label>" +
+                "<textarea id='message' name='Message'></textarea>" +
+            "</div>" +
+            "<button class='themeButton send half' type='button'><p>Send Request</p></button>" +
+            "<button class='themeButton cancel half' type='button'><p>Cancel</p></button>" +
         "</div>"
     );
     

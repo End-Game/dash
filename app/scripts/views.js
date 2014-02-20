@@ -647,11 +647,21 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
     Dash.SideBar = Backbone.View.extend({
         tagName: "div",
         className: "sideBar",
+        
+        events: {
+            'click button.support': 'openSupport'
+        },
+        
+        openSupport: function(){
+            new Dash.View.Modal.Support();
+        }
     });
 
     Dash.SideBar.Product = Dash.SideBar.extend({
         template: Dash.Template.productSideBar,
 
+        
+        
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
             var that = this;
@@ -1057,7 +1067,41 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                 this.$("li").last().append(map.render().el);
             }
         },
-
     });
+
+    Dash.View.Modal = Dash.View.extend({
+        el: "#Modal",
+    });
+    
+    Dash.View.Modal.Support = Dash.View.Modal.extend({
+        template: Dash.Template.supportModal,
+        className: 'supportModal',
+        
+        events: {
+            'click button.send': 'send',
+            'click button.cancel': 'trash',
+            'click .content': 'swallow',
+            'click': 'trash',
+        },
+        
+        render: function(){
+            this.$el.html(this.template());
+            return this;
+        },
+        
+        send: function(){
+            this.$('button.send').prop("disabled", true);
+            var hash = {};
+            hash.name = this.$('#name').val();
+            hash.emailAddress = this.$('#emailAddress').val();
+            hash.message = this.$('#message').val();
+            console.log(hash);
+            Hoist.notify('support', hash);
+            this.trash();
+        }
+        
+        
+    });
+    
     return Dash;
 });
