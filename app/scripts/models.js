@@ -223,6 +223,9 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
         }],
 
         toJSON: function() {
+            if(this.get('keySection')===null){
+                console.log(this.get('product'));
+            }
             return this.get('keySection').get('_id');
         }
     });
@@ -399,6 +402,9 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                 join.destroy();
             });
             this.get('tagJoins').each(function(join) {
+                join.destroy();
+            });
+            this.get('keyProductJoins').each(function(join) {
                 join.destroy();
             });
         },
