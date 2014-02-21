@@ -39,6 +39,7 @@ require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone
         articles: "article",
         sections: "section",
         products: "product",
+        comments: "comment",
     }, function(data) {
         app.dash.tags = new app.dash.Tags(data.tags);
         app.dash.articles = new app.dash.Sections(data.articles, {
@@ -50,10 +51,12 @@ require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone
         app.dash.products = new app.dash.Products(data.products, {
             parse: true
         });
+        app.dash.comments = new app.dash.Comments(data.comments);
         console.log(app.dash.tags);
         console.log(app.dash.articles);
         console.log(app.dash.sections);
         console.log(app.dash.products);
+        console.log(app.dash.comments);
         app.dash.sections.each(function(section) {
             if (section.get('parentJoins').length === 0 && section.get('productJoins').length === 0) {
                 Hoist.remove("section", section.get('_id'));

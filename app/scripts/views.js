@@ -311,12 +311,14 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                 var marginLeft = parseFloat(this.$('#products').css('margin-left'));
                 var offset = marginLeft / -320;
                 if (marginLeft < 0) {
-                    this.$('.homeProduct:eq(' + offset + ')').before(this.arrowTemplate({
+                    this.$('.leftCover').append(this.arrowTemplate({
+                        // this.$('.homeProduct:eq(' + offset + ')').before(this.arrowTemplate({
                         left: true
                     }));
                 }
                 if ((productsWidth + marginLeft) > 960) {
-                    this.$('.homeProduct:eq(' + (2 + offset) + ')').after(this.arrowTemplate({
+                    this.$('.rightCover').append(this.arrowTemplate({
+                        // this.$('.homeProduct:eq(' + (2 + offset) + ')').after(this.arrowTemplate({
                         left: false
                     }));
                 }
@@ -471,9 +473,92 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
         },
 
         renderDiscussion: function() {
-
+            var discussionView = new Dash.View.Discussion({
+                model: this.model
+            });
+            this.$('.discussionContainer').append(discussionView.render().el);
         }
 
+    });
+
+    Dash.View.Discussion = Backbone.View.extend({
+        template: Dash.Template.discussion,
+        commentTemplate: Dash.Template.comment,
+
+        events: {
+            'click .toggleDiscussion': 'toggleDiscussion',
+            'click .toggleAddComment': 'toggleAddComment',
+            'click .save': 'save'
+
+        },
+
+        render: function() {
+            this.$el.html(this.template());
+            this.renderComments();
+            this.$('.discussion, .addComment, .toggleDiscussion:eq(1)').hide();
+            return this;
+        },
+
+        renderComments: function() {
+            this.$('.comments').empty();
+            var comments = this.model.get('comments');
+            comments.each(this.renderComment, this);
+        },
+
+        renderComment: function(comment) {
+            this.$('.comments').append(this.commentTemplate(comment.toJSON()));
+        },
+
+        toggleDiscussion: function() {
+            this.$('.toggleDiscussion, .discussion').toggle();
+        },
+
+        toggleAddComment: function() {
+            this.$('.toggleAddComment').toggle();
+            if (Dash.admin) {
+                this.$('#author').hide();
+                this.$('#content').removeClass('bottomField');
+            }
+            this.$('.addComment').toggle();
+        },
+
+        save: function() {
+            this.$('button.save').prop("disabled", true);
+            this.$('.errorText').remove();
+            var author = this.$('#author').val();
+            var content = this.$('#content').val();
+            if (Dash.admin) {
+                author = 'Simon'; // change to use user name
+            }
+            if (!Dash.admin && !author) {
+                this.$('#author').before(Dash.Template.errorText({
+                    errorText: "You must enter a name."
+                }));
+                this.$('button.save').prop("disabled", false);
+                return;
+            }
+            if (!content) {
+                this.$('#content').before(Dash.Template.errorText({
+                    errorText: "You must enter a comment."
+                }));
+                this.$('button.save').prop("disabled", false);
+                return;
+            }
+            var date = Dash.getDateString(true);
+            var comment = new Dash.Comment({
+                section: this.model,
+                author: author,
+                content: content,
+                date: date
+            });
+            Dash.postModel('comment', comment, function() {
+                var author = this.$('#author').val('');
+                var content = this.$('#content').val('');
+                this.renderComment(comment);
+                this.toggleAddComment();
+                this.$('button.save').prop("disabled", false);
+            }, this);
+        }
     });
 
     Dash.View.Section = Dash.View.extend({
@@ -486,6 +571,9 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             this.renderSections();
             this.renderSidebar();
             this.renderBreadCrumb();
+            if(this.model.get('discussion')){
+                this.renderDiscussion();
+            }
             return this;
         },
 
@@ -530,6 +618,13 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                 crumbText = crumbText + ' > ' + this.breadCrumbTemplate(urlItems[i].toJSON());
             }
             this.$('.breadCrumb').html(crumbText);
+        },
+
+        renderDiscussion: function() {
+            var discussionView = new Dash.View.Discussion({
+                model: this.model
+            });
+            this.$('.discussionContainer').append(discussionView.render().el);
         }
 
     });
@@ -647,12 +742,12 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
     Dash.SideBar = Backbone.View.extend({
         tagName: "div",
         className: "sideBar",
-        
+
         events: {
             'click button.support': 'openSupport'
         },
-        
-        openSupport: function(){
+
+        openSupport: function() {
             new Dash.View.Modal.Support();
         }
     });
@@ -660,8 +755,6 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
     Dash.SideBar.Product = Dash.SideBar.extend({
         template: Dash.Template.productSideBar,
 
-        
-        
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
             var that = this;
@@ -1072,36 +1165,36 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
     Dash.View.Modal = Dash.View.extend({
         el: "#Modal",
     });
-    
+
     Dash.View.Modal.Support = Dash.View.Modal.extend({
         template: Dash.Template.supportModal,
-        className: 'supportModal',
-        
+
         events: {
             'click button.send': 'send',
             'click button.cancel': 'trash',
             'click .content': 'swallow',
             'click': 'trash',
         },
-        
-        render: function(){
+
+        render: function() {
             this.$el.html(this.template());
             return this;
         },
-        
-        send: function(){
+
+        send: function() {
             this.$('button.send').prop("disabled", true);
             var hash = {};
             hash.name = this.$('#name').val();
+            // hash.to = {};
+            // hash.to.address = this.$('#emailAddress').val();
             hash.emailAddress = this.$('#emailAddress').val();
             hash.message = this.$('#message').val();
             console.log(hash);
             Hoist.notify('support', hash);
             this.trash();
         }
-        
-        
+
     });
-    
+
     return Dash;
 });

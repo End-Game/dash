@@ -75,6 +75,8 @@ define(['dash', 'underscore'], function(Dash, _) {
                     "<ul id='relevantArticleList'>" +
                     "</ul>" +
                 "</div>" +
+                "<hr>" +
+                "<div class='discussionContainer'></div>" +
             "</div>" +
         "</div>"
     );
@@ -108,6 +110,8 @@ define(['dash', 'underscore'], function(Dash, _) {
             "<hr>" +
             "<ul id='children'>" +
             "</ul>" +
+            "<hr>" +
+            "<div class='discussionContainer'></div>" +
         "</div>"
     );
 
@@ -139,7 +143,7 @@ define(['dash', 'underscore'], function(Dash, _) {
                 "<p class='bold'>View Other Products</p>" +
             "</div>" +
         "</a>" +
-        "<hr>" +
+       // "<hr>" +
         "<button type='button' class='support themeButton'>" +
             "<img src='images/help.png'/><p>Request Support</p>" +
         "</button>"
@@ -244,7 +248,10 @@ define(['dash', 'underscore'], function(Dash, _) {
                 "<img src='images/view_grey.png'/>" +
                 "<p class='bold'>View Other Products</p>" +
             "</div>" +
-        "</a>"
+        "</a>" +
+        "<button type='button' class='support themeButton'>" +
+            "<img src='images/help.png'/><p>Request Support</p>" +
+        "</button>"
     );
 
     Dash.Template.siteMap = _.template(
@@ -276,12 +283,12 @@ define(['dash', 'underscore'], function(Dash, _) {
     
     Dash.Template.productsArrow = _.template(
         "<div class='productsArrow <%=left? 'left':'right'%>'>" +
-            "<img src='images/arrow_grey_rotated_<%=left? 'left':'right'%>.png'/>" + 
+            "<img src='images/<%=left? 'left':'right'%>_arrow.png'/>" + 
         "</div>"
     );
     
     Dash.Template.supportModal = _.template(
-        "<div class='content'>" +
+        "<div class='content supportModal'>" +
             "<h1>Request Support</h1>" +
             "<p style='margin-bottom:15px;'>We'd love to hear from you if you have any questions, suggestions or problems. Or just send us a note.</p>" +
             "<div>" +
@@ -299,6 +306,37 @@ define(['dash', 'underscore'], function(Dash, _) {
             "<button class='themeButton send half' type='button'><p>Send Request</p></button>" +
             "<button class='themeButton cancel half' type='button'><p>Cancel</p></button>" +
         "</div>"
+    );
+    
+    // Dash.Template.discussionHidden = _.template("");
+    
+    Dash.Template.discussion = _.template(
+        "<div class='toggleDiscussion'>" +
+            "<img class='themeColour' src='images/discussion.png'>" +
+            "<h4 class='bold'>View Discussions</h4>" +
+        "</div>" +
+        "<div class='toggleDiscussion'>" +
+            "<img class='themeColour' src='images/hide_discussion.png'>" +
+            "<h4 class='bold'>Hide Discussions</h4>" +
+        "</div>" +
+        "<div class='discussion'>" +
+            "<div class='comments'></div>" +
+            "<div class='toggleAddComment'>" +
+                "<img src='images/discussion_grey.png'>" +
+                "<p class='bold'>Add Comment</p>" +
+            "</div>" +
+            "<div class='addComment'>" +
+                "<input type='text' id='author' class='topField' placeholder='Your Name...' />" +
+                "<textarea id='content' class='bottomField' placeholder='Your Comment...'></textarea>" +
+                "<button class='themeButton save half' type='button'><p>Save</p></button>" +
+            "</div>" +
+        "</div>"  
+    );
+    
+    Dash.Template.comment = _.template(
+        "<p><%-content%></p>" +
+        "<p class='dateAuthor'><%-date%> // <%-author%>" +
+        "<hr>"
     );
     
     // <!-- admin templates -->" +
@@ -329,6 +367,7 @@ define(['dash', 'underscore'], function(Dash, _) {
                 "</div>" +
                 "<p><%-content%></p>" +
                 "<hr>" +
+                "<div class='discussionContainer'></div>" +
             "</div>" +
         "</div>"
     );
@@ -373,9 +412,6 @@ define(['dash', 'underscore'], function(Dash, _) {
             "<h4>Choose Primary Colour</h4>" +
             // insert drop down for colour
             "<input type='text' class='primary .smallText' placeholder='Enter Hex Code' />" +
-            "<h4>Choose Secondary Colour</h4>" +
-            // insert drop down for colour
-            "<input type='text' class='secondary .smallText' placeholder='Enter Hex Code' />" +
             "<hr>" +
             "<label>" +
                 "<input id='discussion' class='checkbox' type='checkbox'>Enable Discussion" + 
@@ -414,8 +450,7 @@ define(['dash', 'underscore'], function(Dash, _) {
             "</div>" +
             "<hr>" +
             "<input type='text' id='title' class='topField' placeholder='Enter Title of Article...' />" +
-            "<textarea id='content' class='bottomField' placeholder='Enter Article Content...'>" +
-            "</textarea>" +
+            "<textarea id='content' class='bottomField' placeholder='Enter Article Content...'></textarea>" +
             "<hr>" +
               "<h3>Preview</h3>" +
             "<div class='preview'></div>" +
@@ -513,7 +548,7 @@ define(['dash', 'underscore'], function(Dash, _) {
         "<button type='button' class='newArticle'><img src='images/article_grey.png'/><p>Add New Article</p></button>" +
         "<button type='button' class='settings'><img src='images/settings.png'/><p>Product Settings</p></button>" +
         "<button type='button' class='personalise'><img src='images/personalise.png'/><p>Personalise</p></button>" +
-        "<button type='button' class='keySections'><img src='images/.png'/><p>Edit Key Sections</p></button>"
+        "<button type='button' class='keySections'><img src='images/edit.png'/><p>Edit Key Sections</p></button>"
     );
     
     Dash.Template.adminArticleSideBar = _.template(
@@ -697,4 +732,5 @@ define(['dash', 'underscore'], function(Dash, _) {
             "<button class='themeButton cancel half' type='button'><p>Cancel</p></button>" +
         "</div>"
     );
+    
 });

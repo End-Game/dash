@@ -42,7 +42,6 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
         defaults: {
             shortDescription: "",
             themeColour: "#3080C8",
-            secondaryTheme: "#3080C8",
             discussion: false,
             logoURL: "",
             _type: "product"
@@ -164,10 +163,10 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             console.log(index);
             console.log(sectionJoins);
         },
-        
-        setKeySections: function(sections){
+
+        setKeySections: function(sections) {
             var keySections = [];
-            sections.each(function(section){
+            sections.each(function(section) {
                 var join = new Dash.KeySectionJoin();
                 join.set('keySection', section);
                 keySections.push(join);
@@ -223,7 +222,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
         }],
 
         toJSON: function() {
-            if(this.get('keySection')===null){
+            if (this.get('keySection') === null) {
                 console.log(this.get('product'));
             }
             return this.get('keySection').get('_id');
@@ -483,18 +482,6 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             reverseRelation: {
                 key: 'article',
                 includeInJSON: true
-            }
-        }, {
-            type: Backbone.HasMany,
-            key: 'comments',
-            relatedModel: 'ArticleComment',
-            collectionType: 'Comments',
-            includeInJSON: '_id',
-            keyDestination: 'comments',
-            autofetch: false,
-            reverseRelation: {
-                key: 'article',
-                includeInJSON: false
             }
         }],
 
@@ -792,42 +779,42 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
         }
     });
 
-    Dash.ArticleComment = Backbone.RelationalModel.extend({
+    Dash.Comment = Backbone.RelationalModel.extend({
         idAttribute: "_id",
 
         relations: [{
-            type: Backbone.HasMany,
-            key: 'replies',
-            relatedModel: 'ArticleComment',
-            collectionType: 'Comments',
+            type: Backbone.HasOne,
+            key: 'section',
+            relatedModel: 'Section',
             includeInJSON: '_id',
-            keyDestination: 'replies',
             autofetch: false,
             reverseRelation: {
-                key: 'comment',
-                includeInJSON: false
+                key: 'comments',
+                includeInJSON: false,
+                collectionType: 'Comments'
             }
         }],
 
         defaults: {
             author: '',
-            content: ''
+            content: '',
+            date: ''
         }
     });
 
     Dash.Comments = Backbone.Collection.extend({
-        model: Dash.ArticleComment
+        model: Dash.Comment
     });
-    
+
     Dash.MenuProduct = Backbone.RelationalModel.extend({
-        
+
         relations: [{
             type: Backbone.HasOne,
             key: 'product',
             relatedModel: 'Product',
             autofetch: false
         }],
-        
+
         defaults: {
             user: 'Simon'
         }

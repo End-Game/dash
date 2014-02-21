@@ -135,21 +135,6 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         };
     };
 
-    Dash.getDateString = function() {
-        var date = new Date();
-        var day = date.getDate();
-        var month = date.getMonth() + 1; //starts from 0
-        var year = date.getFullYear().toString();
-        year = year.substring(year.length - 2); // make to 2 digits
-        if (day < 10) {
-            day = '0' + day;
-        }
-        if (month < 10) {
-            month = '0' + month;
-        }
-        return day + '/' + month + '/' + year;
-    };
-
     Dash.postModel = function(type, model, success, error, context) {
         if (typeof error !== "function") {
             context = error;
@@ -1429,7 +1414,6 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
             this.$('.primary').val(this.model.get('themeColour'));
-            this.$('.secondary').val(this.model.get('secondaryTheme'));
             this.$('#discussion').prop("checked", this.model.get('discussion'));
             this.$(':file').hide();
             return this;
@@ -1439,12 +1423,8 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             this.$('button.save').prop("disabled", true);
             this.$('.errorText').remove();
             var primary = this.$('.primary').val();
-            var secondary = this.$('.secondary').val();
             if (primary) {
                 this.model.set('themeColour', primary);
-            }
-            if (secondary) {
-                this.model.set('secondaryTheme', secondary);
             }
             this.model.set('discussion', this.$('#discussion').is(':checked'));
             var file = this.$(':file')[0].files[0];

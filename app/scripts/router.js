@@ -99,6 +99,7 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                 if (section) {
                     section.set("currentProductName", product.get("name"));
                     section.set('URL', path);
+                    section.set('discussion', product.get('discussion'));
                     if (section.get("_type") === "article") {
                         if (section.get('published')) {
                             new Dash.View.Article({
@@ -140,8 +141,8 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                 if (section) {
                     section.set("currentProductName", product.get("name"));
                     section.set('URL', path);
+                    section.set('discussion', product.get('discussion'));
                     if (section.get("_type") === "article") {
-                        section.set('discussion', product.get('discussion'));
                         new Dash.View.Admin.Article({
                             model: section
                         });
