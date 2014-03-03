@@ -1,9 +1,10 @@
-/* font colours: 77 #4d4d4d 102 #666666 128 #808080 153 #999999 179 #b3b3b3 */
+/* font colours: 77 #4d4d4d 102 #666666 128 #808080 153 #999999 179 #b3b3b3 204 #cccccc 221 #dddddd 230 #e6e6e6*/
 
 * {
     font-family: helvetica, sans-serif;
     color: #808080;
-    font-weight: 100;}
+    font-weight: 100;
+}
 
 h1, h2, h3, h4, h5, h6{
     color: #3080C8;
@@ -14,11 +15,10 @@ h1 {
     font-size: 2em;
 }
 
-h3 {
-    font-size: 1.5em;
-}
 .container {
     width: 960px;
+    padding-left: 10px;
+    padding-right: 10px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -47,7 +47,7 @@ h3 {
     box-sizing: border-box;
     -moz-box-sizing:border-box; /* Firefox */
     display: inline-block;
-    border: 2px solid #ededed;
+    border: 2px solid #dddddd;
     width: 300px;
     margin-top: 5px;
     border-radius: 5px;
@@ -63,39 +63,50 @@ div {
     vertical-align: top;
 }
 
+#Home hr{
+    min-width: 960px;
+    margin-left: -10px;
+}
+
 .homeContainer {
     position: relative;
-    width: 100%;
+    /*width: 100%;*/
     overflow-x: hidden;
+    min-width: 960px;
 }
 
 .leftCover {
     position: absolute;
     left: 0;
-    height: 100px;
+    /*height: 100px;*/
+    min-width: 100px;
     margin-bottom: -100px;
-    background-image: -webkit-gradient(linear,right top,left top,color-stop(1, rgba(255,255,255,1)),color-stop(0, transparent));
-    background-image: -webkit-linear-gradient(to right, rgba(255,255,255,1), transparent);
-    background-image: -moz-linear-gradient(to right, rgba(255,255,255,1), transparent);
-    background-image: -ms-linear-gradient(to right, rgba(255,255,255,1), transparent);
-    background-image: -o-linear-gradient(to right, rgba(255,255,255,1), transparent);
+    /*z-index: 500;*/
+    background-image: -webkit-gradient(linear,right top,left top,color-stop(1, rgba(255,255,255,1)),color-stop(0, rgba(255,255,255,0)));
+    background-image: -webkit-linear-gradient(to right, rgba(255,255,255,1), rgba(255,255,255,0));
+    background-image: -moz-linear-gradient(to right, rgba(255,255,255,1), rgba(255,255,255,0));
+    background-image: -ms-linear-gradient(to right, rgba(255,255,255,1), rgba(255,255,255,0));
+    background-image: -o-linear-gradient(to right, rgba(255,255,255,1), rgba(255,255,255,0));
+    background-image: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,1));
 }
 
 .rightCover {
     position: absolute;
     right: 0;
-    height: 100px;
+    /*height: 100px;*/
     margin-bottom: -100px;
-    background-image: -webkit-gradient(linear,left top,right top,color-stop(0, transparent),color-stop(1, rgba(255,255,255,1)));
-    background-image: -webkit-linear-gradient(to right, transparent, rgba(255,255,255,1));
-    background-image: -moz-linear-gradient(to right, transparent, rgba(255,255,255,1));
-    background-image: -ms-linear-gradient(to right, transparent, rgba(255,255,255,1));
-    background-image: -o-linear-gradient(to right, transparent, rgba(255,255,255,1));
+    min-width: 100px;
+    /*z-index: 500;*/
+    background-image: -webkit-gradient(linear,left top,right top,color-stop(0, rgba(255,255,255,0)),color-stop(1, rgba(255,255,255,1)));
+    background-image: -webkit-linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,1));
+    background-image: -moz-linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,1));
+    background-image: -ms-linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,1));
+    background-image: -o-linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,1));
+    background-image: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,1));
 }
 
 
 .productsArrow {
-    /*width: 20px;*/
     display: inline-block;
 }
 
@@ -104,7 +115,7 @@ div {
     float: right;
     position: absolute;
     right: 0;
-    z-index: 1000;
+    /*z-index: 1000;*/
 }
 
 .productsArrow.right {
@@ -112,12 +123,12 @@ div {
     float: left;
     position: absolute;
     left: 0;
-    z-index: 1000;
+    /*z-index: 1000;*/
 }
 
-.productsArrow  img {
+/*.productsArrow  img {
     width: 20px;
-}
+}*/
 
 .homeProduct {
     display: inline-block;
@@ -177,7 +188,7 @@ div {
 }
 
 hr {
-    border: 1px solid #ededed;
+    border: 1px solid #e6e6e6;
     height: 0px;
     margin-top: 20px;
     margin-bottom: 20px;
@@ -195,8 +206,8 @@ ul {
 }
 
 .keySections ul {
-    border-right: 2px solid #ededed;
-    border-right: 2px solid #ededed;
+    border-right: 2px solid #dddddd;
+    border-right: 2px solid #dddddd;
 }
 
 .small {
@@ -220,6 +231,10 @@ h4.bold {
     margin-top: 3px;
     margin-bottom: 0px;
     vertical-align: top;
+}
+
+.sideBar p.bold {
+    color: #999999;;
 }
 
 .discussionContainer img {
@@ -263,6 +278,18 @@ p.bold {
     text-align: center;
 }
 
+li {
+    color: #b3b3b3;
+}
+
+li > a{
+    color: #b3b3b3;
+}
+
+.map .bold > a{
+    color: #808080;
+}
+
 .bold > a {
     font-weight: normal;
 }
@@ -281,7 +308,7 @@ div > .bold {
 
 #SiteMap .map{
     display: inline-block;
-    border: 2px solid #ededed;
+    border: 2px solid #dddddd;
     margin-top: 7px;
     border-radius: 5px;
     background-color: #fcfcfc;
@@ -308,7 +335,7 @@ div > .bold {
    /* margin-right: -1px;*/
     margin-bottom: -2px;
     border: none;
-   /* border: 1px solid #ededed;*/
+   /* border: 1px solid #e6e6e6;*/
 }
 
 button img {
@@ -334,6 +361,7 @@ button p {
     margin-bottom: 10px;
     font-size: 16px;
     vertical-align: top;
+    color: #999999;
 }
 
 #Home button img {
@@ -354,16 +382,16 @@ button p {
 button {
     border-radius: 5px;
     font-size: 16px;
-    border: 1px solid #ededed;
+    border: 1px solid #e6e6e6;
     width: 100%;
     text-shadow: 0px 1px 0px rgba(0,0,0,0.4);
     -webkit-box-shadow: inset 0px 1px 3px rgba(0, 0, 0, 0.148438);
     -moz-box-shadow: inset 0px 1px 3px rgba(0, 0, 0, 0.148438);
     box-shadow: inset 0px 1px 3px rgba(0, 0, 0, 0.148438);
-    background: #ededed;
-    background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#ededed));
-    background: -moz-linear-gradient(top,  #ffffff,  #ededed);
-    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr="#ffffff", endColorstr="#ededed");
+    background: #e6e6e6;
+    background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#e6e6e6));
+    background: -moz-linear-gradient(top,  #ffffff,  #e6e6e6);
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr="#ffffff", endColorstr="#e6e6e6");
 }
 
 .modal {
@@ -406,7 +434,7 @@ input, textarea {
     box-sizing: border-box;
     -webkit-box-sizing: border-box;
     -moz-box-sizing:border-box; /* Firefox */
-    border: 2px solid #ededed;
+    border: 2px solid #dddddd;
     font-size: 16px;
     background-color: #fcfcfc;
     padding: 10px 15px;
@@ -481,7 +509,7 @@ textarea {
 
 #menu p {
     display: inline-block;
-    color: #d0d0d0;
+    color: #b3b3b3;
     width: 75px;
     font-size: 12px;
     margin-top: 0px;
@@ -502,6 +530,11 @@ textarea {
     background-color: #ffffff;
 }
 
+#newArticleSideBar .treePlace p, #newArticleSideBar label, #newArticleSideBar input, #newArticleSideBar input[placeholder]{
+    color: #666666;
+}
+
+
 .uploadLogo {
     text-align: center;
 }
@@ -510,13 +543,13 @@ textarea {
     height: 24px;
 }
 
-.off#ffffff {
+.offwhite {
     background: #fcfcfc;
 }
 
 .treePlace > div {
     display: inline-block;
-    border-left: 2px solid #ededed;
+    border-left: 2px solid #dddddd;
     height: 100%;
     margin-top: 0px;
     width: 40px;
@@ -549,7 +582,7 @@ div.treePlace {
     border-radius: 5px;
     background-color: #ffffff;
     display: block;
-    border: 2px solid #ededed;
+    border: 2px solid #dddddd;
   /*  height: auto;*/
     margin-left: 0px;
     margin bottom:5px;
@@ -587,7 +620,7 @@ div.treePlace > p {
     box-sizing: border-box;
     -webkit-box-sizing: border-box;
     -moz-box-sizing:border-box; /* Firefox */
-    border: 2px solid #ededed;
+    border: 2px solid #dddddd;
     background-color: #ffffff;
     border-radius: 5px;
     width: 120px;
@@ -610,7 +643,7 @@ div.treePlace > p {
     height: 100%;
     border-radius: 5px 0px 0px 5px;
     margin-left: -2px;
-    margin-top: -1.5px;
+    margin-top: -2px;
     margin-bottom: -2px;
     border-width: 2px;
     border-style: solid;
@@ -676,7 +709,7 @@ section > .twoThird > hr:first-of-type {
     font-size: 11px;
     margin-top: 4px;
     margin-bottom: 6px;
-    color: #d0d0d0;
+    color: #b3b3b3;
     font-weight: 500;
 }
 
@@ -686,7 +719,7 @@ section > .twoThird > hr:first-of-type {
 }
 
 .preview{
-    border: 2px solid #ededed;
+    border: 2px solid #dddddd;
     border-radius: 5px;
     padding: 10px;
 }
@@ -860,10 +893,10 @@ fieldset {
 }
 
 .lightText{
-    color: #d0d0d0;
+    color: #b3b3b3;
 }
 
-.map h3 {
+.map h2 {
     margin-bottom: 0px;
     font-weight: 400;
 }
@@ -902,7 +935,7 @@ fieldset {
     font-size: 12px;
     text-align: center;
     display: inline-block;
-    color: #d0d0d0;
+    color: #cccccc;
 }
 
 .toggleMap img {
@@ -1033,9 +1066,9 @@ header .container > p{
 }
 
 html, body{
-   margin:0;
-   padding:0;
-   height:100%;
+   margin: 0;
+   padding: 0;
+   height: 100%;
 }
 
 #wrapper{
@@ -1049,13 +1082,14 @@ html, body{
 }
 
 footer {
-    border-top: 2px solid #ededed;
+    border-top: 2px solid #dddddd;
     font-size: 11px;
     background-color: #fcfcfc;
     position: absolute;
     bottom: 0;
     height: 40px;
     width: 100%;
+    min-width: 960px;
 }
 
 footer .container {

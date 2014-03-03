@@ -148,10 +148,6 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                 }
             }
             var that = this;
-            var sectionJoin = new Dash.ProductSectionJoin({
-                section: child,
-                product: that
-            });
             if (index === undefined) {
                 index = sectionJoins.length;
             }
@@ -160,8 +156,6 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             }), {
                 at: index
             });
-            console.log(index);
-            console.log(sectionJoins);
         },
 
         setKeySections: function(sections) {
@@ -177,7 +171,8 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
 
     Dash.Products = Backbone.Collection.extend({
         model: Dash.Product,
-
+        comparator: '_createdDate',
+        
         findProduct: function(name) {
             for (var i = 0; i < this.models.length; i++) {
                 if (this.at(i).get('name').equalsIgnoreUrl(name)) {
@@ -377,9 +372,11 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             var urls = [];
             _.each(this.get('productJoins').pluck('product'), function(product) {
                 urls.push((product.get('name') + '/' + this.get('name') + '/' + toHere));
+                console.log('product ' + urls);
             }, this);
             _.each(this.get('parentJoins').pluck('parent'), function(section) {
                 urls = urls.concat(section.getAllUrls((this.get('name') + '/' + toHere)));
+                console.log('section ' + urls);
             }, this);
             var i;
             if (!toHere) {

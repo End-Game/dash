@@ -6,16 +6,32 @@ define(['dash', 'underscore'], function(Dash, _) {
     Dash.Template.home = _.template(
         "<hr>" +
         "<div class='homeContainer'>" +
-            "<div class='leftCover'></div>" +
-            "<div class='rightCover'></div>" +
+            "<div class='leftCover'>" +
+                "<div class='productsArrow left'>" +
+                    "<img src='images/left_arrow.png'/>" + 
+                "</div>" +
+            "</div>" +
+            "<div class='rightCover'>" +
+                "<div class='productsArrow right'>" +
+                    "<img src='images/right_arrow.png'/>" + 
+                "</div>" +
+            "</div>" +
             "<div class='container'>" +
                 "<div id='products'></div>" +
             "</div>" +
         "</div>" +
         "<hr>" +
         "<div class='homeContainer'>" +
-            "<div class='leftCover'></div>" +
-            "<div class='rightCover'></div>" +
+            "<div class='leftCover'>" +
+                "<div class='productsArrow left'>" +
+                    "<img src='images/left_arrow.png'/>" + 
+                "</div>" +
+            "</div>" +
+            "<div class='rightCover'>" +
+                "<div class='productsArrow right'>" +
+                    "<img src='images/right_arrow.png'/>" + 
+                "</div>" +
+            "</div>" +
             "<div class='container'>" +
                 "<div id='keySections'></div>" +
             "</div>" +
@@ -29,7 +45,7 @@ define(['dash', 'underscore'], function(Dash, _) {
                 "<img src='<%-logoURL%>'/>" +
             "</div>" +
         "</a>" +
-        "<h3><%-name%></h3>" +
+        "<h2><%-name%></h2>" +
         "<p><%-shortDescription%></p>"
     );
 
@@ -47,12 +63,12 @@ define(['dash', 'underscore'], function(Dash, _) {
             "<p><%-description%></p>" +
             "<hr>" +
             "<div class='inlineDiv half' id='faqs'>" +
-                "<h3>FAQ&#39;s</h3>" +
+                "<h2>FAQ&#39;s</h2>" +
                 "<ul id='faqList'>" +
                 "</ul>" +
             "</div>" +
             "<div class='inlineDiv half' id='howDoIs'>" +
-                "<h3>How Do I&#39;s</h3>" +
+                "<h2>How Do I&#39;s</h2>" +
                 "<ul id='howDoIList'>" +
                 "</ul>" +
             "</div>" +
@@ -95,7 +111,7 @@ define(['dash', 'underscore'], function(Dash, _) {
     );
     
     Dash.Template.searchResult = _.template(
-        "<a href='<%-link%>'><h3><%-htmlTitle%></h3></a>" +
+        "<a href='<%-link%>'><h2><%-htmlTitle%></h2></a>" +
         "<p><%-htmlSnippet%></p>"
     );
     
@@ -348,8 +364,16 @@ define(['dash', 'underscore'], function(Dash, _) {
         "</div>" +
         "<hr>" +
         "<div class='homeContainer'>" +
-            "<div class='leftCover'></div>" +
-            "<div class='rightCover'></div>" +
+            "<div class='leftCover'>" +
+                "<div class='productsArrow left'>" +
+                    "<img src='images/left_arrow.png'/>" + 
+                "</div>" +
+            "</div>" +
+            "<div class='rightCover'>" +
+                "<div class='productsArrow right'>" +
+                    "<img src='images/right_arrow.png'/>" + 
+                "</div>" +
+            "</div>" +
             "<div class='container'>" +
                 "<div id='products'></div>" +
             "</div>" +
@@ -452,7 +476,7 @@ define(['dash', 'underscore'], function(Dash, _) {
             "<input type='text' id='title' class='topField' placeholder='Enter Title of Article...' />" +
             "<textarea id='content' class='bottomField' placeholder='Enter Article Content...'></textarea>" +
             "<hr>" +
-              "<h3>Preview</h3>" +
+              "<h2>Preview</h2>" +
             "<div class='preview'></div>" +
             "<button class='half offwhite fullPreview' type='button'>" +
                 "<img src='images/view_grey.png'><p>View Full Preview</p>" +
@@ -677,17 +701,17 @@ define(['dash', 'underscore'], function(Dash, _) {
     
     Dash.Template.adminMapListHeader = _.template(
         '<div>' + 
-            '<div><h3>Article</h3></div>' +
-            '<div><h3>Section</h3></div>' +
-            '<div><h3>Status</h3></div>' +
+            '<div><h2>Article</h2></div>' +
+            '<div><h2>Section</h2></div>' +
+            '<div><h2>Status</h2></div>' +
             '<hr>' +
         '</div>'
     );
     
     Dash.Template.mapListHeader = _.template(
         '<div>' + 
-            '<div><h3>Article</h3></div>' +
-            '<div><h3>Section</h3></div>' +
+            '<div><h2>Article</h2></div>' +
+            '<div><h2>Section</h2></div>' +
             '<hr>' +
         '</div>'
     );

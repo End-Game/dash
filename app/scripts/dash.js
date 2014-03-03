@@ -30,11 +30,12 @@ define(function() {
             if (monthString) {
                 return day + ' ' + months[month] + ' ' + year;
             }
+            month = month + 1;
             year = year.substring(year.length - 2); // make to 2 digits
             if (month < 10) {
                 month = '0' + month;
             }
-            return day + '/' + (month + 1) + '/' + year;
+            return day + '/' + month + '/' + year;
         }
     };
 });

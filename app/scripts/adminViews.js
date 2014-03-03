@@ -130,7 +130,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 var section = product.findSection(pathSplit.slice(1));
                 return this.addPlace(product, url, section);
             } else {
-                return this.sections[index];
+                return index;
             }
         };
     };
@@ -234,6 +234,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
         events: {
             'click .logout': 'logout',
+            'click .arrow': 'toggleProductMenu',
             'mouseenter .productSelect': 'productMenu',
             'mouseleave .productSelect': 'removeProductMenu',
             'click .productSelect p': 'productNavigate',
@@ -264,6 +265,14 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 this.removeProductMenu();
                 Dash.router.navigate(productURL);
                 Dash.router.find(productURL);
+            }
+        },
+
+        toggleProductMenu: function(e) {
+            if (this.$('#productMenu li').length) {
+                this.removeProductMenu(e);
+            } else {
+                this.productMenu(e);
             }
         },
 
@@ -339,6 +348,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             this.model = Dash.products;
             this.productCount = 0; // possibly use for rendering products when > 3
             Dash.products.on("add", this.render, this);
+            $(window).resize($.proxy(this.windowResize, this));
         },
 
         events: {
@@ -435,25 +445,22 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
             //this.$('h1').first().after(this.mapListToggleTemplate());
+            this.$('.toggle' + (this.isList ? 'List' : 'Map')).addClass('themeButton');
+            this.$('.toggle' + (this.isList ? 'List' : 'Map') + ' img').attr('src', 'images/' + (this.isList ? 'list' : 'map') + '_white.png');
+            this.$('.toggle' + (this.isList ? 'Map' : 'List') + ' img').attr('src', 'images/' + (this.isList ? 'map' : 'list') + '_grey.png');
             if (this.model.get('sectionJoins').length) {
                 var map;
                 if (this.isList) {
                     this.$('.map').addClass('admin');
                     this.$('.map').append(this.listHeaderTemplate());
-                    this.$('.toggle > div').last().addClass('themeButton');
                     map = new Dash.SiteMap.AdminList({
                         model: this.model
                     });
-                    this.$('.toggleMap img').attr('src', 'images/map_grey.png');
-                    this.$('.toggleList img').attr('src', 'images/list_white.png');
                     this.$('.map').append(map.render().$(' > div'));
                 } else {
-                    this.$('.toggle > div').first().addClass('themeButton');
                     map = new Dash.SiteMap.AdminMap({
                         model: this.model
                     });
-                    this.$('.toggleMap img').attr('src', 'images/map_white.png');
-                    this.$('.toggleList img').attr('src', 'images/list_grey.png');
                     this.$('.map').append(map.render().el);
                 }
                 this.$('.map').append(Dash.Template.siteMapSetPublished());

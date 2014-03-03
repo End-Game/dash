@@ -243,7 +243,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
 
         start: function() {
             this.model = Dash.products;
-            this.productCount = 0; // possibly use for rendering products > 3
+            $(window).resize($.proxy(this.windowResize, this));
         },
 
         events: {
@@ -282,14 +282,27 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                     that.renderListItem(section, "#keySections" + item.get('_id'));
                 }
             }, this);
+            if(!keySections.$('li').length){
+                keySections.$el.empty();
+            }
         },
 
         resizeContainers: function() {
             var productsWidth = Dash.products.length * 320;
             this.$('#keySections, #products').width(productsWidth);
             var that = this;
+            var fullWidth = $(window).width();
+            var coverWidth = (fullWidth - 960) / 2;
+            this.$('.leftCover, .rightCover').width(coverWidth);
+            this.$('.homeContainer').each(function() {
+                var $this = that.$(this);
+                var height = $this.height();
+                $this.find('.leftCover, .rightCover').css('margin-bottom', height * -1);
+                $this.find('.leftCover, .rightCover').height(height);
+            });
+
             this.$('img').first().load(function() {
-                var fullWidth = that.$('.homeContainer').width();
+                var fullWidth = $(window).width();
                 var coverWidth = (fullWidth - 960) / 2;
                 that.$('.leftCover, .rightCover').width(coverWidth);
                 that.$('.homeContainer').each(function() {
@@ -299,34 +312,54 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                     $this.find('.leftCover, .rightCover').height(height);
                 });
             });
-            if (Dash.products.length > 3) {
+            this.$('.leftCover .rightCover').hide();
+            // if (Dash.products.length > 3) {
                 this.renderArrows();
-            }
+            // }
         },
-
+        
+        windowResize: function(){
+            var that = this;
+            var fullWidth = $(window).width();
+            var coverWidth = (fullWidth - 960) / 2;
+            this.$('.leftCover, .rightCover').width(coverWidth);
+            this.$('.homeContainer').each(function() {
+                var $this = that.$(this);
+                var height = $this.height();
+                $this.find('.leftCover, .rightCover').css('margin-bottom', height * -1);
+                $this.find('.leftCover, .rightCover').height(height);
+            });
+        },
+        
         renderArrows: function() {
-            this.$('.productsArrow').remove();
+            this.$('.leftCover .rightCover').hide();
             if (Dash.products.length > 3) {
                 var productsWidth = Dash.products.length * 320;
                 var marginLeft = parseFloat(this.$('#products').css('margin-left'));
                 var offset = marginLeft / -320;
                 if (marginLeft < 0) {
-                    this.$('.leftCover').append(this.arrowTemplate({
-                        // this.$('.homeProduct:eq(' + offset + ')').before(this.arrowTemplate({
-                        left: true
-                    }));
+                    this.$('.leftCover').show();
+                    // this.$('.leftCover').append(this.arrowTemplate({
+                    //     // this.$('.homeProduct:eq(' + offset + ')').before(this.arrowTemplate({
+                    //     left: true
+                    // }));
+                } else {
+                    this.$('.leftCover').hide();
                 }
                 if ((productsWidth + marginLeft) > 960) {
-                    this.$('.rightCover').append(this.arrowTemplate({
-                        // this.$('.homeProduct:eq(' + (2 + offset) + ')').after(this.arrowTemplate({
-                        left: false
-                    }));
+                    this.$('.rightCover').show();
+                    // this.$('.rightCover').append(this.arrowTemplate({
+                    //     // this.$('.homeProduct:eq(' + (2 + offset) + ')').after(this.arrowTemplate({
+                    //     left: false
+                    // }));
+                } else {
+                    this.$('.rightCover').hide();
                 }
                 var that = this;
                 this.$('.productsArrow img').load(function() {
                     var $this = that.$(this);
-                    var arrowHeight = $this.height();
-                    var height = that.$('#products').height();
+                    var arrowHeight = 50;
+                    var height = $this.parents('.homeContainer').height();
                     $this.parent().css('padding-top', (height - arrowHeight) / 2);
                     $this.parent().css('padding-bottom', (height - arrowHeight) / 2);
                 });
@@ -334,7 +367,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
         },
 
         moveProducts: function(e) {
-            var target = this.$(e.target);
+            var target = this.$(e.currentTarget);
             var productsWidth = Dash.products.length * 320;
             var marginLeft = parseFloat(this.$('#products').css('margin-left'));
             if (target.hasClass('leftCover') && (marginLeft < 0)) {
