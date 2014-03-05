@@ -64,6 +64,9 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             '}' +
             selector + '#productMenu li:hover{' +
             'background: ' + colour + ';' +
+            '}' +
+            selector + '.map .bold > a.themeText {' +
+            'color: ' + colour + ';' +
             '}';
     };
 
@@ -719,7 +722,6 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 name: name,
                 content: content,
                 type: type,
-                _type: 'article',
                 date: date,
                 published: published
             });
@@ -811,7 +813,6 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 name: name,
                 content: content,
                 type: type,
-                _type: 'article',
                 date: date,
                 currentProductName: "",
             });
@@ -1246,20 +1247,26 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         events: {
             'click button.newSection': 'newSection',
             'click button.newArticle': 'newArticle',
+            'click button.editSection': 'editSection'
         },
 
         newSection: function() {
-            var that = this;
             var product = this.model.getProduct(undefined, true);
             var modal = new Dash.View.Modal.NewSection({
                 model: product
             });
         },
 
+        editSection: function() {
+            var modal = new Dash.View.Modal.NewSection({
+                model: this.model
+            });
+        },
+
         newArticle: function() {
             Dash.router.navigate("newArticle");
             new Dash.View.Admin.NewArticle();
-        },
+        }
 
     });
 
@@ -1460,7 +1467,17 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
     Dash.View.Modal.NewSection = Dash.View.Modal.extend({
         template: Dash.Template.newSection,
-
+        
+        start: function(){
+            if(this.model.get('_type')=='section'){
+                var url = this.model.get('URL').split('/');
+                url.pop();
+                var oldTreePlace = this.model.getUrlItems(url);
+                this.treePlace = oldTreePlace[oldTreePlace.length - 1];
+                console.log(this.treePlace);
+            }
+        },
+        
         events: {
             'click button.save': 'save',
             'click button.cancel': 'trash',
@@ -1471,6 +1488,10 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
         render: function() {
             this.$el.html(this.template());
+            if (this.model.get('_type') === 'section') {
+                this.$('#name').val(this.model.get('name'));
+                this.$('#content').val(this.model.get('content'));
+            }
             this.$el.find('div.treePlace').hide();
             return this;
         },
@@ -1479,28 +1500,37 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             this.$('button.save').prop("disabled", true);
             this.$('.errorText').remove();
             var error;
+            var attributes = {};
             if (!this.treePlace) {
                 this.$('button.treePlace').before(Dash.Template.errorText({
                     errorText: "Section must be placed in the tree."
                 }));
                 error = true;
             }
-            var name = this.$('#name').val();
-            if (!this.checkName(name)) {
+            attributes.name = this.$('#name').val();
+            if (!this.checkName(attributes.name)) {
                 this.$('#name').before(Dash.Template.errorText({
                     errorText: "Section name is invalid."
                 }));
                 error = true;
             }
+            attributes.content = this.$('#content').val();
             if (error) {
                 this.$('button.save').prop("disabled", false);
                 return;
             }
-            var that = this;
-            var section = new Dash.Section.Section({
-                name: name,
-                _type: 'section'
-            });
+            var section = this.model;
+            if (this.model.get('_type') === 'section') {
+                this.model.set(attributes);
+                var url = this.model.get('URL').split('/');
+                url.pop();
+                var oldTreePlace = this.model.getUrlItems(url);
+                oldTreePlace = oldTreePlace[oldTreePlace.length - 1];
+                oldTreePlace.removeChild(this.model);
+                Dash.postModel(oldTreePlace.get('_type'), oldTreePlace);
+            } else {
+                section = new Dash.Section.Section(attributes);
+            }
             Dash.postModel("section", section, function(res) {
                 this.treePlace.addChild(section);
                 this.treePlace.trigger('newSection');
@@ -1536,10 +1566,13 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         },
 
         treePlaceFunction: function(e) {
-            var that = this;
             // pop up modal
+            var product = this.model;
+            if (this.model.get('_type') === 'section') {
+                product = Dash.products.findProduct(this.model.get('currentProductName'));
+            }
             var treePlaceView = new Dash.View.Modal.SectionTreePlace({
-                model: that.model,
+                model: product
             });
             treePlaceView.callback = this.treePlaceCallback;
             treePlaceView.trashCallback = this.treePlaceTrashCallback;

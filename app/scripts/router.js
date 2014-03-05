@@ -15,6 +15,7 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
             // console.log(path);
             var loadHome = false;
             var pathSplit;
+            var product;
             if (Dash.admin) {
                 if (!adminMenu) {
                     adminMenu = new Dash.AdminMenu({
@@ -51,7 +52,7 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
             } else if ("search".equalsIgnoreUrl(path)) {
                 new Dash.View.Search();
             } else {
-                var product = Dash.products.findProduct(pathSplit[0]);
+                product = Dash.products.findProduct(pathSplit[0]);
                 if (product) {
                     Dash.menuProduct.set('product', product);
                     $('#theme').html(Dash.getThemeStyleText(product.get('themeColour')));
@@ -70,7 +71,22 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                 }
             }
             if (loadHome) {
-                var view = Dash.admin ? new Dash.View.Admin.Home() : new Dash.View.Home();
+                var view;
+                if (Dash.products.length === 1) {
+                    product = Dash.products.at(0);
+                    $('#theme').html(Dash.getThemeStyleText(product.get('themeColour')));
+                    product.on('change:logoURL', function() {
+                        $('#logo').attr('src', product.get('logoURL'));
+                    });
+                    $('#logo').attr('src', product.get('logoURL'));
+                    view = Dash.admin ? new Dash.View.Admin.SiteMap({
+                        model: product
+                    }) : new Dash.View.HelpDesk({
+                        model: product
+                    });
+                } else {
+                    view = Dash.admin ? new Dash.View.Admin.Home() : new Dash.View.Home();
+                }
             }
         },
 

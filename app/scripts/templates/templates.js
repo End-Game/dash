@@ -46,7 +46,7 @@ define(['dash', 'underscore'], function(Dash, _) {
             "</div>" +
         "</a>" +
         "<h2><%-name%></h2>" +
-        "<p><%-shortDescription%></p>"
+        "<p class='content'><%-shortDescription%></p>"
     );
 
     Dash.Template.keySections = _.template(
@@ -60,7 +60,7 @@ define(['dash', 'underscore'], function(Dash, _) {
         "<div class='inlineDiv twoThird'>" +
             "<hr>" +
             "<!--insert search box here-->" +
-            "<p><%-description%></p>" +
+            "<p class='content'><%-description%></p>" +
             "<hr>" +
             "<div class='inlineDiv half' id='faqs'>" +
                 "<h2>FAQ&#39;s</h2>" +
@@ -84,7 +84,7 @@ define(['dash', 'underscore'], function(Dash, _) {
                 "<div id='tags'>" +
                     "<p>PUBLISHED <%-date%></p>" +
                 "</div>" +
-                "<p><%-content%></p>" +
+                "<p class='content'><%-content%></p>" +
                 "<hr>" +
                 "<div id='relevantArticles'>" +
                     "<h4>Other Relevant Articles</h4>" +
@@ -124,6 +124,8 @@ define(['dash', 'underscore'], function(Dash, _) {
         "<h1><%-name%></h1>" +
         "<div class='inlineDiv twoThird'>" +
             "<hr>" +
+            "<p class='content'><%-content%></p>" +
+            "<hr>" +
             "<ul id='children'>" +
             "</ul>" +
             "<hr>" +
@@ -152,8 +154,8 @@ define(['dash', 'underscore'], function(Dash, _) {
             "<ul id='sections'>" +
             "</ul>" +
         "</div>" +
-        "<hr>" +
-        "<a href='#!'>" +
+        "<hr class='goHome'>" +
+        "<a href='#!' class='goHome'>" +
             "<div>" +
                 "<img src='images/view_grey.png'/>" +
                 "<p class='bold'>View Other Products</p>" +
@@ -258,8 +260,8 @@ define(['dash', 'underscore'], function(Dash, _) {
             "<ul id='sections'>" +
             "</ul>" +
         "</div>" +
-        "<hr>" +
-        "<a href='#!'>" +
+        "<hr class='goHome'>" +
+        "<a href='#!' class='goHome'>" +
             "<div>" +
                 "<img src='images/view_grey.png'/>" +
                 "<p class='bold'>View Other Products</p>" +
@@ -586,7 +588,8 @@ define(['dash', 'underscore'], function(Dash, _) {
     Dash.Template.adminSectionSideBar = _.template(
         "<button class='themeButton newArticle' type='button'><img src='images/article.png'/><p>Add New Article</p></button>" +
         "<hr>" +
-        "<button type='button' class='newSection'><img src='images/new.png'/><p>Add New Section</p></button>"
+        "<button type='button' class='newSection'><img src='images/new.png'/><p>Add New Section</p></button>" +
+        "<button type='button' class='editSection'><img src='images/edit.png'/><p>Edit Section</p></button>"
     );
     
     Dash.Template.errorText = _.template(
@@ -602,7 +605,8 @@ define(['dash', 'underscore'], function(Dash, _) {
         "<div class='content'>" +
             "<h1>Add Section</h1>" +
             "<hr>" +
-            "<input type='text' id='name' placeholder='Name of Section...' />" +
+            "<input type='text' id='name' class='topField' placeholder='Name of Section...' />" +
+            "<textarea id='content' class='bottomField' placeholder='Overview of Section...'></textarea>" +
             "<hr>" +
             "<button class='treePlace' type='button'><img src='images/place.png'><p>Place in Tree</p></button>" +
             "<div class='treePlace'>" +

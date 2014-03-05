@@ -87,7 +87,7 @@ div {
     background-image: -moz-linear-gradient(to right, rgba(255,255,255,1), rgba(255,255,255,0));
     background-image: -ms-linear-gradient(to right, rgba(255,255,255,1), rgba(255,255,255,0));
     background-image: -o-linear-gradient(to right, rgba(255,255,255,1), rgba(255,255,255,0));
-    background-image: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,1));
+    background-image: linear-gradient(to right, rgba(255,255,255,1), rgba(255,255,255,0));
 }
 
 .rightCover {
@@ -223,7 +223,7 @@ ul {
     color: #3080C8;
 }
 
-#HelpDesk > div > p, .homeProduct > p, #article > p{
+.content {
     white-space: pre-wrap;
 }
 

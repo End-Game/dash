@@ -158,6 +158,18 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             });
         },
 
+        removeChild: function(child) {
+            var childJoins = this.get('sectionJoins');
+            for (var i = 0; i < childJoins.length; i++) {
+                var childJoin = childJoins.at(i);
+                if (child === childJoin.get('section')) {
+                    childJoin.destroy();
+                    console.log(childJoins);
+                    return;
+                }
+            }
+        },
+        
         setKeySections: function(sections) {
             var keySections = [];
             sections.each(function(section) {
@@ -172,7 +184,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
     Dash.Products = Backbone.Collection.extend({
         model: Dash.Product,
         comparator: '_createdDate',
-        
+
         findProduct: function(name) {
             for (var i = 0; i < this.models.length; i++) {
                 if (this.at(i).get('name').equalsIgnoreUrl(name)) {
@@ -253,6 +265,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
 
         defaults: {
             name: "",
+            content: "",
             currentProductName: ""
         },
 
@@ -409,9 +422,12 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             var productJoins = this.get('productJoins');
             var i;
             var product;
+            if (!productName) {
+                productName = this.get('currentProductName');
+            }
             for (i = 0; i < productJoins.length; i++) {
                 product = productJoins.at(i).get('product');
-                if (product.get('name').equalsIgnoreUrl(productName ? productName : this.get('currentProductName'))) {
+                if (product.get('name').equalsIgnoreUrl(productName)) {
                     return product;
                 }
             }
@@ -419,7 +435,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                 var parentJoins = this.get('parentJoins');
                 for (i = 0; i < parentJoins.length; i++) {
                     var section = parentJoins.at(i).get('parent');
-                    product = section.getProduct(productName ? productName : this.get('currentProductName'), true);
+                    product = section.getProduct(productName, true);
                     console.log(product);
                     if (product) {
                         return product;
@@ -431,10 +447,13 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
 
         getUrlItems: function(path) {
             var items = [];
+            if (!path) {
+                return items;
+            }
             var toFind = path[path.length - 1];
             var item;
             var productJoins = this.get("productJoins");
-            if (productJoins) {
+            if (path.length === 1 && productJoins) {
                 // check products for product
                 productJoins.every(function(productJoin) {
                     if (!item) {
@@ -483,7 +502,10 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
         }],
 
         defaults: {
-            _type: "article"
+            _type: "article",
+            name: "",
+            content: "",
+            currentProductName: ""
         },
 
         parse: function(response) {
@@ -585,7 +607,10 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
         }],
 
         defaults: {
-            _type: "section"
+            _type: "section",
+            name: "",
+            content: "",
+            currentProductName: ""
         },
 
         getChildren: function() {
@@ -645,6 +670,18 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
                 at: index
             });
             console.log(childJoins);
+        },
+
+        removeChild: function(child) {
+            var childJoins = this.get('childJoins');
+            for (var i = 0; i < childJoins.length; i++) {
+                var childJoin = childJoins.at(i);
+                if (child === childJoin.get('child')) {
+                    childJoin.destroy();
+                    console.log(childJoins);
+                    return;
+                }
+            }
         },
 
         indexOfSection: function(section) {

@@ -282,12 +282,16 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                     that.renderListItem(section, "#keySections" + item.get('_id'));
                 }
             }, this);
-            if(!keySections.$('li').length){
+            if (!keySections.$('li').length) {
                 keySections.$el.empty();
             }
         },
 
         resizeContainers: function() {
+            if (Dash.products.length < 4) {
+                this.$('.leftCover, .rightCover').hide();
+                return;
+            }
             var productsWidth = Dash.products.length * 320;
             this.$('#keySections, #products').width(productsWidth);
             var that = this;
@@ -314,11 +318,11 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             });
             this.$('.leftCover .rightCover').hide();
             // if (Dash.products.length > 3) {
-                this.renderArrows();
+            this.renderArrows();
             // }
         },
-        
-        windowResize: function(){
+
+        windowResize: function() {
             var that = this;
             var fullWidth = $(window).width();
             var coverWidth = (fullWidth - 960) / 2;
@@ -330,7 +334,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                 $this.find('.leftCover, .rightCover').height(height);
             });
         },
-        
+
         renderArrows: function() {
             this.$('.leftCover .rightCover').hide();
             if (Dash.products.length > 3) {
@@ -604,8 +608,12 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             this.renderSections();
             this.renderSidebar();
             this.renderBreadCrumb();
-            if(this.model.get('discussion')){
+            if (this.model.get('discussion')) {
                 this.renderDiscussion();
+            }
+            if(!this.model.get('content')){
+                this.$('.content').hide();
+                this.$('.content').next('hr').hide();
             }
             return this;
         },
@@ -620,6 +628,12 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                     that.renderListItem(child, "#children");
                 }
             });
+            if (this.$("#children li").length === 0) {
+                this.$('#children').hide();
+                this.$('#children').prev('hr').hide();
+            } else {
+                this.$('#children').show();
+            }
         },
 
         renderListItem: function(item, tag) {
@@ -794,6 +808,9 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             this.model.getAllSections().each(function(section) {
                 that.renderListItem(section, "#sections");
             });
+            if (Dash.products.length === 1) {
+                this.$('.goHome').hide();
+            }
             return this;
         },
 

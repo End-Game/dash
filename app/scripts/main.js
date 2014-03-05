@@ -57,11 +57,29 @@ require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone
         console.log(app.dash.sections);
         console.log(app.dash.products);
         console.log(app.dash.comments);
+        app.dash.products.each(function(product) {
+            // var i;
+            // var sectionJoins = product.get('sectionJoins');
+            // for (i = sectionJoins.length - 1; i >= 0; i--) {
+            //     var sectionJoin = sectionJoins.at(i);
+            //     if (!sectionJoin.get('section')) {
+            //         sectionJoins.remove(sectionJoin);
+            //     }
+            // }
+            // sectionJoins = product.get('keySectionJoins');
+            // for (i = sectionJoins.length - 1; i >= 0; i--) {
+            //     sectionJoin = sectionJoins.at(i);
+            //     if (!sectionJoin.get('keySection')) {
+            //         sectionJoins.remove(sectionJoin);
+            //     }
+            // }
+            // app.dash.postModel('product', product);
+        });
         app.dash.sections.each(function(section) {
             if (section.get('parentJoins').length === 0 && section.get('productJoins').length === 0) {
-                Hoist.remove("section", section.get('_id'));
-                app.dash.sections.remove(section);
-                console.log(app.dash.sections);
+                // Hoist.remove("section", section.get('_id'));
+                // app.dash.sections.remove(section);
+                // console.log(app.dash.sections);
             } else {
                 section.get('childJoins').each(function(childJoin) {
                     childJoin.listenTo(childJoin.get('child'), 'newSection', childJoin.changeSection);
@@ -73,24 +91,23 @@ require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone
 
         });
         app.dash.articles.each(function(article) {
-            if (article.get('parentJoins').length === 0 && article.get('productJoins').length === 0) {
-                Hoist.remove("article", article.get('_id'));
-                app.dash.articles.remove(article);
-                console.log(app.dash.articles);
-            } else {
-                // //to make half the articles unpublished
-                // article.set('published', (Math.random() > 0.5) ? true : false);
-                //Hoist.post('article', article);
-            }
+            // if (article.get('parentJoins').length === 0 && article.get('productJoins').length === 0) {
+            //     Hoist.remove("article", article.get('_id'));
+            //     app.dash.articles.remove(article);
+            //     console.log(app.dash.articles);
+            // } else {
+            //     // //to make half the articles unpublished
+            //     // article.set('published', (Math.random() > 0.5) ? true : false);
+            //     //Hoist.post('article', article);
+            // }
         });
         app.dash.tags.each(function(tag) {
-            if (tag.getArticles().length === 0) {
-                Hoist.remove("tag", tag.get('_id'));
-                app.dash.tags.remove(tag);
-                console.log(app.dash.tags);
-            }
+            // if (tag.getArticles().length === 0) {
+            //     Hoist.remove("tag", tag.get('_id'));
+            //     app.dash.tags.remove(tag);
+            //     console.log(app.dash.tags);
+            // }
         });
-
 
         // for giving products random colours for testing
         // function getRandomColour() {
