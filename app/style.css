@@ -1,7 +1,7 @@
 /* font colours: 77 #4d4d4d 102 #666666 128 #808080 153 #999999 179 #b3b3b3 204 #cccccc 221 #dddddd 230 #e6e6e6*/
 
 * {
-    font-family: helvetica, sans-serif;
+    font-family: "freight-sans-pro-1", "freight-sans-pro-2", helvetica, sans-serif;
     color: #808080;
     font-weight: 100;
 }
@@ -12,7 +12,33 @@ h1, h2, h3, h4, h5, h6{
 }
 
 h1 {
-    font-size: 2em;
+    font-size: 45px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+h2 {
+    font-size: 35px;
+}
+
+h3 {
+    font-size: 26px;
+}
+
+p, li, h4 {
+    font-size: 18px;
+}
+
+h5 {
+    font-size: 14px;
+}
+
+h6 {
+    font-size: 11px;
+}
+
+strong {
+    font-weight: 500;
 }
 
 .container {
@@ -207,12 +233,6 @@ ul {
 
 .keySections ul {
     border-right: 2px solid #dddddd;
-    border-right: 2px solid #dddddd;
-}
-
-.small {
-    font-size: 10px;
-    font-weight: bold;
 }
 
 .themeColour {
@@ -223,12 +243,22 @@ ul {
     color: #3080C8;
 }
 
-.content {
+/*.textBlock {
     white-space: pre-wrap;
+}*/
+
+.textBlock h1, .textBlock h2, .textBlock h3, .textBlock h4, .textBlock h5, .textBlock h6 {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    font-weight: 400;
+}
+
+.textBlock a {
+    text-decoration: underline;
 }
 
 h4.bold {
-    margin-top: 3px;
+    margin-top: 0px;
     margin-bottom: 0px;
     vertical-align: top;
 }
@@ -255,7 +285,7 @@ h4.bold {
 }
 
 p.bold {
-    margin-top: 3px;
+    margin-top: 0px;
     margin-bottom: 0px;
     vertical-align: top;
 }
@@ -264,6 +294,7 @@ p.bold {
    /* height: 20px;*/
     display: inline-block;
     margin-right: 10px;
+    margin-top: 2px;
 }
 
 .sideBar > div {
@@ -286,7 +317,7 @@ li > a{
     color: #b3b3b3;
 }
 
-.map .bold > a{
+.map .bold > a, #children .bold > a{
     color: #808080;
 }
 
@@ -356,10 +387,10 @@ button img {
 
 button p {
     display: inline-block;
-    font-weight: normal;
-    margin-top: 11px;
+    font-weight: 500;
+    margin-top: 8px;
     margin-bottom: 10px;
-    font-size: 16px;
+    font-size: 18px;
     vertical-align: top;
     color: #999999;
 }
@@ -382,12 +413,9 @@ button p {
 button {
     border-radius: 5px;
     font-size: 16px;
-    border: 1px solid #e6e6e6;
+    border: 2px solid #e6e6e6;
     width: 100%;
     text-shadow: 0px 1px 0px rgba(0,0,0,0.4);
-    -webkit-box-shadow: inset 0px 1px 3px rgba(0, 0, 0, 0.148438);
-    -moz-box-shadow: inset 0px 1px 3px rgba(0, 0, 0, 0.148438);
-    box-shadow: inset 0px 1px 3px rgba(0, 0, 0, 0.148438);
     background: #e6e6e6;
     background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#e6e6e6));
     background: -moz-linear-gradient(top,  #ffffff,  #e6e6e6);
@@ -435,7 +463,7 @@ input, textarea {
     -webkit-box-sizing: border-box;
     -moz-box-sizing:border-box; /* Firefox */
     border: 2px solid #dddddd;
-    font-size: 16px;
+    font-size: 18px;
     background-color: #fcfcfc;
     padding: 10px 15px;
     width: 100%;
@@ -495,6 +523,7 @@ textarea {
     display: inline-block;
     width: 120px;
     margin-right: 5px;
+    margin-bottom: -5px;
 }
 
 #menu div:last-child {
@@ -511,8 +540,8 @@ textarea {
     display: inline-block;
     color: #b3b3b3;
     width: 75px;
-    font-size: 12px;
-    margin-top: 0px;
+    font-size: 14px;
+    margin-top: -5px;
     margin-bottom: 0px;
 }
 
@@ -523,6 +552,11 @@ textarea {
 
 #Article .checkbox {
     width: auto;
+}
+
+.fullPreview {
+    text-shadow: none;
+    margin-top: 40px;
 }
 
 #newArticleSideBar input {
@@ -661,11 +695,11 @@ div.treePlace > p {
 .newTag > p {
     display: inline-block;
     width: 66px;
-    font-size: 14px;
-    margin-left: 10px;
+    font-size: 16px;
+    margin-left: 9px;
     margin-right: 10px;
     margin-top: 8px;
-    margin-bottom: 8px;
+    margin-bottom: 7px;
 }
 
 .modal .newTag{
@@ -680,7 +714,7 @@ div.treePlace > p {
 }
 
 .smallText {
-    font-size: 14px;
+    font-size: 16px;
 }
 
 .tag {
@@ -705,8 +739,9 @@ section > .twoThird > hr:first-of-type {
 }
 
 #tags > p {
+    font-variant: small-caps;
     display: inline-block;
-    font-size: 11px;
+    font-size: 12px;
     margin-top: 4px;
     margin-bottom: 6px;
     color: #b3b3b3;
@@ -743,6 +778,10 @@ label > p {
     display: inline-block;
 }
 
+.map div div a {
+    font-size: 18px;
+}
+
 .published {
     width: 100%;
     margin-top: 0px;
@@ -750,35 +789,34 @@ label > p {
 }
 
 .published img {
+    margin-bottom: 0px;
     margin-right: 5px;
 }
 
-.published label > p {
-    margin-top: 0px;
-    margin-bottom: 0px;
-}
-
 li .published .checkbox {
-    margin-top: 3px;
+    margin-top: 0px;
     margin-left: 15px;
-    margin-bottom: 5px;
+    margin-bottom: 0px;
 }
 
 
 li .published p {
-    margin-top: 5px;
-    margin-bottom: 5px;
+    margin-top: 7px;
+    margin-bottom: 0px;
+    font-size: 11px;
 }
 
 .map div .published .checkbox {
-    margin-top: 1px;
+    margin-top: 5px;
+    margin-bottom: 0px;
     margin-right: 0px;
     float: right;
 }
 
 .map div .published p {
-    margin-top: 0px;
+    margin-top: 5px;
     margin-bottom: 0px;
+    font-size: 11px;
 }
 
 .setPublished{
@@ -792,7 +830,7 @@ li .published p {
     font-style: italic;
     text-align: right;
     margin-right: 20px;
-    font-size: 12px;
+    font-size: 14px;
     float: right;
     
 }
@@ -852,7 +890,7 @@ fieldset {
 }
 
 .map .emptyProduct{
-    margin: 50px 30px 200px 30px;
+    margin: 60px 30px 200px 30px;
 }
 
 .adminSideBar button {
@@ -896,13 +934,14 @@ fieldset {
     color: #b3b3b3;
 }
 
-.map h2 {
+.map h3 {
     margin-bottom: 0px;
     font-weight: 400;
 }
 
 .map hr {
-    margin-top: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
 }
 
 .sideBar hr {
@@ -910,7 +949,7 @@ fieldset {
     margin-bottom: 5px;
 }
 
-#SiteMap h1 {
+#SiteMap > .twoThird > h1 {
     display: inline-block;
     width: 80%;
 }
@@ -919,20 +958,22 @@ fieldset {
     display: inline-block;
     width: 20%;
     vertical-align: bottom;
-    margin-bottom: 17px;
+    margin-bottom: 20px;
 }
 
 .toggle div {
     display: inline-block;
     width: 50%;
     background-color: #fcfcfc;
-    
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
 }
 
 .toggle p {
-    margin-top: 7px;
-    margin-bottom: 7px;
-    font-size: 12px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-size: 14px;
     text-align: center;
     display: inline-block;
     color: #cccccc;
@@ -954,35 +995,34 @@ fieldset {
     vertical-align: top;
 }
 
+.toggle div.themeButton {
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-left-style: solid;
+    border-right-style: solid;
+}
+
 .toggleMap {
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
     border-radius: 5px 0px 0px 5px;
     border: 2px solid #efefef;
     border-right: none;
 }
 
 .toggleList {
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
     border-radius: 0px 5px 5px 0px;
     border: 2px solid #efefef;
     border-left: none;
 }
 
+
 header p {
-    font-size: 13px;
-    margin-top: 15px;
-    margin-bottom: 15px;
+    font-size: 14px;
+    margin-top: 13px;
+    margin-bottom: 12px;
 }
 
 header .container div p {
-    font-size: 13px;
-    margin-top: 15px;
-    margin-bottom: 15px;
-    font-weight: 600;
+    font-weight: 500;
 }
 
 .productSelect {
@@ -1001,7 +1041,7 @@ header .container div p {
 
 #productMenu{
     padding-left: 0px;
-    margin-top: 0px;
+    margin-top: -1px;
     margin-bottom: 0px;
     margin-left: -10px;
     border-radius: 0px 0px 5px 5px;
@@ -1014,13 +1054,13 @@ header .container div p {
 #productMenu li{
     padding-left: 10px;
     padding-top: 10px;
-    padding-bottom: 10px;
+    padding-bottom: 12px;
     list-style-type: none;
 }
 
 #productMenu li a{
     color: #ffffff;
-    font-size: 13px;
+    font-size: 14px;
 }
 
 
@@ -1053,9 +1093,10 @@ header .container div p {
 header {
     position: absolute;
     top: 0;
-    min-width: 960px;
+    min-width: 980px;
     width: 100%;
     height: 45px;
+    z-index: 1000;
     /*vertical-align: top;*/
 }
 
@@ -1089,11 +1130,11 @@ footer {
     bottom: 0;
     height: 40px;
     width: 100%;
-    min-width: 960px;
+    min-width: 980px;
 }
 
-footer .container {
-    margin-top: 5px;
+footer p {
+    font-size: 12px
 }
 
 footer .container *{

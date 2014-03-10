@@ -385,11 +385,9 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             var urls = [];
             _.each(this.get('productJoins').pluck('product'), function(product) {
                 urls.push((product.get('name') + '/' + this.get('name') + '/' + toHere));
-                console.log('product ' + urls);
             }, this);
             _.each(this.get('parentJoins').pluck('parent'), function(section) {
                 urls = urls.concat(section.getAllUrls((this.get('name') + '/' + toHere)));
-                console.log('section ' + urls);
             }, this);
             var i;
             if (!toHere) {
@@ -853,6 +851,8 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
             user: 'Simon'
         }
     });
+    
+    // Dash.ImageId
 
     return Dash;
 });

@@ -1,8 +1,7 @@
-define(['dash', 'underscore'], function(Dash, _) {
+define(['dash', 'underscore', 'showdown'], function(Dash, _, Showdown) {
     'use strict';
     // <!-- templates-->
     Dash.Template = {};
-    
     Dash.Template.home = _.template(
         "<hr>" +
         "<div class='homeContainer'>" +
@@ -46,7 +45,7 @@ define(['dash', 'underscore'], function(Dash, _) {
             "</div>" +
         "</a>" +
         "<h2><%-name%></h2>" +
-        "<p class='content'><%-shortDescription%></p>"
+        "<p class='textBlock'><%-shortDescription%></p>"
     );
 
     Dash.Template.keySections = _.template(
@@ -60,7 +59,7 @@ define(['dash', 'underscore'], function(Dash, _) {
         "<div class='inlineDiv twoThird'>" +
             "<hr>" +
             "<!--insert search box here-->" +
-            "<p class='content'><%-description%></p>" +
+            "<div class='textBlock'><%=converter.makeHtml(description)%></div>" +
             "<hr>" +
             "<div class='inlineDiv half' id='faqs'>" +
                 "<h2>FAQ&#39;s</h2>" +
@@ -84,7 +83,7 @@ define(['dash', 'underscore'], function(Dash, _) {
                 "<div id='tags'>" +
                     "<p>PUBLISHED <%-date%></p>" +
                 "</div>" +
-                "<p class='content'><%-content%></p>" +
+                "<div class='textBlock'><%=converter.makeHtml(content)%></div>" +
                 "<hr>" +
                 "<div id='relevantArticles'>" +
                     "<h4>Other Relevant Articles</h4>" +
@@ -124,7 +123,7 @@ define(['dash', 'underscore'], function(Dash, _) {
         "<h1><%-name%></h1>" +
         "<div class='inlineDiv twoThird'>" +
             "<hr>" +
-            "<p class='content'><%-content%></p>" +
+            "<div class='textBlock'><%=converter.makeHtml(content)%></div>" +
             "<hr>" +
             "<ul id='children'>" +
             "</ul>" +
@@ -352,7 +351,7 @@ define(['dash', 'underscore'], function(Dash, _) {
     );
     
     Dash.Template.comment = _.template(
-        "<p><%-content%></p>" +
+        "<div class='textBlock'><%=converter.makeHtml(content)%></div>" +
         "<p class='dateAuthor'><%-date%> // <%-author%>" +
         "<hr>"
     );
@@ -391,7 +390,7 @@ define(['dash', 'underscore'], function(Dash, _) {
                 "<div id='tags'>" +
                     "<p class='bold'><%-published ? 'PUBLISHED':'NOT PUBLISHED'%> <%-date%></p>" +
                 "</div>" +
-                "<p><%-content%></p>" +
+                "<div class='textBlock'><%=converter.makeHtml(content)%></div>" +
                 "<hr>" +
                 "<div class='discussionContainer'></div>" +
             "</div>" +
@@ -437,7 +436,7 @@ define(['dash', 'underscore'], function(Dash, _) {
             "<hr>" +
             "<h4>Choose Primary Colour</h4>" +
             // insert drop down for colour
-            "<input type='text' class='primary .smallText' placeholder='Enter Hex Code' />" +
+            "<input type='text' class='primary smallText' placeholder='Enter Hex Code' />" +
             "<hr>" +
             "<label>" +
                 "<input id='discussion' class='checkbox' type='checkbox'>Enable Discussion" + 
@@ -453,32 +452,32 @@ define(['dash', 'underscore'], function(Dash, _) {
         "<div class='inlineDiv twoThird'>" +
             "<hr>" +
             "<div id='menu'>" +
-            "<div>" +
-                "<img class='themeColour' src='images/heading.png'>" +
-                "<p>Format As Heading</p>" +
-            "</div>" +
-            "<div>" +
-                "<img class='themeColour' src='images/subheading.png'>" +
-                "<p>Format As Sub Heading</p>" +
-            "</div>" +
-            "<div>" +
-                "<img class='themeColour' src='images/body.png'>" +
-                "<p>Format As Body Text</p>" +
-            "</div>" +
-            "<div>" +
-                "<img class='themeColour' src='images/image.png'>" +
-                "<p>Upload Image</p>" +
-            "</div>" +
-            "<div>" +
-                "<img class='themeColour' src='images/video.png'>" +
-                "<p>Add Video</p>" +
-            "</div>" +
+                "<div id='formatHeading'>" +
+                    "<img class='themeColour' src='images/heading.png'>" +
+                    "<p>Format As Heading</p>" +
+                "</div>" +
+                "<div id='formatSubHeading'>" +
+                    "<img class='themeColour' src='images/subheading.png'>" +
+                    "<p>Format As Sub Heading</p>" +
+                "</div>" +
+                "<div id='formatBody'>" +
+                    "<img class='themeColour' src='images/body.png'>" +
+                    "<p>Format As Body Text</p>" +
+                "</div>" +
+                "<div id='formatImage'>" +
+                    "<img class='themeColour' src='images/image.png'>" +
+                    "<p>Upload Image</p>" +
+                "</div>" +
+                "<div id='formatVideo'>" +
+                    "<img class='themeColour' src='images/video.png'>" +
+                    "<p>Add Video</p>" +
+                "</div>" +
             "</div>" +
             "<hr>" +
             "<input type='text' id='title' class='topField' placeholder='Enter Title of Article...' />" +
             "<textarea id='content' class='bottomField' placeholder='Enter Article Content...'></textarea>" +
             "<hr>" +
-              "<h2>Preview</h2>" +
+            "<h3>Preview</h3>" +
             "<div class='preview'></div>" +
             "<button class='half offwhite fullPreview' type='button'>" +
                 "<img src='images/view_grey.png'><p>View Full Preview</p>" +
@@ -493,7 +492,7 @@ define(['dash', 'underscore'], function(Dash, _) {
             "<div id='tags'>" +
                 "<p class='bold'>PUBLISHED <%-date%></p>" +
             "</div>" +
-            "<p><%-content%></p>" +
+            "<div class='textBlock'><%=converter.makeHtml(content)%></div>" +
         "</div>"
     );
 
@@ -622,7 +621,7 @@ define(['dash', 'underscore'], function(Dash, _) {
     Dash.Template.adminMapItemPublished = _.template(
         "<div class='published'>" + 
             "<img class='themeColour' src='images/tick.png'>" +
-            "<p class='themeText bold small'> PUBLISHED</p>" +
+            "<p class='themeText bold'> PUBLISHED</p>" +
         "</div>"
     );
     
@@ -635,7 +634,7 @@ define(['dash', 'underscore'], function(Dash, _) {
         "<div class='published'>" +
             "<label>" +
                 "<img class='themeColour' src='images/cross.png'>" +
-                "<p class='themeText bold small'> NOT PUBLISHED</p>" +
+                "<p class='themeText bold'> NOT PUBLISHED</p>" +
                 "<input class='checkbox' type='checkbox'>" +
             "</label>" +
         "</div>"
@@ -705,17 +704,17 @@ define(['dash', 'underscore'], function(Dash, _) {
     
     Dash.Template.adminMapListHeader = _.template(
         '<div>' + 
-            '<div><h2>Article</h2></div>' +
-            '<div><h2>Section</h2></div>' +
-            '<div><h2>Status</h2></div>' +
+            '<div><h3>Article</h3></div>' +
+            '<div><h3>Section</h3></div>' +
+            '<div><h3>Status</h3></div>' +
             '<hr>' +
         '</div>'
     );
     
     Dash.Template.mapListHeader = _.template(
         '<div>' + 
-            '<div><h2>Article</h2></div>' +
-            '<div><h2>Section</h2></div>' +
+            '<div><h3>Article</h3></div>' +
+            '<div><h3>Section</h3></div>' +
             '<hr>' +
         '</div>'
     );

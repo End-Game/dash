@@ -51,7 +51,6 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             'background: -webkit-gradient(linear, left top, left bottom, from(' + lighterColour + '), to(' + colour + '));' +
             'background: -moz-linear-gradient(top, ' + lighterColour + ', ' + colour + ');' +
             'filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr="' + lighterColour + '", endColorstr="' + colour + '");' +
-            'background: linear-gradient(top, ' + lighterColour + ', ' + colour + ');' +
             '}' +
             selector + '.themeBorder {' +
             'border-color: ' + colour + ';' +
@@ -62,10 +61,16 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             selector + '#productMenu {' +
             'background: ' + lighterColour + ';' +
             '}' +
+            selector + '#productMenu li {' +
+            'border-top: 1px solid' + colour + ';' +
+            '}' +
             selector + '#productMenu li:hover{' +
             'background: ' + colour + ';' +
             '}' +
             selector + '.map .bold > a.themeText {' +
+            'color: ' + colour + ';' +
+            '}' +
+            selector + '.textBlock a {' +
             'color: ' + colour + ';' +
             '}';
     };
@@ -409,6 +414,10 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
     });
 
     Dash.View.Admin.Section = Dash.View.Section.extend({
+        start: function() {
+            this.on('change', this.render, this);
+        },
+
         renderSidebar: function() {
             var sideBar = new Dash.AdminSideBar.Section({
                 model: this.model
@@ -468,8 +477,8 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 }
                 this.$('.map').append(Dash.Template.siteMapSetPublished());
             } else {
-                this.$('.map').append(Dash.Template.adminEmptyProduct());
-                this.$('> h1').remove();
+                this.$('.map').html(Dash.Template.adminEmptyProduct());
+                this.$('.toggle').hide();
             }
             this.renderSidebar();
             return this;
@@ -603,7 +612,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             return false;
         }
     });
-
+    
     Dash.View.Admin.NewArticle = Dash.View.Admin.extend({
         el: "#Article",
         template: Dash.Template.newArticle,
@@ -611,7 +620,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
         events: {
             'click button.save': 'save',
-            'click button.fullPreview': 'fullPreview',
+            'click .fullPreview': 'fullPreview',
             'keydown #title': 'renderPreview',
             'keydown #content': 'renderPreview'
         },
@@ -619,9 +628,13 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         render: function() {
             this.$el.html(this.template());
             this.renderSideBar();
-            // if(this.model && this.renderModel){
-            //     this.renderModel();
-            // }
+            this.menuView = new Dash.View.FormatingMenu({
+                el: '#menu'
+            });
+            this.$('.twoThird').html();
+            if(this.model && this.renderModel){
+                this.renderModel();
+            }
             this.$('.preview').hide();
             return this;
         },
@@ -823,13 +836,45 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             });
         },
     });
-
+    
+    Dash.View.FormatingMenu = Backbone.View.extend({
+        
+        events:{
+            'click #formatHeading': 'formatHeading',
+            'click #formatSubHeading': 'formatSubHeading',
+            'click #formatBody': 'formatBody',
+            'click #formatImage': 'formatImage',
+            'click #formatVideo': 'formatVideo',
+        },
+        
+        formatHeading: function(e){
+            console.log(e.currentTarget);
+        },
+        
+        formatSubHeading: function(e){
+            console.log(e.currentTarget);
+        },
+        
+        formatBody: function(e){
+            console.log(e.currentTarget);
+        },
+        
+        formatImage: function(e){
+            console.log(e.currentTarget);
+        },
+        
+        formatVideo: function(e){
+            console.log(e.currentTarget);
+        },
+    });
+    
     Dash.View.Admin.EditArticle = Dash.View.Admin.NewArticle.extend({
 
-        afterRender: function() {
+        renderModel: function() {
             this.$('h1').text('Edit Article');
             this.$('#title').val(this.model.get('name'));
             this.$('#content').val(this.model.get('content').replace(/<br \/>/g, '\r\n'));
+            this.renderPreview();
         },
 
         renderSideBar: function() {
@@ -1467,9 +1512,9 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
     Dash.View.Modal.NewSection = Dash.View.Modal.extend({
         template: Dash.Template.newSection,
-        
-        start: function(){
-            if(this.model.get('_type')=='section'){
+
+        start: function() {
+            if (this.model.get('_type') == 'section') {
                 var url = this.model.get('URL').split('/');
                 url.pop();
                 var oldTreePlace = this.model.getUrlItems(url);
@@ -1477,7 +1522,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 console.log(this.treePlace);
             }
         },
-        
+
         events: {
             'click button.save': 'save',
             'click button.cancel': 'trash',

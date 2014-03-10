@@ -8,7 +8,9 @@ require.config({
         hoist: './hoist/hoist',
         templates: './templates/templates',
         requirejs: '../bower_components/requirejs/require',
-        "jquery.cookie": "../bower_components/jquery.cookie/jquery.cookie"
+        "jquery.cookie": "../bower_components/jquery.cookie/jquery.cookie",
+        showdown: '../bower_components/showdown/src/showdown',
+        rangyinputs: './other/rangyinputs/rangyinputs-jquery-1.1.2'
     },
     shim: {
         underscore: {
@@ -23,6 +25,9 @@ require.config({
         },
         relational: {
             deps: ['backbone']
+        },
+        rangyinputs: {
+            deps: ['jquery']
         }
     }
 });
@@ -30,6 +35,7 @@ require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone
     'use strict';
     $('section').hide();
     $('header').hide();
+    window.converter = new Showdown.converter();
     Hoist.apiKey('TVGDGQGQSETLPLSSKRL[');
     // put somewhere to show that user is admin, maybe after login
     // maybe make a link to a login page

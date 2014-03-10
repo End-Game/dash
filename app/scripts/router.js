@@ -41,8 +41,8 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                 loadHome = true;
             } else if ('admin login'.equalsIgnoreUrl(path)) {
                 new Dash.View.Admin.Login();
-            } else if ('admin signup'.equalsIgnoreUrl(path)) {
-                new Dash.View.Admin.SignUp();
+            // } else if ('admin signup'.equalsIgnoreUrl(path)) {
+            //     new Dash.View.Admin.SignUp();
             } else if ("newArticle".equalsIgnoreUrl(path)) {
                 if (Dash.admin) {
                     new Dash.View.Admin.NewArticle();
@@ -79,9 +79,7 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
                         $('#logo').attr('src', product.get('logoURL'));
                     });
                     $('#logo').attr('src', product.get('logoURL'));
-                    view = Dash.admin ? new Dash.View.Admin.SiteMap({
-                        model: product
-                    }) : new Dash.View.HelpDesk({
+                    view = Dash.admin ? new Dash.View.Admin.Home() : new Dash.View.HelpDesk({
                         model: product
                     });
                 } else {

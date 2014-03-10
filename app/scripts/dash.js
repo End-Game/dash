@@ -35,7 +35,7 @@ define(function() {
             if (month < 10) {
                 month = '0' + month;
             }
-            return day + '/' + month + '/' + year;
+            return day + '.' + month + '.' + year;
         }
     };
 });
