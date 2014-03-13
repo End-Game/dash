@@ -612,7 +612,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             return false;
         }
     });
-    
+
     Dash.View.Admin.NewArticle = Dash.View.Admin.extend({
         el: "#Article",
         template: Dash.Template.newArticle,
@@ -629,13 +629,13 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             this.$el.html(this.template());
             this.renderSideBar();
             this.menuView = new Dash.View.FormatingMenu({
-                el: '#menu'
+                el: '#newArticleContainer'
             });
             this.$('.twoThird').html();
-            if(this.model && this.renderModel){
+            if (this.model && this.renderModel) {
                 this.renderModel();
             }
-            this.$('.preview').hide();
+            this.$('.preview, :file').hide();
             return this;
         },
 
@@ -707,23 +707,25 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 return false;
             }
 
-            var sections = this.sideBar.treePlaces.sections;
+            if (this.treePlaces) {
+                var sections = this.sideBar.treePlaces.sections;
 
-            for (var i = 0; i < sections.length; i++) {
-                var section = sections[i];
-                if (section.get('_type') !== 'section') {
-                    var path = this.sideBar.treePlaces.sectionUrls[i].split('/');
-                    var sectionName = path[path.length - 2];
-                    section = section.getSection(sectionName);
-                }
-                var children = section.getChildren();
-                for (var j = 0; j < children.length; j++) {
-                    var child = children.at(j);
-                    if (child.get('name').equalsIgnoreUrl(name) && child !== this.model) {
-                        this.$('#title').before(Dash.Template.errorText({
-                            errorText: "Article name is invalid."
-                        }));
-                        return false;
+                for (var i = 0; i < sections.length; i++) {
+                    var section = sections[i];
+                    if (section.get('_type') !== 'section') {
+                        var path = this.sideBar.treePlaces.sectionUrls[i].split('/');
+                        var sectionName = path[path.length - 2];
+                        section = section.getSection(sectionName);
+                    }
+                    var children = section.getChildren();
+                    for (var j = 0; j < children.length; j++) {
+                        var child = children.at(j);
+                        if (child.get('name').equalsIgnoreUrl(name) && child !== this.model) {
+                            this.$('#title').before(Dash.Template.errorText({
+                                errorText: "Article name is invalid."
+                            }));
+                            return false;
+                        }
                     }
                 }
             }
@@ -836,38 +838,81 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             });
         },
     });
-    
+
     Dash.View.FormatingMenu = Backbone.View.extend({
-        
-        events:{
+
+        events: {
             'click #formatHeading': 'formatHeading',
             'click #formatSubHeading': 'formatSubHeading',
             'click #formatBody': 'formatBody',
             'click #formatImage': 'formatImage',
+            'change #formatImage :file': 'uploadImage',
             'click #formatVideo': 'formatVideo',
         },
-        
-        formatHeading: function(e){
-            console.log(e.currentTarget);
+
+        formatHeading: function(e) {
+            var textarea = this.$('#content');
+            textarea.focus();
+            var selection = textarea.getSelection();
+            var toInsert = selection.start ? '\n###' : '###';
+            textarea.insertText(toInsert, selection.start, 'collapseToEnd');
         },
-        
-        formatSubHeading: function(e){
+
+        formatSubHeading: function(e) {
             console.log(e.currentTarget);
+            var textarea = this.$('#content');
+            textarea.focus();
+            var selection = textarea.getSelection();
+            var toInsert = selection.start ? '\n####' : '####';
+            textarea.insertText(toInsert, selection.start, 'collapseToEnd');
         },
-        
-        formatBody: function(e){
+
+        formatBody: function(e) {
+            var textarea = this.$('#content');
+            textarea.focus();
+            var selection = textarea.getSelection();
+            if (selection.start) {
+                textarea.insertText('\n', selection.start, 'collapseToEnd');
+            }
+        },
+
+        formatImage: function(e) {
+            var fileInput = this.$('#formatImage :file')[0];
+            if (e.target !== fileInput) {
+                this.$('#formatImage :file').click();
+            }
+        },
+
+        formatVideo: function(e) {
             console.log(e.currentTarget);
+            var textarea = this.$('#content');
+            textarea.focus();
+            var selection = textarea.getSelection();
+            if (selection.start) {
+                textarea.insertText('\n', selection.start, 'collapseToEnd');
+            }
         },
-        
-        formatImage: function(e){
-            console.log(e.currentTarget);
-        },
-        
-        formatVideo: function(e){
-            console.log(e.currentTarget);
-        },
+
+        uploadImage: function() {
+            var fileInput = this.$('#formatImage :file')[0];
+            var file = fileInput.files[0];
+            var name = fileInput.value;
+            name = name.slice(name.lastIndexOf('/') + 1);
+            name = name.slice(name.lastIndexOf('\\') + 1);
+            console.log(name);
+            Hoist.file('image' + name, file, function() {
+                console.log(name);
+                var textarea = this.$('#content');
+                textarea.focus();
+                var selection = textarea.getSelection();
+                textarea.insertText((selection.start ? '\n' : '') + '![Alt text](!Hoist' + name + ')\n', selection.end, 'collapseToEnd');
+            }, function() {
+                console.log('file upload unsuccessful' + res);
+            }, this);
+
+        }
     });
-    
+
     Dash.View.Admin.EditArticle = Dash.View.Admin.NewArticle.extend({
 
         renderModel: function() {

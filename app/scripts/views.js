@@ -78,6 +78,22 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
         return result;
     };
 
+    Dash.loadImages = function($textBlock) {
+        console.log('here');
+        console.log($textBlock);
+        $textBlock.find('img').each(function() {
+            var $this = $(this);
+            var src = $this.attr('src');
+            if (src.indexOf('!Hoist') === 0) {
+                Hoist.file('image' + src.slice(6), function(res) {
+                    $this.attr('src', URL.createObjectURL(res));
+                }, function(res) {
+                    console.log('image get failed: ' + res);
+                }, this);
+            }
+        });
+    };
+
 
     Dash.ListItem = Backbone.View.extend({
 
@@ -451,6 +467,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             if (this.model.get('discussion')) {
                 this.renderDiscussion();
             }
+            Dash.loadImages(this.$('.textBlock'));
             return this;
         },
 
@@ -611,7 +628,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             if (this.model.get('discussion')) {
                 this.renderDiscussion();
             }
-            if(!this.model.get('content')){
+            if (!this.model.get('content')) {
                 this.$('.content').hide();
                 this.$('.content').next('hr').hide();
             }

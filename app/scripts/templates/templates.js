@@ -449,7 +449,7 @@ define(['dash', 'underscore', 'showdown'], function(Dash, _, Showdown) {
 
     Dash.Template.newArticle = _.template(
         "<h1>Add New Article</h1>" +
-        "<div class='inlineDiv twoThird'>" +
+        "<div id='newArticleContainer' class='inlineDiv twoThird'>" +
             "<hr>" +
             "<div id='menu'>" +
                 "<div id='formatHeading'>" +
@@ -465,6 +465,7 @@ define(['dash', 'underscore', 'showdown'], function(Dash, _, Showdown) {
                     "<p>Format As Body Text</p>" +
                 "</div>" +
                 "<div id='formatImage'>" +
+                    "<input type='file'/>" +
                     "<img class='themeColour' src='images/image.png'>" +
                     "<p>Upload Image</p>" +
                 "</div>" +

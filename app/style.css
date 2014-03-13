@@ -18,11 +18,11 @@ h1 {
 }
 
 h2 {
-    font-size: 35px;
+    font-size: 32px;
 }
 
 h3 {
-    font-size: 26px;
+    font-size: 24px;
 }
 
 p, li, h4 {
@@ -250,11 +250,15 @@ ul {
 .textBlock h1, .textBlock h2, .textBlock h3, .textBlock h4, .textBlock h5, .textBlock h6 {
     margin-top: 0px;
     margin-bottom: 0px;
-    font-weight: 400;
+    font-weight: 500;
 }
 
 .textBlock a {
     text-decoration: underline;
+}
+
+.textBlock p {
+    margin-top: 0px;
 }
 
 h4.bold {
@@ -512,7 +516,7 @@ textarea {
 }
 
 .container .bottomField {
-    height: 300px;
+    height: 400px;
 }
     
 #menu {
@@ -732,10 +736,6 @@ div.treePlace > p {
 section > .twoThird > hr:first-of-type {
     margin-top: 5px;
     margin-bottom: 10px;
-}
-
-#tags {
-    margin-bottom: -10px;
 }
 
 #tags > p {

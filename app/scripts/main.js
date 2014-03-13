@@ -10,7 +10,7 @@ require.config({
         requirejs: '../bower_components/requirejs/require',
         "jquery.cookie": "../bower_components/jquery.cookie/jquery.cookie",
         showdown: '../bower_components/showdown/src/showdown',
-        rangyinputs: './other/rangyinputs/rangyinputs-jquery-1.1.2'
+        rangyInputs: './other/rangyinputs/rangyinputs-jquery-1.1.2'
     },
     shim: {
         underscore: {
@@ -26,12 +26,13 @@ require.config({
         relational: {
             deps: ['backbone']
         },
-        rangyinputs: {
-            deps: ['jquery']
+        rangyInputs: {
+            deps: ['jquery'],
+            exports: '$'
         }
     }
 });
-require(['app', 'jquery', 'hoist', 'backbone'], function(app, $, hoist, Backbone) {
+require(['app', 'jquery', 'hoist', 'backbone', 'rangyInputs'], function(app, $, hoist, Backbone) {
     'use strict';
     $('section').hide();
     $('header').hide();
