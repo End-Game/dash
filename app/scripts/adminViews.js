@@ -621,8 +621,8 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         events: {
             'click button.save': 'save',
             'click .fullPreview': 'fullPreview',
-            'keydown #title': 'renderPreview',
-            'keydown #content': 'renderPreview'
+            'keyup #title': 'renderPreview',
+            'keyup #content': 'renderPreview'
         },
 
         render: function() {
@@ -632,10 +632,10 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 el: '#newArticleContainer'
             });
             this.$('.twoThird').html();
+            this.$('.preview, :file').hide();
             if (this.model && this.renderModel) {
                 this.renderModel();
             }
-            this.$('.preview, :file').hide();
             return this;
         },
 
@@ -703,6 +703,13 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             if (!Dash.checkKeywords(name)) {
                 this.$('#title').before(Dash.Template.errorText({
                     errorText: "Article name is invalid."
+                }));
+                return false;
+            }
+
+            if (name.indexOf('/') !== -1) {
+                this.$('#title').before(Dash.Template.errorText({
+                    errorText: "Article name cannot contain '/'."
                 }));
                 return false;
             }
@@ -884,13 +891,9 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         },
 
         formatVideo: function(e) {
-            console.log(e.currentTarget);
-            var textarea = this.$('#content');
-            textarea.focus();
-            var selection = textarea.getSelection();
-            if (selection.start) {
-                textarea.insertText('\n', selection.start, 'collapseToEnd');
-            }
+            var modal = new Dash.View.Modal.Youtube();
+            modal.callback = this.addVideo;
+            modal.callbackContext = this;
         },
 
         uploadImage: function() {
@@ -899,6 +902,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             var name = fileInput.value;
             name = name.slice(name.lastIndexOf('/') + 1);
             name = name.slice(name.lastIndexOf('\\') + 1);
+            name = Dash.urlEscape(name);
             console.log(name);
             Hoist.file('image' + name, file, function() {
                 console.log(name);
@@ -909,7 +913,15 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             }, function() {
                 console.log('file upload unsuccessful' + res);
             }, this);
-
+        },
+        
+        addVideo: function(url){
+            console.log(url);
+            var textarea = this.$('#content');
+            textarea.focus();
+            var selection = textarea.getSelection();
+                textarea.insertText((selection.start? '\n': '') + '^^' + url, selection.start, 'collapseToEnd');
+            
         }
     });
 
@@ -1017,6 +1029,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             this.$el.prepend(this.backButtonTemplate({
                 text: "Exit Preview"
             }));
+            Dash.loadImages(this.$('.textBlock'));
             return this;
         },
 
@@ -1213,9 +1226,16 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         },
 
         addTag: function() {
+            this.$('.errorText').remove();
             var input = this.$('#tagName');
             var name = input.val();
             if (!name) {
+                return;
+            }
+            if (name.indexOf('/') !== -1) {
+                this.$('#tagName').before(Dash.Template.errorText({
+                    errorText: "tag cannot contain '/'."
+                }));
                 return;
             }
             input.val('');
@@ -1422,6 +1442,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             } else {
                 this.$('.changeLogo').hide();
             }
+            this.resizeLogo();
             return this;
         },
 
@@ -1481,6 +1502,13 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             if (!Dash.checkKeywords(name)) {
                 return false;
             }
+
+            if (name.indexOf('/') !== -1) {
+                this.$('#title').before(Dash.Template.errorText({
+                    errorText: "Article name cannot contain '/'."
+                }));
+                return false;
+            }
             for (var j = 0; j < Dash.products.length; j++) {
                 var product = Dash.products.at(j);
                 if (product !== this.model && product.get('name').equalsIgnoreUrl(name)) {
@@ -1499,6 +1527,25 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             var file = this.$(':file')[0].files[0];
             this.$('.changeLogo .logo').attr('src', URL.createObjectURL(file));
             this.$('.changeLogo').show();
+            this.resizeLogo();
+        },
+        
+        resizeLogo: function() {
+            var that = this;
+            this.$('.logo').load(function() {
+                var this$ = that.$(this);
+                if (this.naturalHeight / this.naturalWidth > 0.75) {
+                    this$.css('height', 135);
+                    this$.css('width', 'auto');
+                    this$.css('margin-left', (180 - this$.width()) / 2);
+                    this$.css('margin-right', (180 - this$.width()) / 2);
+                } else {
+                    this$.css('width', 180);
+                    this$.css('height', 'auto');
+                    this$.css('margin-left', 0);
+                    this$.css('margin-right', 0);
+                }
+            });
         }
 
     });
@@ -1520,6 +1567,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             this.$('.primary').val(this.model.get('themeColour'));
             this.$('#discussion').prop("checked", this.model.get('discussion'));
             this.$(':file').hide();
+            this.resizeLogo();
             return this;
         },
 
@@ -1552,7 +1600,26 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         change: function(e) {
             var file = this.$(':file')[0].files[0];
             this.$('.logo').attr('src', URL.createObjectURL(file));
+            this.resizeLogo();
         },
+        
+        resizeLogo: function() {
+            var that = this;
+            this.$('.logo').load(function() {
+                var this$ = that.$(this);
+                if (this.naturalHeight / this.naturalWidth > 0.75) {
+                    this$.css('height', 135);
+                    this$.css('width', 'auto');
+                    this$.css('margin-left', (180 - this$.width()) / 2);
+                    this$.css('margin-right', (180 - this$.width()) / 2);
+                } else {
+                    this$.css('width', 180);
+                    this$.css('height', 'auto');
+                    this$.css('margin-left', 0);
+                    this$.css('margin-right', 0);
+                }
+            });
+        }
     });
 
     Dash.View.Modal.NewSection = Dash.View.Modal.extend({
@@ -1638,6 +1705,13 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 return false;
             }
             if (!Dash.checkKeywords(name)) {
+                return false;
+            }
+
+            if (name.indexOf('/') !== -1) {
+                this.$('#title').before(Dash.Template.errorText({
+                    errorText: "Article name cannot contain '/'."
+                }));
                 return false;
             }
             var children;
@@ -1853,6 +1927,30 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 this.trashCallback.call(this.callbackContext);
             }
         }
+    });
+    
+    Dash.View.Modal.Youtube = Dash.View.Modal.extend({
+        template: Dash.Template.addVideo,
+
+        events: {
+            'click button.save': 'save',
+            'click button.cancel': 'trash',
+            'click .content': 'swallow',
+            'click': 'trash',
+        },
+
+        render: function() {
+            this.$el.html(this.template());
+            return this;
+        },
+
+        save: function() {
+            this.$('button.save').prop("disabled", true);
+            var url = this.$('.videoUrl').val();
+            this.callback.call(this.callbackContext, url);
+            this.trash();
+        }
+
     });
 
 });

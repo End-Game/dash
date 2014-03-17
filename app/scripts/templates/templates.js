@@ -1,6 +1,9 @@
-define(['dash', 'underscore', 'showdown'], function(Dash, _, Showdown) {
+define(['dash', 'underscore', 'showdown', 'youtube'], function(Dash, _, Showdown, Youtube) {
     'use strict';
     // <!-- templates-->
+    window.converter = new Showdown.converter();
+    //{extensions: [Youtube]});
+   window.converter = new Showdown.converter({extensions: ['youtube']});
     Dash.Template = {};
     Dash.Template.home = _.template(
         "<hr>" +
@@ -59,7 +62,7 @@ define(['dash', 'underscore', 'showdown'], function(Dash, _, Showdown) {
         "<div class='inlineDiv twoThird'>" +
             "<hr>" +
             "<!--insert search box here-->" +
-            "<div class='textBlock'><%=converter.makeHtml(description)%></div>" +
+            "<div class='textBlock'><%=converter.makeHtml(description.replace(/</g, '&lt;').replace(/>/g, '&gt;'))%></div>" +
             "<hr>" +
             "<div class='inlineDiv half' id='faqs'>" +
                 "<h2>FAQ&#39;s</h2>" +
@@ -83,7 +86,7 @@ define(['dash', 'underscore', 'showdown'], function(Dash, _, Showdown) {
                 "<div id='tags'>" +
                     "<p>PUBLISHED <%-date%></p>" +
                 "</div>" +
-                "<div class='textBlock'><%=converter.makeHtml(content)%></div>" +
+                "<div class='textBlock'><%=converter.makeHtml(content.replace(/</g, '&lt;').replace(/>/g, '&gt;'))%></div>" +
                 "<hr>" +
                 "<div id='relevantArticles'>" +
                     "<h4>Other Relevant Articles</h4>" +
@@ -123,12 +126,23 @@ define(['dash', 'underscore', 'showdown'], function(Dash, _, Showdown) {
         "<h1><%-name%></h1>" +
         "<div class='inlineDiv twoThird'>" +
             "<hr>" +
-            "<div class='textBlock'><%=converter.makeHtml(content)%></div>" +
+            "<div class='textBlock'><%=converter.makeHtml(content.replace(/</g, '&lt;').replace(/>/g, '&gt;'))%></div>" +
             "<hr>" +
             "<ul id='children'>" +
             "</ul>" +
             "<hr>" +
             "<div class='discussionContainer'></div>" +
+        "</div>"
+    );
+    
+    Dash.Template.tagPage = _.template(
+        "<p class='breadCrumb'></p>" +
+        "<h1><%-name%></h1>" +
+        "<div class='inlineDiv twoThird'>" +
+            "<hr>" +
+            "<ul id='children'>" +
+            "</ul>" +
+            "<hr>" +
         "</div>"
     );
 
@@ -351,7 +365,7 @@ define(['dash', 'underscore', 'showdown'], function(Dash, _, Showdown) {
     );
     
     Dash.Template.comment = _.template(
-        "<div class='textBlock'><%=converter.makeHtml(content)%></div>" +
+        "<div class='textBlock'><%=converter.makeHtml(content.replace(/</g, '&lt;').replace(/>/g, '&gt;'))%></div>" +
         "<p class='dateAuthor'><%-date%> // <%-author%>" +
         "<hr>"
     );
@@ -390,7 +404,7 @@ define(['dash', 'underscore', 'showdown'], function(Dash, _, Showdown) {
                 "<div id='tags'>" +
                     "<p class='bold'><%-published ? 'PUBLISHED':'NOT PUBLISHED'%> <%-date%></p>" +
                 "</div>" +
-                "<div class='textBlock'><%=converter.makeHtml(content)%></div>" +
+                "<div class='textBlock'><%=converter.makeHtml(content.replace(/</g, '&lt;').replace(/>/g, '&gt;'))%></div>" +
                 "<hr>" +
                 "<div class='discussionContainer'></div>" +
             "</div>" +
@@ -410,8 +424,8 @@ define(['dash', 'underscore', 'showdown'], function(Dash, _, Showdown) {
                 "<h4 class='bold'>Upload Logo</h4>" +
             "</div>" +
             "<div class='changeLogo'>" +
-                "<img src='' class='logo inlineDiv half'>" +
-                "<div class='uploadLogo inlineDiv half'>" +
+                "<img src='' class='logo inlineDiv'>" +
+                "<div class='uploadLogo inlineDiv'>" +
                     "<img class='themeButton' src='images/image.png'>" +
                     "<h4 class='bold'>Change Logo</h4>" +
                 "</div>" +
@@ -427,8 +441,8 @@ define(['dash', 'underscore', 'showdown'], function(Dash, _, Showdown) {
         "<div class='content'>" +
             "<h1>Personalise</h1>" +
             "<hr>" +
-            "<img src='<%-logoURL%>' class='logo inlineDiv half'>" +
-            "<div class='uploadLogo inlineDiv half'>" +
+            "<img src='<%-logoURL%>' class='logo inlineDiv'>" +
+            "<div class='uploadLogo inlineDiv'>" +
                 "<img class='themeButton' src='images/image.png'>" +
                 "<h4 class='bold'>Change Logo</h4>" +
             "</div>" +
@@ -470,6 +484,7 @@ define(['dash', 'underscore', 'showdown'], function(Dash, _, Showdown) {
                     "<p>Upload Image</p>" +
                 "</div>" +
                 "<div id='formatVideo'>" +
+                    "<input type='file'/>" +
                     "<img class='themeColour' src='images/video.png'>" +
                     "<p>Add Video</p>" +
                 "</div>" +
@@ -493,7 +508,7 @@ define(['dash', 'underscore', 'showdown'], function(Dash, _, Showdown) {
             "<div id='tags'>" +
                 "<p class='bold'>PUBLISHED <%-date%></p>" +
             "</div>" +
-            "<div class='textBlock'><%=converter.makeHtml(content)%></div>" +
+            "<div class='textBlock'><%=converter.makeHtml(content.replace(/</g, '&lt;').replace(/>/g, '&gt;'))%></div>" +
         "</div>"
     );
 
@@ -755,6 +770,16 @@ define(['dash', 'underscore', 'showdown'], function(Dash, _, Showdown) {
             "<div id='sectionList'></div>" +
             "<hr>" +
             "<button class='addSection' type='button'><img src='images/new.png'><p>Add Key Section</p></button>" +
+            "<hr>" +
+            "<button class='themeButton save half' type='button'><p>Save</p></button>" +
+            "<button class='themeButton cancel half' type='button'><p>Cancel</p></button>" +
+        "</div>"
+    );
+    
+    Dash.Template.addVideo = _.template(
+        "<div class='content addVideo'>" +
+            "<h4>Enter Youtube url</h4>" +
+            "<input type='text' class='videoUrl' />" +
             "<hr>" +
             "<button class='themeButton save half' type='button'><p>Save</p></button>" +
             "<button class='themeButton cancel half' type='button'><p>Cancel</p></button>" +

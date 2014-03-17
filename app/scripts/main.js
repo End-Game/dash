@@ -10,7 +10,8 @@ require.config({
         requirejs: '../bower_components/requirejs/require',
         "jquery.cookie": "../bower_components/jquery.cookie/jquery.cookie",
         showdown: '../bower_components/showdown/src/showdown',
-        rangyInputs: './other/rangyinputs/rangyinputs-jquery-1.1.2'
+        rangyInputs: './other/rangyinputs/rangyinputs-jquery-1.1.2',
+        youtube: './other/showdown-extensions/youtube'
     },
     shim: {
         underscore: {
@@ -29,14 +30,18 @@ require.config({
         rangyInputs: {
             deps: ['jquery'],
             exports: '$'
+        },
+        youtube: {
+            deps: ['showdown'],
+            exports: 'Showdown'
         }
     }
 });
-require(['app', 'jquery', 'hoist', 'backbone', 'rangyInputs'], function(app, $, hoist, Backbone) {
+require(['app', 'jquery', 'hoist', 'backbone', 'showdown', 'youtube', 'rangyInputs'], function(app, $, hoist, Backbone, Showdown, Youtube) {
     'use strict';
+    console.log(Youtube);
     $('section').hide();
     $('header').hide();
-    window.converter = new Showdown.converter();
     Hoist.apiKey('TVGDGQGQSETLPLSSKRL[');
     // put somewhere to show that user is admin, maybe after login
     // maybe make a link to a login page

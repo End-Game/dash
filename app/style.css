@@ -205,6 +205,10 @@ div {
     width: 630px;
 }
 
+.container img {
+    max-width: 100%;
+}
+
 .third {
     width: 32%;
 }
@@ -321,7 +325,9 @@ li > a{
     color: #b3b3b3;
 }
 
-.map .bold > a, #children .bold > a{
+li > .bold
+
+.map .bold > a, #children .bold > a, li.bold > a{
     color: #808080;
 }
 
@@ -575,10 +581,19 @@ textarea {
 
 .uploadLogo {
     text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 .uploadLogo img {
     height: 24px;
+}
+
+.logo{
+    max-width: 180px;
+    max-height: 135px;
 }
 
 .offwhite {
@@ -1165,4 +1180,9 @@ footer img{
 
 .themeButton p {
     color: #ffffff;
+}
+
+iframe {
+    width: 320px;
+    height: 180px;
 }

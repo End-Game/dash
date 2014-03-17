@@ -36,6 +36,13 @@ define(function() {
                 month = '0' + month;
             }
             return day + '.' + month + '.' + year;
+        },
+
+        // from stack overflow http://stackoverflow.com/a/5831191
+        // id has length 11
+        embedYouTubeURLs: function(text) {
+            var re = /(?:https?:\/\/)?(?:[0-9A-Z-]+\.)?(?:youtu\.be\/|youtube(?:-nocookie)?\.com\S*[^\w\s-])([\w-]{11})(?=[^\w-]|$)(?![?=&+%\w.-]*(?:['"][^<>]*>|<\/a>))[?=&+%\w.-]*/ig;
+            return text.replace(re, "<iframe width='425' height='250' src='http://www.youtube.com/embed/$1' frameborder='0' allowfullscreen></iframe>");
         }
     };
 });

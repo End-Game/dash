@@ -79,8 +79,6 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
     };
 
     Dash.loadImages = function($textBlock) {
-        console.log('here');
-        console.log($textBlock);
         $textBlock.find('img').each(function() {
             var $this = $(this);
             var src = $this.attr('src');
@@ -161,7 +159,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             var that = this;
             this.$('.imageContainer img').load(function() {
                 var this$ = that.$(this);
-                if (this.naturalHeight / this.naturalWidth > 0.5) {
+                if (this.naturalHeight / this.naturalWidth > 0.6) {
                     this$.css('height', 150);
                     this$.parent().css('padding-top', 0);
                     this$.parent().css('padding-bottom', 0);
@@ -695,7 +693,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
 
     Dash.View.Tag = Dash.View.extend({
         el: "#Article",
-        template: Dash.Template.section,
+        template: Dash.Template.tagPage,
         breadCrumbTemplate: Dash.Template.breadCrumb,
 
         render: function() {
@@ -892,7 +890,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                         item.set("currentProductName", that.model.get('currentProductName'));
                         item.setUrl();
                     }
-                    that.renderListItem(item, '#miniMapList');
+                    that.renderListItem(item, '#miniMapList', 'bold');
                     if (item === above) {
                         that.$('li').last().append('<ul class="innerList"></ul>');
                         toRenderSame.each(function(item2) {
@@ -901,7 +899,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                             } else if (item2.get('_type') === 'section' || item2.get('published')) {
                                 item2.set("currentProductName", that.model.get('currentProductName'));
                                 item2.setUrl();
-                                that.renderListItem(item2, '.innerList');
+                                that.renderListItem(item2, '.innerList', item2.get('_type') === 'section'? 'bold':'');
                             }
                         });
                     }
@@ -953,9 +951,10 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             this.renderList(toRender.models, "#otherArticleList", "#otherArticles");
         },
 
-        renderListItem: function(item, tag) {
+        renderListItem: function(item, tag, className) {
             var listItem = new Dash.ListItem({
-                model: item
+                model: item,
+                className: className
             });
             this.$(tag).append(listItem.render().el);
         },
@@ -1257,7 +1256,9 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             hash.emailAddress = this.$('#emailAddress').val();
             hash.message = this.$('#message').val();
             console.log(hash);
-            Hoist.notify('support', hash);
+            Hoist.notify('support', hash, function() {}, function(res) {
+                console.log('support notification failed');
+            });
             this.trash();
         }
 
