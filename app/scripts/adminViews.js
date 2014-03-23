@@ -755,6 +755,8 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                     article.setUrl();
                     Dash.router.navigate('!' + article.get('URL'));
                     Dash.router.find('!' + article.get('URL'));
+                }, function(res) {
+                    this.$('button.save').prop("disabled", false);
                 }, this);
             }, this);
             return article;
@@ -891,7 +893,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         },
 
         formatVideo: function(e) {
-            var modal = new Dash.View.Modal.Youtube();
+            var modal = new Dash.View.Modal.Video();
             modal.callback = this.addVideo;
             modal.callbackContext = this;
         },
@@ -914,14 +916,14 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 console.log('file upload unsuccessful' + res);
             }, this);
         },
-        
-        addVideo: function(url){
+
+        addVideo: function(url) {
             console.log(url);
             var textarea = this.$('#content');
             textarea.focus();
             var selection = textarea.getSelection();
-                textarea.insertText((selection.start? '\n': '') + '^^' + url, selection.start, 'collapseToEnd');
-            
+            textarea.insertText((selection.start ? '\n' : '') + '^^' + url, selection.start, 'collapseToEnd');
+
         }
     });
 
@@ -1529,7 +1531,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             this.$('.changeLogo').show();
             this.resizeLogo();
         },
-        
+
         resizeLogo: function() {
             var that = this;
             this.$('.logo').load(function() {
@@ -1602,7 +1604,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             this.$('.logo').attr('src', URL.createObjectURL(file));
             this.resizeLogo();
         },
-        
+
         resizeLogo: function() {
             var that = this;
             this.$('.logo').load(function() {
@@ -1928,8 +1930,8 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             }
         }
     });
-    
-    Dash.View.Modal.Youtube = Dash.View.Modal.extend({
+
+    Dash.View.Modal.Video = Dash.View.Modal.extend({
         template: Dash.Template.addVideo,
 
         events: {

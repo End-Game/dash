@@ -1,9 +1,9 @@
-define(['dash', 'underscore', 'showdown', 'youtube'], function(Dash, _, Showdown, Youtube) {
+define(['dash', 'underscore', 'showdown', 'video'], function(Dash, _, Showdown) {
     'use strict';
     // <!-- templates-->
-    window.converter = new Showdown.converter();
+    // window.converter = new Showdown.converter();
     //{extensions: [Youtube]});
-   window.converter = new Showdown.converter({extensions: ['youtube']});
+   window.converter = new Showdown.converter({extensions: ['video']});
     Dash.Template = {};
     Dash.Template.home = _.template(
         "<hr>" +
@@ -778,7 +778,7 @@ define(['dash', 'underscore', 'showdown', 'youtube'], function(Dash, _, Showdown
     
     Dash.Template.addVideo = _.template(
         "<div class='content addVideo'>" +
-            "<h4>Enter Youtube url</h4>" +
+            "<h4>Enter Youtube or Vimeo url</h4>" +
             "<input type='text' class='videoUrl' />" +
             "<hr>" +
             "<button class='themeButton save half' type='button'><p>Save</p></button>" +

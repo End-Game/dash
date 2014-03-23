@@ -11,7 +11,7 @@ require.config({
         "jquery.cookie": "../bower_components/jquery.cookie/jquery.cookie",
         showdown: '../bower_components/showdown/src/showdown',
         rangyInputs: './other/rangyinputs/rangyinputs-jquery-1.1.2',
-        youtube: './other/showdown-extensions/youtube'
+        video: './other/showdown-extensions/video'
     },
     shim: {
         underscore: {
@@ -31,15 +31,14 @@ require.config({
             deps: ['jquery'],
             exports: '$'
         },
-        youtube: {
+        video: {
             deps: ['showdown'],
             exports: 'Showdown'
         }
     }
 });
-require(['app', 'jquery', 'hoist', 'backbone', 'showdown', 'youtube', 'rangyInputs'], function(app, $, hoist, Backbone, Showdown, Youtube) {
+require(['app', 'jquery', 'hoist', 'backbone', 'rangyInputs'], function(app, $, hoist, Backbone) {
     'use strict';
-    console.log(Youtube);
     $('section').hide();
     $('header').hide();
     Hoist.apiKey('TVGDGQGQSETLPLSSKRL[');
