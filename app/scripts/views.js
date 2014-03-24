@@ -194,7 +194,26 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
             this.$('h1, h2, h3, h4, h5, h6').css('color', this.model.get('themeColour'));
+            var that = this;
+            var keySectionsList = this.model.getKeySections();
+            keySectionsList.each(function(section) {
+                if (section.get('_type') === 'section' || section.get('published')) {
+                    section.set("currentProductName", this.model.get('name'));
+                    section.setUrl(Dash.urlEscape(this.model.get('name')));
+                    that.renderListItem(section, 'ul');
+                }
+            }, this);
+            if (!this.$('li').length) {
+                this.$el.empty();
+            }
             return this;
+        },
+
+        renderListItem: function(item, tag) {
+            var listItem = new Dash.ListItem({
+                model: item
+            });
+            this.$(tag).append(listItem.render().el);
         }
     });
 
@@ -271,6 +290,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                 that.renderProduct(item);
             }, this);
             this.resizeContainers();
+            this.keySectionsBorders();
             return this;
         },
 
@@ -287,20 +307,24 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                 model: item
             });
             this.$("#keySections").append(keySections.render().el);
-            var that = this;
-            var keySectionsList = item.getKeySections();
-            keySectionsList.each(function(section) {
-                if (section.get('_type') === 'section' || section.get('published')) {
-                    section.set("currentProductName", item.get('name'));
-                    section.setUrl(Dash.urlEscape(item.get('name')));
-                    that.renderListItem(section, "#keySections" + item.get('_id'));
+        },
+        
+        keySectionsBorders: function(){
+            var keySectionDivs = this.$('.keySections');
+            var i;
+            for (i = keySectionDivs.length - 1; i >= 0; i--) {
+                keySectionDivs[i] = this.$(keySectionDivs[i]).find('div').first();
+                if (i!==keySectionDivs.length-1 && !keySectionDivs[i + 1].length) {
+                    keySectionDivs[i].css('border-right', 'none');
                 }
-            }, this);
-            if (!keySections.$('li').length) {
-                keySections.$el.empty();
+            }
+            for (i = keySectionDivs.length - 1; i >= 0; i--) {
+                if (i!==0 && !keySectionDivs[i - 1].length) {
+                    keySectionDivs[i].css('border-left', 'none');
+                }
             }
         },
-
+        
         resizeContainers: function() {
             if (Dash.products.length < 4) {
                 this.$('.leftCover, .rightCover').hide();
@@ -899,7 +923,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
                             } else if (item2.get('_type') === 'section' || item2.get('published')) {
                                 item2.set("currentProductName", that.model.get('currentProductName'));
                                 item2.setUrl();
-                                that.renderListItem(item2, '.innerList', item2.get('_type') === 'section'? 'bold':'');
+                                that.renderListItem(item2, '.innerList', item2.get('_type') === 'section' ? 'bold' : '');
                             }
                         });
                     }

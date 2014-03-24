@@ -212,6 +212,9 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
         },
 
         toJSON: function() {
+            if(!this.get('section')){
+                console.log(this);
+            }
             return this.get('section').get('_id');
         }
     });

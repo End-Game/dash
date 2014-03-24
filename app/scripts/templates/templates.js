@@ -1,9 +1,7 @@
 define(['dash', 'underscore', 'showdown', 'video'], function(Dash, _, Showdown) {
     'use strict';
     // <!-- templates-->
-    // window.converter = new Showdown.converter();
-    //{extensions: [Youtube]});
-   window.converter = new Showdown.converter({extensions: ['video']});
+    window.converter = new Showdown.converter({extensions: ['video']});
     Dash.Template = {};
     Dash.Template.home = _.template(
         "<hr>" +
@@ -53,7 +51,9 @@ define(['dash', 'underscore', 'showdown', 'video'], function(Dash, _, Showdown) 
 
     Dash.Template.keySections = _.template(
         "<h1>Key Sections</h1>" +
-        "<ul id='keySections<%-_id%>'>" +
+        "<div>" + 
+            "<ul id='keySections<%-_id%>'>" +
+        "</div>" + 
         "</ul>"
     );
 

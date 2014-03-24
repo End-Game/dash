@@ -543,6 +543,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 Dash.admin = true;
                 new Dash.View.Admin.Home();
             }, function(res) {
+                this.$('button.login').prop("disabled", false);
                 console.log('login unsuccessful: ' + res);
             });
             return false;
@@ -608,6 +609,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 new Dash.View.Admin.Home();
             }, function(res) {
                 console.log('Signup unsuccessful: ' + res);
+                this.$('button.save').prop("disabled", false);
             });
             return false;
         }
@@ -1492,6 +1494,8 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 }
                 Dash.products.add(product);
                 this.trash();
+            }, function(res) {
+                this.$('button.save').prop("disabled", false);
             }, this);
 
             Dash.indexProduct(product);
@@ -1592,6 +1596,8 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                     }, this);
                 }
                 this.trash();
+            }, function(res) {
+                this.$('button.save').prop("disabled", false);
             }, this);
         },
 
@@ -1696,6 +1702,8 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 Dash.postModel(this.treePlace.get('_type'), this.treePlace, function() {
                     this.trash();
                 }, this);
+            }, function(res) {
+                this.$('button.save').prop("disabled", false);
             }, this);
         },
 
@@ -1814,6 +1822,8 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             this.model.setKeySections(this.sections);
             Dash.postModel('product', this.model, function() {
                 this.trash();
+            }, function(res) {
+                this.$('button.save').prop("disabled", false);
             }, this);
         },
 
