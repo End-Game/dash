@@ -843,7 +843,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 currentProductName: "",
             });
 
-            // Dash.router.navigate('!newArticle/preview');
+            // Dash.router.navigate(window.location.hash.substring(1) + '/preview');
             var view = new Dash.View.Article.Preview({
                 model: article,
             });
@@ -1406,6 +1406,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
         editArticle: function() {
             var that = this;
+            //Dash.router.navigate(window.location.hash.substring(1) + '/edit');
             new Dash.View.Admin.EditArticle({
                 model: that.model,
             });

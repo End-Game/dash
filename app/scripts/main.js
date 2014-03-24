@@ -44,7 +44,7 @@ require(['app', 'jquery', 'hoist', 'backbone', 'rangyInputs'], function(app, $, 
     Hoist.apiKey('TVGDGQGQSETLPLSSKRL[');
     // put somewhere to show that user is admin, maybe after login
     // maybe make a link to a login page
-    app.dash.admin = false;
+    app.dash.admin = true;
     Hoist.get({
         tags: "tag",
         articles: "article",

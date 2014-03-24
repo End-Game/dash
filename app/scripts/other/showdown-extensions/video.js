@@ -14,11 +14,11 @@
             type: 'lang',
             regex: '\\^\\^([\\S]+)',
             replace: function(match, url) {
-                var m, video_id, re;
-                vimeoRe = /https?:\/\/(?:www\.)?vimeo.com\/(?:channels\/|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|)(\d+)(?:$|\/|\?)/;
+                var m, video_id, vimeoRe, youtubeRe;
+                vimeoRe = /(?:https?:\/\/)?(?:(www)|(player)\.)?vimeo.com\/(?:channels\/|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|)(\d+)(?:$|\/|\?)/;
                 youtubeRe = /(?:https?:\/\/)?(?:[0-9A-Z-]+\.)?(?:youtu\.be\/|youtube(?:-nocookie)?\.com\S*[^\w\s-])([\w-]{11})(?=[^\w-]|$)(?![?=&+%\w.-]*(?:['"][^<>]*>|<\/a>))[?=&+%\w.-]*/ig;
                 if (vimeoRe.test(url)) {
-                    return url.replace(vimeoRe, '<iframe src="//player.vimeo.com/video/$3" width="WIDTH" height="HEIGHT" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>');
+                    return url.replace(vimeoRe, '<iframe src="//player.vimeo.com/video/$5" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>');
                 } else if (youtubeRe.test(url)) {
                     return url.replace(youtubeRe, "<iframe src='//www.youtube.com/embed/$1' frameborder='0' allowfullscreen></iframe>");
                 } else {
