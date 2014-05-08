@@ -589,7 +589,7 @@ define(['dash', 'underscore', 'showdown', 'video'], function(Dash, _, Showdown) 
         "<button type='button' class='newArticle'><img src='images/article_grey.png'/><p>Add New Article</p></button>" +
         "<button type='button' class='settings'><img src='images/settings.png'/><p>Product Settings</p></button>" +
         "<button type='button' class='personalise'><img src='images/personalise.png'/><p>Personalise</p></button>" +
-        "<button type='button' class='keySections'><img src='images/edit.png'/><p>Edit Key Sections</p></button>"
+        "<button type='button' class='editKeySections'><img src='images/edit.png'/><p>Edit Key Sections</p></button>"
     );
     
     Dash.Template.adminArticleSideBar = _.template(

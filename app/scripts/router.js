@@ -1,4 +1,4 @@
-define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone, hoist) {
+define(['dash', 'backbone', 'Hoist', 'models', 'views'], function(Dash, Backbone, Hoist) {
     'use strict';
     var defaultColour = '#3080C8';
     var adminMenu;
@@ -7,10 +7,10 @@ define(['dash', 'backbone', 'hoist', 'models', 'views'], function(Dash, Backbone
         routes: {
             "*path": "find"
         },
-
+        
         find: function(path) {
             $('#theme').html(Dash.getThemeStyleText(defaultColour));
-            $('#logo').attr('src', 'images/logo.jpg');
+            $('#logo').attr('src', 'images/logo.png');
             // console.log(window.location);
             // console.log(path);
             var loadHome = false;

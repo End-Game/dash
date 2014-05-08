@@ -1,15 +1,6 @@
-define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hoist) {
+define(['dash', 'backbone', 'Hoist', 'templates'], function(Dash, Backbone, Hoist) {
     'use strict';
-
-    /*
-    Views needed:
-    SearchResults
-        ResultsList
-    SiteMap + Admin
-        Map-
-        List
-    personaliseProduct modal ->Admin 
-*/
+    
     Dash.ignoredWords = [
         "a",
         "all",
@@ -308,23 +299,23 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             });
             this.$("#keySections").append(keySections.render().el);
         },
-        
-        keySectionsBorders: function(){
+
+        keySectionsBorders: function() {
             var keySectionDivs = this.$('.keySections');
             var i;
             for (i = keySectionDivs.length - 1; i >= 0; i--) {
                 keySectionDivs[i] = this.$(keySectionDivs[i]).find('div').first();
-                if (i!==keySectionDivs.length-1 && !keySectionDivs[i + 1].length) {
+                if (i !== keySectionDivs.length - 1 && !keySectionDivs[i + 1].length) {
                     keySectionDivs[i].css('border-right', 'none');
                 }
             }
             for (i = keySectionDivs.length - 1; i >= 0; i--) {
-                if (i!==0 && !keySectionDivs[i - 1].length) {
+                if (i !== 0 && !keySectionDivs[i - 1].length) {
                     keySectionDivs[i].css('border-left', 'none');
                 }
             }
         },
-        
+
         resizeContainers: function() {
             if (Dash.products.length < 4) {
                 this.$('.leftCover, .rightCover').hide();
@@ -591,10 +582,10 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
 
         toggleAddComment: function() {
             this.$('.toggleAddComment').toggle();
-            if (Dash.admin) {
-                this.$('#author').hide();
-                this.$('#content').removeClass('bottomField');
-            }
+            // if (Dash.admin) {
+            //     this.$('#author').hide();
+            //     this.$('#content').removeClass('bottomField');
+            // }
             this.$('.addComment').toggle();
         },
 
@@ -604,9 +595,9 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             var author = this.$('#author').val();
             var content = this.$('#content').val();
             if (Dash.admin) {
-                author = 'Simon'; // change to use user name
+                // author = 'Simon'; // change to use user name
             }
-            if (!Dash.admin && !author) {
+            if (!Dash.admin || !author) {
                 this.$('#author').before(Dash.Template.errorText({
                     errorText: "You must enter a name."
                 }));
@@ -1281,7 +1272,7 @@ define(['dash', 'backbone', 'hoist', 'templates'], function(Dash, Backbone, hois
             hash.message = this.$('#message').val();
             console.log(hash);
             Hoist.notify('support', hash, function() {}, function(res) {
-                console.log('support notification failed');
+                console.log('support notification failed: ' + res);
             });
             this.trash();
         }

@@ -11,8 +11,9 @@ module.exports = function(grunt) {
 			}
 		},
 		jshint: {
-			files: ['gruntfile.js', 'app/scripts/*.js'],
+			files: ['gruntfile.js', 'app/scripts/*.js', 'app/scripts/hoist/hoist.js'],
 			options: {
+				expr: true,
 				globals: {
 					jQuery: true,
 					console: true,

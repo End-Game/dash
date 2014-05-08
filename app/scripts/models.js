@@ -1,7 +1,6 @@
-define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $) {
+define(['dash', 'backbone', 'Hoist', "jquery", 'relational'], function(Dash, Backbone, Hoist, $) {
     'use strict';
     Backbone.Relational.store.addModelScope(Dash);
-
     Dash.Product = Backbone.RelationalModel.extend({
         idAttribute: '_id',
 
@@ -851,7 +850,7 @@ define(['dash', 'backbone', "jquery", 'relational'], function(Dash, Backbone, $)
         }],
 
         defaults: {
-            user: 'Simon'
+            user: ''
         }
     });
     

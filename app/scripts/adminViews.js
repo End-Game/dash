@@ -1,9 +1,6 @@
-define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backbone, hoist) {
+define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backbone, Hoist) {
     'use strict';
-    /*
-    views needed:
-    personalise product - modal
-*/
+    
     Dash.shadeColor = function(color, percent) {
         var R, G, B;
         if (color.length < 7) { // support for #RGB and #RRGGBB
@@ -164,12 +161,12 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         }
         console.log(toSend);
 
-        Hoist.post(type, toSend, function(res) {
+        Hoist.post(type, toSend, function(res, xhr) {
             console.log('response');
+            console.log(res);
             console.log(res);
             if (model instanceof Array) {
                 for (i = 0; i < model.length; i++) {
-                    model[i].set('_rev', res[i]._rev);
                     if (!model[i].get("_id")) {
                         model[i].set("_id", res[i]._id);
                     }
@@ -177,13 +174,11 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             } else {
                 if (toSend instanceof Array) {
                     for (i = 0; i < model.length; i++) {
-                        model.at(i).set('_rev', res[i]._rev);
                         if (!model.at(i).get("_id")) {
                             model.at(i).set("_id", res[i]._id);
                         }
                     }
                 } else {
-                    model.set('_rev', res._rev);
                     if (!model.get("_id")) {
                         model.set("_id", res._id);
                     }
@@ -415,7 +410,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
     Dash.View.Admin.Section = Dash.View.Section.extend({
         start: function() {
-            this.on('change', this.render, this);
+            this.model.on('change', this.render, this);
         },
 
         renderSidebar: function() {
@@ -440,7 +435,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
         listHeaderTemplate: Dash.Template.adminMapListHeader,
 
         start: function() {
-            this.model.on('newSection', this.changed, this);
+            this.model.on('newSection', this.render, this);
             var url = window.location.hash;
             if (url.charAt(url.length - 1) === '/') {
                 url = url.substring(0, url.length - 1);
@@ -508,12 +503,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 model: this.model,
             });
             this.$el.append(sideBar.render().el);
-        },
-
-        changed: function() {
-            this.render();
-        },
-
+        }
     });
 
     Dash.View.Admin.Login = Dash.View.Admin.extend({
@@ -522,6 +512,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
 
         events: {
             'click button.login': 'login',
+            'keydown input': 'keydown'
         },
 
         render: function() {
@@ -536,16 +527,16 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 username: this.$('#EmailAddress').val(),
                 password: this.$('#Password').val()
             }, function(res) {
+                Dash.admin = true;
                 Dash.router.navigate('!');
                 if (res.name) {
                     Dash.menuProduct.set('user', res.name);
                 }
-                Dash.admin = true;
-                new Dash.View.Admin.Home();
+                new Dash.router.find();
             }, function(res) {
                 this.$('button.login').prop("disabled", false);
                 console.log('login unsuccessful: ' + res);
-            });
+            }, this);
             return false;
         },
 
@@ -562,6 +553,13 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 }
             });
             return valid;
+        },
+
+        keydown: function(e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                this.login();
+            }
         }
     });
 
@@ -695,7 +693,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             // var date = published ? Dash.getDateString() : "";
             // console.log('here');
             var article = this.saveModel(name, content, type, date, published);
-            Dash.indexArticle(article);
+            // Dash.indexArticle(article);
         },
 
         checkName: function(name) {
@@ -1318,7 +1316,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
             'click button.newArticle': 'newArticle',
             'click button.settings': 'settings',
             'click button.personalise': 'personalise',
-            'click button.keySections': 'keySections'
+            'click button.editKeySections': 'keySections'
         },
 
         newSection: function() {
@@ -1499,7 +1497,7 @@ define(['dash', 'backbone', 'hoist', 'views', 'templates'], function(Dash, Backb
                 this.$('button.save').prop("disabled", false);
             }, this);
 
-            Dash.indexProduct(product);
+            // Dash.indexProduct(product);
         },
 
         checkName: function(name) {
