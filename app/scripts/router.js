@@ -11,17 +11,21 @@ define(['dash', 'backbone', 'Hoist', 'models', 'views'], function(Dash, Backbone
         find: function(path) {
             $('#theme').html(Dash.getThemeStyleText(defaultColour));
             $('#logo').attr('src', 'images/logo.png');
-            // console.log(window.location);
-            // console.log(path);
             var loadHome = false;
             var pathSplit;
             var product;
             if (Dash.admin) {
+                if(Dash.user){
+                    Dash.menuProduct.set('user', Dash.user.name);
+                }
+                console.log(Dash.menuProduct.user);
+                console.log(Dash.user.name);
                 if (!adminMenu) {
                     adminMenu = new Dash.AdminMenu({
                         model: Dash.menuProduct
                     });
                 }
+                $('header').show();
             } else {
                 $('header').hide();
             }

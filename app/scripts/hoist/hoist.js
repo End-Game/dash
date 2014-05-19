@@ -459,16 +459,16 @@
             request(this._configs, { url: "file.hoi.io/" + key, data: data }, success, error, context);
         },
                 
-        index: function (path, content, success, error, context){
-            // request(this._configs, {url: "search.hoi.io/index", data: {path: path, content: content}}, success, error, context);
+        index: function(path, content, success, error, context){
+            request(this._configs, {url: "search.hoi.io/index", data: {path: path, content: content}}, success, error, context);
         },
         
-        getIndex: function (path, success, error, context){
-            // request(this._configs, {url: "search.hoi.io/index", data: {path: path, method: 'GET'}, responseType: 'text/html'}, success, error, context);
+        getIndex: function(path, success, error, context){
+            request(this._configs, {url: "search.hoi.io/index", data: {path: path, method: 'GET'}, responseType: 'text/html'}, success, error, context);
         },
         
-        deIndex: function (path, success, error, context){
-            // request(this._configs, {url: "search.hoi.io/index", data: {path: path}, method: 'DELETE'}, success, error, context);
+        deIndex: function(path, success, error, context){
+            request(this._configs, {url: "search.hoi.io/index", data: {path: path}, method: 'DELETE'}, success, error, context);
         },
             
         use: function (bucket) {

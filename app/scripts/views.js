@@ -582,10 +582,10 @@ define(['dash', 'backbone', 'Hoist', 'templates'], function(Dash, Backbone, Hois
 
         toggleAddComment: function() {
             this.$('.toggleAddComment').toggle();
-            // if (Dash.admin) {
-            //     this.$('#author').hide();
-            //     this.$('#content').removeClass('bottomField');
-            // }
+            if (Dash.user && Dash.user.name) {
+                this.$('#author').hide();
+                this.$('#content').removeClass('bottomField');
+            }
             this.$('.addComment').toggle();
         },
 
@@ -594,10 +594,10 @@ define(['dash', 'backbone', 'Hoist', 'templates'], function(Dash, Backbone, Hois
             this.$('.errorText').remove();
             var author = this.$('#author').val();
             var content = this.$('#content').val();
-            if (Dash.admin) {
-                // author = 'Simon'; // change to use user name
+            if (Dash.user && Dash.user.name) {
+                author = Dash.user.name;
             }
-            if (!Dash.admin || !author) {
+            if (!author) {
                 this.$('#author').before(Dash.Template.errorText({
                     errorText: "You must enter a name."
                 }));

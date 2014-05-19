@@ -11,7 +11,8 @@ require.config({
         "jquery.cookie": "../bower_components/jquery.cookie/jquery.cookie",
         showdown: '../bower_components/showdown/src/showdown',
         rangyInputs: './other/rangyinputs/rangyinputs-jquery-1.1.2',
-        video: './other/showdown-extensions/video'
+        video: './other/showdown-extensions/video',
+        colorPicker: './other/jquery.wheelcolorpicker/jquery.wheelcolorpicker'
     },
     shim: {
         underscore: {
@@ -34,10 +35,14 @@ require.config({
         video: {
             deps: ['showdown'],
             exports: 'Showdown'
+        },
+        colorPicker: {
+            deps: ['jquery'],
+            exports: '$'
         }
     }
 });
-require(['app', 'jquery', 'backbone', 'hoist', 'rangyInputs'], function(app, $, Backbone) {
+require(['app', 'jquery', 'backbone', 'hoist', 'rangyInputs', 'colorPicker'], function(app, $, Backbone) {
     'use strict';
     $('section').hide();
     $('header').hide();

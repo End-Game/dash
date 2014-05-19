@@ -50,7 +50,10 @@ define(['backbone', 'dash', 'Hoist', 'models', 'views', 'adminViews', 'router'],
                 });
             }
         });
-        Hoist.status(function(){
+        Hoist.status(function(res){
+            app.dash.user = res;
+            app.dash.user.name = res.name ? res.name : res.metaData? res.metaData.name? res.metaData.name:'':'';
+            console.log(app.dash.user.name);
             app.dash.admin = true;
             app.dash.router = new app.dash.Router();
             Backbone.history.start();

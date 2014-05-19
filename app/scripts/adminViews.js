@@ -1,6 +1,6 @@
 define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backbone, Hoist) {
     'use strict';
-    
+
     Dash.shadeColor = function(color, percent) {
         var R, G, B;
         if (color.length < 7) { // support for #RGB and #RRGGBB
@@ -29,6 +29,15 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
         var BB = ((B.toString(16).length === 1) ? "0" + B.toString(16) : B.toString(16));
 
         return "#" + RR + GG + BB;
+    };
+
+    Dash.validHex = function(color) {
+        var R = parseInt(color.substring(1, 3), 16);
+        var G = parseInt(color.substring(3, 5), 16);
+        var B = parseInt(color.substring(5, 7), 16);
+        if (isNaN(R) || isNaN(G) || isNaN(B)) {
+            return false;
+        }
     };
 
     Dash.getThemeStyleText = function(colour, selector) {
@@ -150,7 +159,6 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
             success = null;
         }
         var i, toSend;
-        console.log('before post');
         if (model instanceof Array) {
             toSend = [];
             for (i = 0; i < model.length; i++) {
@@ -159,12 +167,8 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
         } else {
             toSend = model.toJSON();
         }
-        console.log(toSend);
 
         Hoist.post(type, toSend, function(res, xhr) {
-            console.log('response');
-            console.log(res);
-            console.log(res);
             if (model instanceof Array) {
                 for (i = 0; i < model.length; i++) {
                     if (!model[i].get("_id")) {
@@ -528,10 +532,10 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
                 password: this.$('#Password').val()
             }, function(res) {
                 Dash.admin = true;
+                Dash.user = res;
+                console.log(res);
+                Dash.user.name = res.name ? res.name : res.metaData? res.metaData.name? res.metaData.name:'':'';
                 Dash.router.navigate('!');
-                if (res.name) {
-                    Dash.menuProduct.set('user', res.name);
-                }
                 new Dash.router.find();
             }, function(res) {
                 this.$('button.login').prop("disabled", false);
@@ -1569,19 +1573,25 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
 
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
-            this.$('.primary').val(this.model.get('themeColour'));
             this.$('#discussion').prop("checked", this.model.get('discussion'));
             this.$(':file').hide();
             this.resizeLogo();
-            return this;
+            this.setupColorPicker();
         },
 
         save: function() {
             this.$('button.save').prop("disabled", true);
             this.$('.errorText').remove();
-            var primary = this.$('.primary').val();
-            if (primary) {
-                this.model.set('themeColour', primary);
+            var themeColour = this.$('.primary').val();
+            themeColour = themeColour.charAt(0) !== '#' ? themeColour : '#' + themeColour;
+            if (Dash.validHex(themeColour)) {
+                this.model.set('themeColour', themeColour);
+                $('#theme').html(Dash.getThemeStyleText(themeColour));
+            } else {
+                this.$('.primary').prepend(Dash.Template.errorText({
+                    errorText: "Invalid hex code."
+                }));
+                this.$('button.save').prop("disabled", false);
             }
             this.model.set('discussion', this.$('#discussion').is(':checked'));
             var file = this.$(':file')[0].files[0];
@@ -1594,6 +1604,7 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
                         console.log("file post unsuccessful: " + res);
                     }, this);
                 }
+
                 this.trash();
             }, function(res) {
                 this.$('button.save').prop("disabled", false);
@@ -1626,6 +1637,36 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
                     this$.css('margin-right', 0);
                 }
             });
+        },
+
+        setupColorPicker: function() {
+            var themeColour = this.model.get('themeColour');
+            this.$('#ColorInput').wheelColorPicker({
+                format: 'hex',
+                layout: 'popup',
+                sliders: 'v',
+                width: '160px'
+            });
+            this.$('#ColorInput').wheelColorPicker('setValue', themeColour);
+            var that = this;
+            this.$('#ColorInput').change(function() {
+                var $this = that.$(this);
+                var val = $this.val();
+                $this.css('color', val);
+                $this.css('background', val);
+                that.$('.primary').val(val);
+            });
+            this.$('.primary').change(function() {
+                var $this = that.$(this);
+                var val = $this.val();
+                that.$('#ColorInput').val(val);
+                that.$('#ColorInput').change();
+            });
+            this.$('.primary').keyup(function() {
+                that.$(this).change();
+            });
+            this.$('.primary').val(themeColour);
+            this.$('.primary').change();
         }
     });
 
@@ -1961,7 +2002,25 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
             this.callback.call(this.callbackContext, url);
             this.trash();
         }
-
     });
 
+    Dash.View.Dummy = {
+        dummyInitialize: function() {
+            if (this.start) {
+                this.start();
+            }
+
+            this.render();
+
+            if (this.afterRender) {
+                this.afterRender();
+            }
+        },
+    };
+
+    Dash.View.Dummy.Article = Dash.View.Article.extend({
+        el: undefined,
+
+        initialize: Dash.View.Dummy.dummyInitialize
+    });
 });

@@ -448,9 +448,13 @@ define(['dash', 'underscore', 'showdown', 'video'], function(Dash, _, Showdown) 
             "</div>" +
             "<input type='file'/>" +
             "<hr>" +
-            "<h4>Choose Primary Colour</h4>" +
+            "<h3>Choose Primary Colour</h4>" +
             // insert drop down for colour
-            "<input type='text' class='primary smallText' placeholder='Enter Hex Code' />" +
+            "<div class=colorContainer>" +
+                "<input type='text' name='color' id='ColorInput' class='smallText' />" +
+                "<p class='smallText'>OR</p>" +
+                "<input type='text' name='color' class='primary smallText' placeholder='Enter Hex Code' />" +
+            "</div>" +
             "<hr>" +
             "<label>" +
                 "<input id='discussion' class='checkbox' type='checkbox'>Enable Discussion" + 
@@ -785,5 +789,17 @@ define(['dash', 'underscore', 'showdown', 'video'], function(Dash, _, Showdown) 
             "<button class='themeButton cancel half' type='button'><p>Cancel</p></button>" +
         "</div>"
     );
-    
+     
+    Dash.Template.htmlWrapper = _.template(
+        "<!DOCTYPE html>" +
+        "<html>" +
+        "<head>" +
+            "<meta charset='utf-8'>" +
+            "<meta name='fragment' content='!'>" +
+        "</head>" +
+        "<body>" +
+            "<%=content%>" +
+        "</body>" +
+        "</html>"
+    );
 });
