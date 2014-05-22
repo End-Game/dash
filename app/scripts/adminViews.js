@@ -201,28 +201,61 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
         }, context);
     };
 
+    // in the following index methods success and error may be called multiple times.
+    
     Dash.indexProduct = function(product, success, error, context) {
+        var template = Dash.Template.htmlWrapper;
         // home page
-        var content = '';
-        Dash.products.each(function(product) {
-            content = content + product.get('name') + ' ' + product.get('shortDescription') + ' ';
-        });
-        content = _.escape(content);
-        Hoist.index('#!', content, success, error, context);
+        var dummyView = new Dash.View.Dummy.Home();
+        var content = template({content:dummyView.el.outerHtml});
+        Hoist.index('#!', content);
         // help desk page
-        content = product.get('name') + ' ' + product.get('description');
-        content = _.escape(content);
+        dummyView = new Dash.View.Dummy.HelpDesk({model: product});
+        content = template({content:dummyView.el.outerHtml});
         Hoist.index('#!' + product.get('URL'), content, success, error, context);
+        // site map page
+        dummyView = new Dash.View.Dummy.SiteMap({model: product});
+        content = template({content:dummyView.el.outerHtml});
+        Hoist.index('#!' + product.get('URL') + '/sitemap', content, success, error, context);
     };
 
     Dash.indexArticle = function(article, success, error, context) {
+        var template = Dash.Template.htmlWrapper;
         // article page
-        var content = article.get('name') + ' ' + article.get('content');
-        content = _.escape(content);
-        // get all urls to article
+        var dummyView = new Dash.View.Dummy.Article({model: article});
+        var content = template({content:dummyView.el.outerHtml});
+        // index all urls to article
         var urls = article.getAllUrls();
         _.each(urls, function(url) {
             Hoist.index('#!' + url, content, success, error, context);
+        });
+        // all sections that are connected need to have links updated.
+        article.get('parentJoins').each(function(parentJoin){
+            var parent = parentJoin.get('parent');
+            Dash.indexSection(parent);
+        });
+    };
+    
+    Dash.indexSection = function(section, success, error, context) {
+        var template = Dash.Template.htmlWrapper;
+        // section page
+        var dummyView = new Dash.View.Dummy.Section({model: section});
+        var content = template({content:dummyView.el.outerHtml});
+        Hoist.index('#!' + section.get('URL'), content, success, error, context);
+        // all products that are connected need to have links updated
+        section.get('productJoins').each(function(productJoin){
+            var product = productJoin.get('product');
+            dummyView = new Dash.View.Dummy.HelpDesk({model: product});
+            content = template({content:dummyView.el.outerHtml});
+            Hoist.index('#!' + product.get('URL'), content);
+            dummyView = new Dash.View.Dummy.SiteMap({model: product});
+            content = template({content:dummyView.el.outerHtml});
+            Hoist.index('#!' + product.get('URL') + '/sitemap', content);
+        });
+        // all sections that are connected need to have links updated
+        section.get('parentJoins').each(function(parentJoin){
+            var parent = parentJoin.get('parent');
+            Dash.indexSection(parent);
         });
     };
 
@@ -2004,6 +2037,8 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
         }
     });
 
+    // dummy views used for generating html snapshots for the search index
+
     Dash.View.Dummy = {
         dummyInitialize: function() {
             if (this.start) {
@@ -2015,6 +2050,12 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
             if (this.afterRender) {
                 this.afterRender();
             }
+            
+            if(this.dummyRender) {
+                this.dummyRender();
+            }
+            
+            this.$('.discussion').show();
         },
     };
 
@@ -2023,4 +2064,29 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
 
         initialize: Dash.View.Dummy.dummyInitialize
     });
+    
+    Dash.View.Dummy.HelpDesk = Dash.View.HelpDesk.extend({
+        el: undefined,
+
+        initialize: Dash.View.Dummy.dummyInitialize
+    });
+    
+    Dash.View.Dummy.Section = Dash.View.Section.extend({
+        el: undefined,
+
+        initialize: Dash.View.Dummy.dummyInitialize
+    });
+    
+    Dash.View.Dummy.SiteMap = Dash.View.SiteMap.extend({
+        el: undefined,
+
+        initialize: Dash.View.Dummy.dummyInitialize
+    });
+    
+    Dash.View.Dummy.Home = Dash.View.Home.extend({
+        el: undefined,
+
+        initialize: Dash.View.Dummy.dummyInitialize
+    });
+    
 });

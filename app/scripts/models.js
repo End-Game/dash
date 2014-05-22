@@ -436,7 +436,6 @@ define(['dash', 'backbone', 'Hoist', "jquery", 'relational'], function(Dash, Bac
                 for (i = 0; i < parentJoins.length; i++) {
                     var section = parentJoins.at(i).get('parent');
                     product = section.getProduct(productName, true);
-                    console.log(product);
                     if (product) {
                         return product;
                     }
