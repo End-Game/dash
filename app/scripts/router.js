@@ -18,8 +18,6 @@ define(['dash', 'backbone', 'Hoist', 'models', 'views'], function(Dash, Backbone
                 if(Dash.user){
                     Dash.menuProduct.set('user', Dash.user.name);
                 }
-                console.log(Dash.menuProduct.user);
-                console.log(Dash.user.name);
                 if (!adminMenu) {
                     adminMenu = new Dash.AdminMenu({
                         model: Dash.menuProduct
@@ -45,8 +43,6 @@ define(['dash', 'backbone', 'Hoist', 'models', 'views'], function(Dash, Backbone
                 loadHome = true;
             } else if ('admin login'.equalsIgnoreUrl(path)) {
                 new Dash.View.Admin.Login();
-            // } else if ('admin signup'.equalsIgnoreUrl(path)) {
-            //     new Dash.View.Admin.SignUp();
             } else if ("newArticle".equalsIgnoreUrl(path)) {
                 if (Dash.admin) {
                     new Dash.View.Admin.NewArticle();
