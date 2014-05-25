@@ -35,9 +35,7 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
         var R = parseInt(color.substring(1, 3), 16);
         var G = parseInt(color.substring(3, 5), 16);
         var B = parseInt(color.substring(5, 7), 16);
-        if (isNaN(R) || isNaN(G) || isNaN(B)) {
-            return false;
-        }
+        return !(color.charAt(0) !== '#' || isNaN(R) || isNaN(G) || isNaN(B));
     };
 
     Dash.getThemeStyleText = function(colour, selector) {
@@ -1616,15 +1614,20 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
             this.$('button.save').prop("disabled", true);
             this.$('.errorText').remove();
             var themeColour = this.$('.primary').val();
-            themeColour = themeColour.charAt(0) !== '#' ? themeColour : '#' + themeColour;
+            themeColour = themeColour.charAt(0) !== '#' ? '#' + themeColour : themeColour;
+            
+                console.log(themeColour);
             if (Dash.validHex(themeColour)) {
+                console.log(themeColour);
                 this.model.set('themeColour', themeColour);
                 $('#theme').html(Dash.getThemeStyleText(themeColour));
             } else {
-                this.$('.primary').prepend(Dash.Template.errorText({
+                console.log(false);
+                this.$('.colorContainer').before(Dash.Template.errorText({
                     errorText: "Invalid hex code."
                 }));
                 this.$('button.save').prop("disabled", false);
+                return;
             }
             this.model.set('discussion', this.$('#discussion').is(':checked'));
             var file = this.$(':file')[0].files[0];

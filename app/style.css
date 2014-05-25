@@ -688,6 +688,11 @@ div.treePlace > p {
     margin-right: 10px;
 }
 
+.colorContainer .errorText {
+    color: red;
+    font-size: 14px;
+}
+
 #Article li > div {
     margin-left: 2px;
     margin-right: 2px;
