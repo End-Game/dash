@@ -75,7 +75,7 @@
         xhr.open(method, configs.protocol + opts.url);
         
         responseType = opts.responseType || "json";
-        
+        console.log(opts);
         // Safari will error out (!) if we try to set a responseType of "json"
         
         if (responseType != "json") {
@@ -116,7 +116,6 @@
                 }
             }
         };
-        
         xhr.send(opts.data);
     }
     
@@ -460,15 +459,35 @@
         },
                 
         index: function(path, content, success, error, context){
-            request(this._configs, {url: "search.hoi.io/index", data: {path: path, content: content}}, success, error, context);
+            
+                console.log(path);
+            if (!content || typeof content === "function") {
+                context = error;
+                error = success;
+                success = content;
+                var data = path;
+                console.log(path);
+                if(classOf(path) === "Array"){
+                    data = {pages:path};
+                }
+                request(this._configs, {url: "search.hoi.io/index", data: data, method:'POST'}, success, error, context);
+            } else {
+                request(this._configs, {url: "search.hoi.io/index", data: {path: path, content: content}, method:'POST'}, success, error, context);
+            }
         },
         
         getIndex: function(path, success, error, context){
-            request(this._configs, {url: "search.hoi.io/index", data: {path: path, method: 'GET'}, responseType: 'text/html'}, success, error, context);
+            path = path.replace(/#!/, '?_escaped_fragment_=');
+            request(this._configs, {url: "search.hoi.io/index?path=" + path, method: 'GET', responseType: 'text/html'}, success, error, context);
         },
         
-        deIndex: function(path, success, error, context){
-            request(this._configs, {url: "search.hoi.io/index", data: {path: path}, method: 'DELETE'}, success, error, context);
+        deIndex: function(path, regex, success, error, context){
+            if (typeof regex === "function") {
+                context = error;
+                error = success;
+                success = regex;
+            }
+            request(this._configs, {url: "search.hoi.io/index", data: {path: path, regex: regex}, method: 'DELETE'}, success, error, context);
         },
             
         use: function (bucket) {

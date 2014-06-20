@@ -42,8 +42,9 @@ require.config({
         }
     }
 });
-require(['app', 'jquery', 'backbone', 'hoist', 'rangyInputs', 'colorPicker'], function(app, $, Backbone) {
+require(['hoist','app', 'jquery', 'backbone', 'rangyInputs', 'colorPicker'], function(hoist, app, $, Backbone) {
     'use strict';
     $('section').hide();
     $('header').hide();
+    app.initialize();
 });

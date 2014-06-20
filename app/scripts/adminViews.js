@@ -199,62 +199,189 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
         }, context);
     };
 
-    // in the following index methods success and error may be called multiple times.
-    
-    Dash.indexProduct = function(product, success, error, context) {
+    // in the following index methods success and error may be called multiple times
+
+    // recurseUp = true if creating or name change i.e. needs to bubble up tree updating links
+    // recurseDown = true if name or parent change i.e. needs to bubble down the tree updating urls
+
+    Dash.indexProduct = function(recurseDown, product, success, error, context) {
         var template = Dash.Template.htmlWrapper;
         // home page
         var dummyView = new Dash.View.Dummy.Home();
-        var content = template({content:dummyView.el.outerHtml});
-        Hoist.index('#!', content);
+        var content = template({
+            content: dummyView.el.outerHtml
+        });
+        var toIndex = [];
+        toIndex.push({
+            path: '#!',
+            content: content
+        });
         // help desk page
-        dummyView = new Dash.View.Dummy.HelpDesk({model: product});
-        content = template({content:dummyView.el.outerHtml});
-        Hoist.index('#!' + product.get('URL'), content, success, error, context);
-        // site map page
-        dummyView = new Dash.View.Dummy.SiteMap({model: product});
-        content = template({content:dummyView.el.outerHtml});
-        Hoist.index('#!' + product.get('URL') + '/sitemap', content, success, error, context);
+        dummyView = new Dash.View.Dummy.HelpDesk({
+            model: product
+        });
+        content = template({
+            content: dummyView.el.outerHtml
+        });
+        toIndex.push({
+            path: '#!' + product.get('URL'),
+            content: content
+        });
+        // only need to index sitemap when there is a name change, as editing product doesn't change the sitemap, and when created the sitemap is blank
+        if (recurseDown) {
+            //index sitemap
+            dummyView = new Dash.View.Dummy.SiteMap({
+                model: product
+            });
+            content = template({
+                content: dummyView.el.outerHtml
+            });
+            toIndex.push({
+                path: '#!' + product.get('URL') + '/sitemap',
+                content: content
+            });
+            // index child sections.
+            product.get('sectionJoins').each(function(sectionJoin) {
+                var section = sectoinJoin.get('parent');
+                toIndex = toIndex.concat(Dash.getIndexSectionArray(false, true, section));
+            });
+        }
+        Hoist.index(toIndex, success, error, context);
     };
 
-    Dash.indexArticle = function(article, success, error, context) {
+    Dash.getIndexArticleArray = function(recurseUp, article) {
         var template = Dash.Template.htmlWrapper;
-        // article page
-        var dummyView = new Dash.View.Dummy.Article({model: article});
-        var content = template({content:dummyView.el.outerHtml});
+        var toIndex = [];
+        var originalProduct = article.get('currentProductName');
         // index all urls to article
         var urls = article.getAllUrls();
         _.each(urls, function(url) {
-            Hoist.index('#!' + url, content, success, error, context);
+            var productName = url.slice(0, url.indexOf('/'));
+            article.set('currentProductName', productName);
+            // article page from procuct
+            var dummyView = new Dash.View.Dummy.Article({
+                model: article
+            });
+            var content = template({
+                content: dummyView.el.outerHtml
+            });
+            toIndex.push({
+                path: '#!' + url,
+                content: content
+            });
+        });
+        article.set('currentProductName', originalProduct);
+        if (recurseUp) {
+            // all sections that are connected need to have links updated
+            article.get('parentJoins').each(function(parentJoin) {
+                var parent = parentJoin.get('parent');
+                toIndex = toIndex.concat(Dash.getIndexSectionArray(true, false, parent));
+            });
+        }
+        return toIndex;
+    };
+
+    Dash.indexArticle = function(recurseUp, article, success, error, context) {
+        var toIndex = Dash.getIndexArticleArray(recurseUp, article);
+        Hoist.index(toIndex, success, error, context);
+    };
+
+    Dash.getIndexSectionArray = function(recurseUp, recurseDown, section) {
+        var template = Dash.Template.htmlWrapper;
+        var toIndex = [];
+        // section page
+        console.log(section);
+        var dummyView = new Dash.View.Dummy.Section({
+            model: section
+        });
+        var content = template({
+            content: dummyView.el.outerHtml
+        });
+        toIndex.push({
+            path: '#!' + section.get('URL'),
+            content: content
+        });
+        if (recurseUp) {
+            // all products that are connected need to have links updated
+            section.get('productJoins').each(function(productJoin) {
+                var product = productJoin.get('product');
+                dummyView = new Dash.View.Dummy.HelpDesk({
+                    model: product
+                });
+                content = template({
+                    content: dummyView.el.outerHtml
+                });
+                toIndex.push({
+                    path: '#!' + product.get('URL'),
+                    content: content
+                });
+                dummyView = new Dash.View.Dummy.SiteMap({
+                    model: product
+                });
+                content = template({
+                    content: dummyView.el.outerHtml
+                });
+                toIndex.push({
+                    path: '#!' + product.get('URL') + '/sitemap',
+                    content: content
+                });
+            });
+            // all sections that are connected need to have links updated
+            section.get('parentJoins').each(function(parentJoin) {
+                var parent = parentJoin.get('parent');
+                toIndex = toIndex.concat(Dash.getIndexSectionArray(true, false, parent));
+            });
+        }
+        if (recurseDown) {
+            // index children
+            var sections = section.getChildren();
+            sections.each(function(child) {
+                if (child.get('_type') === 'section') {
+                    toIndex = toIndex.concat(Dash.getIndexSectionArray(false, true, child));
+                } else if (child.get('published')) {
+                    toIndex = toIndex.concat(Dash.getIndexArticleArray(false, child));
+                }
+
+            });
+        }
+        return toIndex;
+    };
+
+    Dash.indexSection = function(recurseUp, recurseDown, section, success, error, context) {
+        console.log(section);
+                var toIndex = Dash.getIndexSectionArray(recurseUp, recurseDown, section);
+                console.log(toIndex);
+        Hoist.index(toIndex, success, error, context);
+    };
+
+    Dash.deIndexArticle = function(article, success, error, context) {
+        // deIndex all urls to article
+        var urls = article.getAllUrls();
+        _.each(urls, function(url) {
+            Hoist.deIndex('#!' + url, success, error, context);
         });
         // all sections that are connected need to have links updated.
-        article.get('parentJoins').each(function(parentJoin){
+        article.get('parentJoins').each(function(parentJoin) {
             var parent = parentJoin.get('parent');
-            Dash.indexSection(parent);
+            Dash.indexSection(true, false, parent);
         });
     };
-    
-    Dash.indexSection = function(section, success, error, context) {
-        var template = Dash.Template.htmlWrapper;
-        // section page
-        var dummyView = new Dash.View.Dummy.Section({model: section});
-        var content = template({content:dummyView.el.outerHtml});
-        Hoist.index('#!' + section.get('URL'), content, success, error, context);
-        // all products that are connected need to have links updated
-        section.get('productJoins').each(function(productJoin){
-            var product = productJoin.get('product');
-            dummyView = new Dash.View.Dummy.HelpDesk({model: product});
-            content = template({content:dummyView.el.outerHtml});
-            Hoist.index('#!' + product.get('URL'), content);
-            dummyView = new Dash.View.Dummy.SiteMap({model: product});
-            content = template({content:dummyView.el.outerHtml});
-            Hoist.index('#!' + product.get('URL') + '/sitemap', content);
-        });
-        // all sections that are connected need to have links updated
-        section.get('parentJoins').each(function(parentJoin){
-            var parent = parentJoin.get('parent');
-            Dash.indexSection(parent);
-        });
+
+    Dash.deIndexSection = function(recurseUp, section, success, error, context) {
+        // deIndex all url to section
+        Hoist.deIndex('#!' + section.get('URL'), success, error, context);
+        if (recurseUp) {
+            // all sections that are connected need to have links updated.
+            section.get('parentJoins').each(function(parentJoin) {
+                var parent = parentJoin.get('parent');
+                Dash.indexSection(true, false, parent);
+            });
+        }
+    };
+
+    Dash.deIndexProduct = function(productMenu, success, error, context) {
+        // deIndex url to product
+        Hoist.deIndex('#!' + product.get('URL'), success, error, context);
     };
 
     Dash.AdminMenu = Dash.View.extend({
@@ -564,8 +691,7 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
             }, function(res) {
                 Dash.admin = true;
                 Dash.user = res;
-                console.log(res);
-                Dash.user.name = res.name ? res.name : res.metaData? res.metaData.name? res.metaData.name:'':'';
+                Dash.user.name = res.name ? res.name : res.metaData ? res.metaData.name ? res.metaData.name : '' : '';
                 Dash.router.navigate('!');
                 new Dash.router.find();
             }, function(res) {
@@ -725,10 +851,7 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
             }
             var date = Dash.getDateString();
             var published = this.$('#published').val() === 'published';
-            // var date = published ? Dash.getDateString() : "";
-            // console.log('here');
             var article = this.saveModel(name, content, type, date, published);
-            // Dash.indexArticle(article);
         },
 
         checkName: function(name) {
@@ -788,6 +911,7 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
                     this.addToSections(article);
                     article.set('currentProductName', this.sideBar.treePlaces.products[0].get('name'));
                     article.setUrl();
+                    Dash.indexArticle(true, article);
                     Dash.router.navigate('!' + article.get('URL'));
                     Dash.router.find('!' + article.get('URL'));
                 }, function(res) {
@@ -981,7 +1105,7 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
 
         saveModel: function(name, content, type, date, published) {
             var article = this.model;
-
+            var nameChange = this.model.get('name') !== name;
             if (published && !this.model.get('published')) {
                 this.model.set({
                     date: date,
@@ -999,7 +1123,7 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
 
             this.addTags(article, function() {
                 Dash.postModel('article', article, function(res) {
-                    this.addToSections(article);
+                    this.addToSections(article, nameChange);
                     if (!treePlaces.containsUrl(article.get('URL'))) {
                         article.set('currentProductName', treePlaces.products[0].get('name'));
                         article.setUrl();
@@ -1018,36 +1142,51 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
                     }
                     Dash.router.navigate('!' + article.get('URL'));
                     Dash.router.find('!' + article.get('URL'));
+                    Dash.indexArticle(false, article);
                 }, this);
             }, this);
 
             return article;
         },
 
-        addToSections: function(article) {
+        addToSections: function(article, nameChange) {
+            Dash.deIndexArticle(false, article);
             var treePlaces = this.sideBar.treePlaces;
             var sections = new Dash.Sections();
+            var unchangedSections = new Dash.Sections();
             var indexes = [];
             var oldSections = new Dash.Sections(article.get('parentJoins').pluck('parent'));
             for (var i = 0; i < treePlaces.length(); i++) {
                 var section = treePlaces.sections[i];
-                if (section.get('_type') === 'section') {
-                    section.addChild(article);
+                if (oldSections.get(section)) {
+                    unchangedSections.add(section);
                 } else {
-                    var addBefore = section;
-                    var path = treePlaces.sectionUrls[i].split('/');
-                    var sectionName = path[path.length - 2];
-                    section = addBefore.getSection(sectionName);
-                    var index = section.indexOfSection(addBefore);
-                    section.addChild(article, index);
+                    if (section.get('_type') === 'section') {
+                        section.addChild(article);
+                    } else {
+                        var addBefore = section;
+                        var path = treePlaces.sectionUrls[i].split('/');
+                        var sectionName = path[path.length - 2];
+                        section = addBefore.getSection(sectionName);
+                        var index = section.indexOfSection(addBefore);
+                        section.addChild(article, index);
+                    }
+                    sections.add(section);
                 }
-                sections.add(section);
             }
-            oldSections.remove(sections.models);
+            oldSections.remove(unchangedSections.models);
             article.removeSections(oldSections);
             sections.add(oldSections.models);
             if (sections.length) {
                 Dash.postModel('section', sections);
+            }
+            sections.each(function(section) {
+                Dash.indexSection(true, false, section);
+            });
+            if (nameChange) {
+                unchangedSections.each(function(section) {
+                    Dash.indexSection(true, false, section);
+                });
             }
         },
 
@@ -1512,7 +1651,11 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
                 return;
             }
             var product;
+            var index;
             if (this.model) {
+                if (this.model.get('name') !== attributes.name) {
+                    Dash.deIndexProduct(this.model);
+                }
                 product = this.model.set(attributes);
             } else {
                 product = new Dash.Product(attributes);
@@ -1527,12 +1670,11 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
                     });
                 }
                 Dash.products.add(product);
+                Dash.indexProduct(this.model ? true : false, product);
                 this.trash();
             }, function(res) {
                 this.$('button.save').prop("disabled", false);
             }, this);
-
-            // Dash.indexProduct(product);
         },
 
         checkName: function(name) {
@@ -1615,8 +1757,8 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
             this.$('.errorText').remove();
             var themeColour = this.$('.primary').val();
             themeColour = themeColour.charAt(0) !== '#' ? '#' + themeColour : themeColour;
-            
-                console.log(themeColour);
+
+            console.log(themeColour);
             if (Dash.validHex(themeColour)) {
                 console.log(themeColour);
                 this.model.set('themeColour', themeColour);
@@ -1761,23 +1903,37 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
                 return;
             }
             var section = this.model;
+            var oldTreePlace;
             if (this.model.get('_type') === 'section') {
-                this.model.set(attributes);
                 var url = this.model.get('URL').split('/');
-                url.pop();
-                var oldTreePlace = this.model.getUrlItems(url);
+                oldTreePlace = this.model.getUrlItems(url.splice(-2, 1));
                 oldTreePlace = oldTreePlace[oldTreePlace.length - 1];
-                oldTreePlace.removeChild(this.model);
-                Dash.postModel(oldTreePlace.get('_type'), oldTreePlace);
+
+                if (oldTreePlace !== this.treePlace) {
+                    oldTreePlace.removeChild(this.model);
+                    Dash.deIndexSection(true, this.model);
+                    if (oldTreePlace.get('_type') === 'section') {
+                        Dash.indexSection(true, false, oldTreePlace);
+                    } else {
+                        Dash.indexProduct(false, oldTreePlace);
+                    }
+                    Dash.postModel(oldTreePlace.get('_type'), oldTreePlace);
+                } else if (this.model.get('name') !== attributes.name) {
+                    Dash.indexSection(true, true, this.model);
+                }
+                this.model.set(attributes);
             } else {
                 section = new Dash.Section.Section(attributes);
             }
             Dash.postModel("section", section, function(res) {
-                this.treePlace.addChild(section);
-                this.treePlace.trigger('newSection');
-                Dash.postModel(this.treePlace.get('_type'), this.treePlace, function() {
-                    this.trash();
-                }, this);
+                if (oldTreePlace !== this.treePlace) {
+                    this.treePlace.addChild(section);
+                    this.treePlace.trigger('newSection');
+                    Dash.postModel(this.treePlace.get('_type'), this.treePlace, function() {
+                        this.trash();
+                    }, this);
+                    Dash.indexSection(true, true, section);
+                }
             }, function(res) {
                 this.$('button.save').prop("disabled", false);
             }, this);
@@ -2053,11 +2209,11 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
             if (this.afterRender) {
                 this.afterRender();
             }
-            
-            if(this.dummyRender) {
+
+            if (this.dummyRender) {
                 this.dummyRender();
             }
-            
+
             this.$('.discussion').show();
         },
     };
@@ -2067,29 +2223,29 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
 
         initialize: Dash.View.Dummy.dummyInitialize
     });
-    
+
     Dash.View.Dummy.HelpDesk = Dash.View.HelpDesk.extend({
         el: undefined,
 
         initialize: Dash.View.Dummy.dummyInitialize
     });
-    
+
     Dash.View.Dummy.Section = Dash.View.Section.extend({
         el: undefined,
 
         initialize: Dash.View.Dummy.dummyInitialize
     });
-    
+
     Dash.View.Dummy.SiteMap = Dash.View.SiteMap.extend({
         el: undefined,
 
         initialize: Dash.View.Dummy.dummyInitialize
     });
-    
+
     Dash.View.Dummy.Home = Dash.View.Home.extend({
         el: undefined,
 
         initialize: Dash.View.Dummy.dummyInitialize
     });
-    
+
 });

@@ -453,11 +453,10 @@ define(['dash', 'backbone', 'Hoist', "jquery", 'relational'], function(Dash, Bac
             var item;
             var productJoins = this.get("productJoins");
             if (path.length === 1 && productJoins) {
-                // check products for product
+                // check products for toFind
                 productJoins.every(function(productJoin) {
                     if (!item) {
                         var product = productJoin.get('product');
-                        // console.log(productJoin.get("product").get("name") + " vs " + productName);
                         if (toFind.equalsIgnoreUrl(product.get("name"))) {
                             item = product;
                             items.push(product);
@@ -469,7 +468,7 @@ define(['dash', 'backbone', 'Hoist', "jquery", 'relational'], function(Dash, Bac
             }
             var parentJoins = this.get("parentJoins");
             if (!item && parentJoins) {
-                // check parent sections for if they are connected to product
+                // check parent sections for toFind
                 parentJoins.every(function(parentJoin) {
                     if (!item) {
                         var section = parentJoin.get("parent");
