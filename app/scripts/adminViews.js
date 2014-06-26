@@ -349,8 +349,8 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
 
     Dash.indexSection = function(recurseUp, recurseDown, section, success, error, context) {
         console.log(section);
-                var toIndex = Dash.getIndexSectionArray(recurseUp, recurseDown, section);
-                console.log(toIndex);
+        var toIndex = Dash.getIndexSectionArray(recurseUp, recurseDown, section);
+        console.log(toIndex);
         Hoist.index(toIndex, success, error, context);
     };
 
@@ -1016,6 +1016,7 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
             'click #formatImage': 'formatImage',
             'change #formatImage :file': 'uploadImage',
             'click #formatVideo': 'formatVideo',
+            'click #formatArticleLink': 'formatArticleLink',
         },
 
         formatHeading: function(e) {
@@ -1027,7 +1028,6 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
         },
 
         formatSubHeading: function(e) {
-            console.log(e.currentTarget);
             var textarea = this.$('#content');
             textarea.focus();
             var selection = textarea.getSelection();
@@ -1064,9 +1064,7 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
             name = name.slice(name.lastIndexOf('/') + 1);
             name = name.slice(name.lastIndexOf('\\') + 1);
             name = Dash.urlEscape(name);
-            console.log(name);
             Hoist.file('image' + name, file, function() {
-                console.log(name);
                 var textarea = this.$('#content');
                 textarea.focus();
                 var selection = textarea.getSelection();
@@ -1077,12 +1075,33 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
         },
 
         addVideo: function(url) {
-            console.log(url);
             var textarea = this.$('#content');
             textarea.focus();
             var selection = textarea.getSelection();
             textarea.insertText((selection.start ? '\n' : '') + '^^' + url, selection.start, 'collapseToEnd');
+        },
 
+        formatArticleLink: function() {
+            var modal = new Dash.View.Modal.SelectArticle();
+            modal.callback = this.addArticleLink;
+            modal.callbackContext = this;
+        },
+
+        addArticleLink: function(articleUrl) {
+            var textarea = this.$('#content');
+            textarea.focus();
+            var selection = textarea.getSelection();
+            var urlSplit = articleUrl.slice(2).split('/');
+            console.log(urlSplit);
+            var product = Dash.products.findProduct(urlSplit.shift());
+            if (product) {
+                var article = product.findSection(urlSplit);
+                console.log(product);
+                if (article) {
+                    console.log(article);
+                    textarea.insertText((selection.start ? '\n' : '')+'[](!Hoist' + article.get('_id') + ')', selection.end, 'collapseToEnd');
+                }
+            }
         }
     });
 
@@ -1150,7 +1169,7 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
         },
 
         addToSections: function(article, nameChange) {
-            Dash.deIndexArticle(false, article);
+            // Dash.deIndexArticle(false, article);
             var treePlaces = this.sideBar.treePlaces;
             var sections = new Dash.Sections();
             var unchangedSections = new Dash.Sections();
@@ -2193,6 +2212,35 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
             var url = this.$('.videoUrl').val();
             this.callback.call(this.callbackContext, url);
             this.trash();
+        }
+    });
+
+    Dash.View.Modal.SelectArticle = Dash.View.Modal.TreePlace.extend({
+        template: Dash.Template.articleLink,
+
+        renderTree: function() {
+            Dash.articles.each(function(article) {
+                if (article.get('published')) {
+                    this.$('.map > ul').append(new Dash.ListItem({
+                        model: article
+                    }).render().el);
+                }
+            }, this);
+            return this;
+        },
+
+        save: function() {
+            this.$('button.save').prop("disabled", true);
+            var url = this.$('.videoUrl').val();
+            var selected = this.$(".map .themeText");
+            if (selected[0]) {
+                var hash = selected[0].hash;
+                if (this.callback) {
+                    this.callback.call(this.callbackContext, hash);
+                }
+                this.trash();
+            }
+            this.$('button.save').prop("disabled", false);
         }
     });
 

@@ -75,7 +75,7 @@
         xhr.open(method, configs.protocol + opts.url);
         
         responseType = opts.responseType || "json";
-        console.log(opts);
+        
         // Safari will error out (!) if we try to set a responseType of "json"
         
         if (responseType != "json") {
@@ -459,14 +459,11 @@
         },
                 
         index: function(path, content, success, error, context){
-            
-                console.log(path);
             if (!content || typeof content === "function") {
                 context = error;
                 error = success;
                 success = content;
                 var data = path;
-                console.log(path);
                 if(classOf(path) === "Array"){
                     data = {pages:path};
                 }

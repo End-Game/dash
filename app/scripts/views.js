@@ -1,6 +1,6 @@
 define(['dash', 'backbone', 'Hoist', 'templates'], function(Dash, Backbone, Hoist) {
     'use strict';
-    
+
     Dash.ignoredWords = [
         "a",
         "all",
@@ -83,31 +83,37 @@ define(['dash', 'backbone', 'Hoist', 'templates'], function(Dash, Backbone, Hois
         });
     };
 
+    Dash.loadArticleLinks = function($textBlock, currentProductName) {
+        $textBlock.find('a').each(function() {
+            var $this = $(this);
+            var href = $this.attr('href');
+            if (href.indexOf('!Hoist') === 0) {
+                //get url of article.
+                var article = Dash.articles.get(href.slice(6));
+                var url = article.findUrl(currentProductName);
+                if (!url) {
+                    url = article.getAllUrls()[0];
+                    url = url ? url : '';
+                }
+                console.log('link'+url);
+                console.log(article);
+                $this.attr('href', '#!'+ url);
+                var text = $this.text();
+                if (!text) {
+                    $this.text(article.get('name'));
+                }
+            }
+        });
+    };
 
     Dash.ListItem = Backbone.View.extend({
-
         tagName: "li",
         template: Dash.Template.listItem,
-
-        // handled by router
-        // events: {
-        //     "click .item": "item"
-        // },
 
         render: function() {
             this.$el.html(this.template(this.model.toJSON()));
             return this;
         },
-
-        // item: function() {
-        //     if (this.model.get("_type") === "section") {
-        //         //do something for section
-        //     } else {
-        //         new Dash.View.Article({
-        //             model: this.model
-        //         });
-        //     }
-        // }
     });
 
     Dash.NonLinkListItem = Dash.ListItem.extend({
@@ -481,6 +487,7 @@ define(['dash', 'backbone', 'Hoist', 'templates'], function(Dash, Backbone, Hois
                 this.renderDiscussion();
             }
             Dash.loadImages(this.$('.textBlock'));
+            Dash.loadArticleLinks(this.$('.textBlock'), this.model.get('currentProductName'));
             return this;
         },
 

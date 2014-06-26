@@ -492,6 +492,10 @@ define(['dash', 'underscore', 'showdown', 'video'], function(Dash, _, Showdown) 
                     "<img class='themeColour' src='images/video.png'>" +
                     "<p>Add Video</p>" +
                 "</div>" +
+                "<div id='formatArticleLink'>" +
+                    "<img class='themeColour' src='images/article.png'>" +
+                    "<p>Link to Article</p>" +
+                "</div>" +
             "</div>" +
             "<hr>" +
             "<input type='text' id='title' class='topField' placeholder='Enter Title of Article...' />" +
@@ -546,6 +550,18 @@ define(['dash', 'underscore', 'showdown', 'video'], function(Dash, _, Showdown) 
             "<h1>Place Article in Tree</h1>" +
             "<hr>" +
             "<div class='map'>" +
+            "</div>" +
+            "<button class='themeButton inlineDiv half save' type='button'><p>Save</p></button>" +
+            "<button class='themeButton inlineDiv half cancel' type='button'><p>Cancel</p></button>" +
+        "</div>"
+    );
+    
+    Dash.Template.articleLink = _.template(
+        "<div class='content big'>" +
+            "<h1>Select Article</h1>" +
+            "<hr>" +
+            "<div class='map'>" +
+                "<ul><ul>" +
             "</div>" +
             "<button class='themeButton inlineDiv half save' type='button'><p>Save</p></button>" +
             "<button class='themeButton inlineDiv half cancel' type='button'><p>Cancel</p></button>" +
