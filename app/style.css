@@ -71,6 +71,13 @@ strong {
     margin-bottom: 20px;
 }
 
+#logoDiv .searchbox {
+    width:50%;
+    float: right;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
 .sideBar {
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
@@ -555,8 +562,8 @@ textarea {
 
 #menu div {
     display: inline-block;
-    width: 116px;
-    margin-right: 5px;
+    width: 100px;
+    margin-right: 1px;
     margin-bottom: -5px;
 }
 
@@ -565,7 +572,7 @@ textarea {
 }
 
 #menu img {
-    margin-right: 10px;
+    margin-right: 5px;
     display: inline-block;
     vertical-align: top;
 }
@@ -573,9 +580,9 @@ textarea {
 #menu p {
     display: inline-block;
     color: #b3b3b3;
-    width: 72px;
-    font-size: 14px;
-    margin-top: -5px;
+    width: 63px;
+    font-size: 13px;
+    margin-top: -4px;
     margin-bottom: 0px;
 }
 
@@ -941,6 +948,10 @@ fieldset {
 .searchbox div p {
     margin-top: 12px;
     margin-bottom: 12px;
+}
+
+#HelpDesk .searchbox {
+    margin-bottom: 25px;
 }
 
 .modal .cancel{

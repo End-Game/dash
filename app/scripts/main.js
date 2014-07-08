@@ -1,16 +1,16 @@
 require.config({
     baseUrl: '/scripts',
     paths: {
-        jquery: '../bower_components/jquery/jquery',
-        backbone: '../bower_components/backbone/backbone',
+        jquery: '../bower_components/jquery/jquery.min',
+        backbone: '../bower_components/backbone/backbone-min',
         relational: '../bower_components/backbone-relational/backbone-relational',
-        underscore: '../bower_components/underscore/underscore',
+        underscore: '../bower_components/underscore/underscore-min',
         hoist: './hoist/hoist',
         templates: './templates/templates',
         requirejs: '../bower_components/requirejs/require',
         "jquery.cookie": "../bower_components/jquery.cookie/jquery.cookie",
-        showdown: '../bower_components/showdown/src/showdown',
-        rangyInputs: './other/rangyinputs/rangyinputs-jquery-1.1.2',
+        showdown: '../bower_components/showdown/compressed/showdown',
+        rangyInputs: './other/rangyinputs/rangyinputs-jquery-1.1.2.min',
         video: './other/showdown-extensions/video',
         colorPicker: './other/jquery.wheelcolorpicker/jquery.wheelcolorpicker'
     },

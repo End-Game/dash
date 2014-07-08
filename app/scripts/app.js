@@ -9,7 +9,7 @@ define(['backbone', 'dash', 'Hoist', 'models', 'views', 'adminViews', 'router'],
                 url: '/settings' + (window.location.hostname === 'localhost' ? '.json' : ''),
                 context: this,
                 success: function(res) {
-                    this.dash.settings = res
+                    this.dash.settings = res;
                     Hoist.apiKey(res.apiKey);
                     Hoist.get({
                         tags: "tag",

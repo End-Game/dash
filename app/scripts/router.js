@@ -2,6 +2,7 @@ define(['dash', 'backbone', 'Hoist', 'models', 'views'], function(Dash, Backbone
     'use strict';
     var defaultColour = '#3080C8';
     var adminMenu;
+    var searchbox;
     Dash.menuProduct = new Dash.MenuProduct();
     Dash.Router = Backbone.Router.extend({
         routes: {
@@ -14,7 +15,12 @@ define(['dash', 'backbone', 'Hoist', 'models', 'views'], function(Dash, Backbone
             var loadHome = false;
             var pathSplit;
             var product;
+                if(!searchbox){
+                    searchbox = new Dash.Searchbox();
+                    $('#logoDiv').append(searchbox.render().el);
+                }
             if (Dash.admin) {
+                $('#logoDiv .searchbox').hide();
                 if(Dash.user){
                     Dash.menuProduct.set('user', Dash.user.name);
                 }
@@ -25,6 +31,7 @@ define(['dash', 'backbone', 'Hoist', 'models', 'views'], function(Dash, Backbone
                 }
                 $('header').show();
             } else {
+                $('#logoDiv .searchbox').show();
                 $('header').hide();
             }
             if (path) {
@@ -43,6 +50,7 @@ define(['dash', 'backbone', 'Hoist', 'models', 'views'], function(Dash, Backbone
                 loadHome = true;
             } else if ('admin login'.equalsIgnoreUrl(path)) {
                 new Dash.View.Admin.Login();
+                $('#logoDiv .searchbox').hide();
             } else if ("newArticle".equalsIgnoreUrl(path)) {
                 if (Dash.admin) {
                     new Dash.View.Admin.NewArticle();
@@ -51,6 +59,7 @@ define(['dash', 'backbone', 'Hoist', 'models', 'views'], function(Dash, Backbone
                 }
             } else if ("search".equalsIgnoreUrl(path)) {
                 new Dash.View.Search();
+                $('#logoDiv .searchbox').hide();
             } else {
                 product = Dash.products.findProduct(pathSplit[0]);
                 if (product) {
@@ -94,6 +103,7 @@ define(['dash', 'backbone', 'Hoist', 'models', 'views'], function(Dash, Backbone
                 new Dash.View.HelpDesk({
                     model: product
                 });
+                $('#logoDiv .searchbox').hide();
             } else if ("sitemap".equalsIgnoreUrl(pathSplit[0])) {
                 new Dash.View.SiteMap({
                     model: product

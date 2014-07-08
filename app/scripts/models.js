@@ -168,7 +168,7 @@ define(['dash', 'backbone', 'Hoist', "jquery", 'relational'], function(Dash, Bac
                 }
             }
         },
-        
+
         setKeySections: function(sections) {
             var keySections = [];
             sections.each(function(section) {
@@ -211,7 +211,7 @@ define(['dash', 'backbone', 'Hoist', "jquery", 'relational'], function(Dash, Bac
         },
 
         toJSON: function() {
-            if(!this.get('section')){
+            if (!this.get('section')) {
                 console.log(this);
             }
             return this.get('section').get('_id');
@@ -851,7 +851,32 @@ define(['dash', 'backbone', 'Hoist', "jquery", 'relational'], function(Dash, Bac
             user: ''
         }
     });
-    
+
+    Dash.SearchQuery = Backbone.RelationalModel.extend({
+        relations: [{
+            type: Backbone.HasMany,
+            key: 'results',
+            relatedModel: 'SearchResult',
+            autofetch: false
+        }],
+        defaults: {
+            query: '',
+            start: 0,
+        }
+    });
+
+    Dash.SearchResult = Backbone.RelationalModel.extend({
+        defaults: {
+            title: '',
+            link: '',
+            snippet: ''
+        }
+    });
+
+    Dash.SearchResults = Backbone.Collection.extend({
+        model: Dash.SearchResult
+    });
+
     // Dash.ImageId
 
     return Dash;

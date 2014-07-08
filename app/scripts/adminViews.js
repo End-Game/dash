@@ -201,19 +201,26 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
 
     // in the following index methods success and error may be called multiple times
 
-    // recurseUp = true if creating or name change i.e. needs to bubble up tree updating links
-    // recurseDown = true if name or parent change i.e. needs to bubble down the tree updating urls
+    // recurseUp = true if creating or name change i.e. needs to bubble up tree updating links, defaults to false
+    // recurseDown = true if name or parent change i.e. needs to bubble down the tree updating urls, defaults to false
 
     Dash.indexProduct = function(recurseDown, product, success, error, context) {
+        if (!product || typeof product === "function") {
+            context = error;
+            error = success;
+            success = product;
+            product = recurseDown;
+            recurseDown = false;
+        }
         var template = Dash.Template.htmlWrapper;
         // home page
         var dummyView = new Dash.View.Dummy.Home();
         var content = template({
-            content: dummyView.el.outerHtml
+            content: dummyView.el.outerHTML
         });
         var toIndex = [];
         toIndex.push({
-            path: '#!',
+            path: '/#!',
             content: content
         });
         // help desk page
@@ -221,10 +228,10 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
             model: product
         });
         content = template({
-            content: dummyView.el.outerHtml
+            content: dummyView.el.outerHTML
         });
         toIndex.push({
-            path: '#!' + product.get('URL'),
+            path: '/#!' + product.get('URL'),
             content: content
         });
         // only need to index sitemap when there is a name change, as editing product doesn't change the sitemap, and when created the sitemap is blank
@@ -234,15 +241,15 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
                 model: product
             });
             content = template({
-                content: dummyView.el.outerHtml
+                content: dummyView.el.outerHTML
             });
             toIndex.push({
-                path: '#!' + product.get('URL') + '/sitemap',
+                path: '/#!' + product.get('URL') + '/sitemap',
                 content: content
             });
             // index child sections.
             product.get('sectionJoins').each(function(sectionJoin) {
-                var section = sectoinJoin.get('parent');
+                var section = sectionJoin.get('section');
                 toIndex = toIndex.concat(Dash.getIndexSectionArray(false, true, section));
             });
         }
@@ -263,10 +270,11 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
                 model: article
             });
             var content = template({
-                content: dummyView.el.outerHtml
+                content: dummyView.el.outerHTML
             });
+            
             toIndex.push({
-                path: '#!' + url,
+                path: '/#!' + url,
                 content: content
             });
         });
@@ -282,6 +290,13 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
     };
 
     Dash.indexArticle = function(recurseUp, article, success, error, context) {
+        if (!article || typeof article === "function") {
+            context = error;
+            error = success;
+            success = article;
+            article = recurseUp;
+            recurseUp = false;
+        }
         var toIndex = Dash.getIndexArticleArray(recurseUp, article);
         Hoist.index(toIndex, success, error, context);
     };
@@ -290,15 +305,14 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
         var template = Dash.Template.htmlWrapper;
         var toIndex = [];
         // section page
-        console.log(section);
         var dummyView = new Dash.View.Dummy.Section({
             model: section
         });
         var content = template({
-            content: dummyView.el.outerHtml
+            content: dummyView.el.outerHTML
         });
         toIndex.push({
-            path: '#!' + section.get('URL'),
+            path: '/#!' + section.get('URL'),
             content: content
         });
         if (recurseUp) {
@@ -309,20 +323,20 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
                     model: product
                 });
                 content = template({
-                    content: dummyView.el.outerHtml
+                    content: dummyView.el.outerHTML
                 });
                 toIndex.push({
-                    path: '#!' + product.get('URL'),
+                    path: '/#!' + product.get('URL'),
                     content: content
                 });
                 dummyView = new Dash.View.Dummy.SiteMap({
                     model: product
                 });
                 content = template({
-                    content: dummyView.el.outerHtml
+                    content: dummyView.el.outerHTML
                 });
                 toIndex.push({
-                    path: '#!' + product.get('URL') + '/sitemap',
+                    path: '/#!' + product.get('URL') + '/sitemap',
                     content: content
                 });
             });
@@ -348,9 +362,21 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
     };
 
     Dash.indexSection = function(recurseUp, recurseDown, section, success, error, context) {
-        console.log(section);
+        if (!section || typeof section === "function") {
+            context = error;
+            error = success;
+            success = section;
+            section = recurseDown;
+            recurseDown = false;
+        }
+        if (!section || typeof section === "function") {
+            context = error;
+            error = success;
+            success = section;
+            section = recurseUp;
+            recurseUp = false;
+        }
         var toIndex = Dash.getIndexSectionArray(recurseUp, recurseDown, section);
-        console.log(toIndex);
         Hoist.index(toIndex, success, error, context);
     };
 
@@ -358,7 +384,7 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
         // deIndex all urls to article
         var urls = article.getAllUrls();
         _.each(urls, function(url) {
-            Hoist.deIndex('#!' + url, success, error, context);
+            Hoist.deIndex('/#!' + url, success, error, context);
         });
         // all sections that are connected need to have links updated.
         article.get('parentJoins').each(function(parentJoin) {
@@ -369,7 +395,7 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
 
     Dash.deIndexSection = function(recurseUp, section, success, error, context) {
         // deIndex all url to section
-        Hoist.deIndex('#!' + section.get('URL'), success, error, context);
+        Hoist.deIndex('/#!' + section.get('URL')+'/*', true, success, error, context);
         if (recurseUp) {
             // all sections that are connected need to have links updated.
             section.get('parentJoins').each(function(parentJoin) {
@@ -381,7 +407,7 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
 
     Dash.deIndexProduct = function(productMenu, success, error, context) {
         // deIndex url to product
-        Hoist.deIndex('#!' + product.get('URL'), success, error, context);
+        Hoist.deIndex('/#!' + product.get('URL')+'/*', success, error, context);
     };
 
     Dash.AdminMenu = Dash.View.extend({
@@ -1099,7 +1125,7 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
                 console.log(product);
                 if (article) {
                     console.log(article);
-                    textarea.insertText((selection.start ? '\n' : '')+'[](!Hoist' + article.get('_id') + ')', selection.end, 'collapseToEnd');
+                    textarea.insertText((selection.start ? '\n' : '') + '[](!Hoist' + article.get('_id') + ')', selection.end, 'collapseToEnd');
                 }
             }
         }

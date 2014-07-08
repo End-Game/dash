@@ -113,8 +113,13 @@ define(['dash', 'underscore', 'showdown', 'video'], function(Dash, _, Showdown) 
     );
     
     Dash.Template.searchResult = _.template(
-        "<a href='<%-link%>'><h2><%-htmlTitle%></h2></a>" +
-        "<p><%-htmlSnippet%></p>"
+        "<a href='<%-link%>'><h2><%-title%></h2></a>" +
+        "<p><%-snippet%></p>"
+    );
+    
+    Dash.Template.searchbox = _.template(
+        "<input type='text' class='search' placeholder='What are you looking for...' />" +
+        "<div class='themeBorder search themeButton'><p>Search</p></div>"
     );
     
     Dash.Template.tag = _.template(
@@ -812,9 +817,28 @@ define(['dash', 'underscore', 'showdown', 'video'], function(Dash, _, Showdown) 
         "<head>" +
             "<meta charset='utf-8'>" +
             "<meta name='fragment' content='!'>" +
+            "<link rel='stylesheet' type='text/css' href='style.css'>"+
         "</head>" +
         "<body>" +
-            "<%=content%>" +
+            "<div id='wrapper'>" +
+                "<header id='Header' class='themeButton'></header>" +
+                "<div id='body'>" +
+                    "<div id='logoDiv' class='container'>" +
+                        "<a href='#!'>" +
+                            "<img id='logo' src='images/logo.png'/>" +
+                        "</a>" +
+                    "</div>" +
+                    "<%=content%>" +
+                "</div>" +
+                "<footer>" +
+                    "<div class='container'>" +
+                        "<p>Hosted on </p>" +
+                        "<img src='images/hoist.png'/>" +
+                        "<p>&#169; All information on this site is copyrighted 2014</p>" +
+                    "</div>" +
+                "</footer>" +
+            "</div>" +
+            "<script data-main='scripts/main' src='bower_components/requirejs/require.js'></script>" +
         "</body>" +
         "</html>"
     );
