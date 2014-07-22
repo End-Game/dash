@@ -71,11 +71,11 @@ define(['dash', 'backbone', 'Hoist', 'templates'], function(Dash, Backbone, Hois
             var $this = $(this);
             var src = $this.attr('src');
             if (src.indexOf('!Hoist') === 0) {
-                Hoist.file('image' + src.slice(6), function(res) {
-                    $this.attr('src', URL.createObjectURL(res));
-                }, function(res) {
-                    console.log('image get failed: ' + res);
-                }, this);
+                // Hoist.file('image' + src.slice(6), function(res) {
+                $this.attr('src', 'https://file.hoi.io/image' + src.slice(6) + '?hoist-auth-key=' + Hoist.apiKey());
+                // }, function(res) {
+                //     console.log('image get failed: ' + res);
+                // }, this);
             }
         });
     };

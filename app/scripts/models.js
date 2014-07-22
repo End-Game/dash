@@ -7,12 +7,16 @@ define(['dash', 'backbone', 'Hoist', "jquery", 'relational'], function(Dash, Bac
         initialize: function() {
             this.set("URL", Dash.urlEscape(this.get('name')));
             if (this.has('_id')) {
-                Hoist.file(this.get("_id"), function(res) {
-                    this.set("logoURL", URL.createObjectURL(res));
-                }, function() {
-                    this.set("logoURL", "");
-                }, this);
+                this.set('logoURL', 'https://file.hoi.io/'+this.get('_id') + '?hoist-auth-key=' + Hoist.apiKey());
+                // Hoist.file(this.get("_id"), function(res, xhr) {
+                //     this.set("logoURL", URL.createObjectURL(res));
+                // }, function() {
+                //     this.set("logoURL", "");
+                // }, this);
             }
+            this.on('change:_id', function(){
+                this.set('logoURL', 'https://file.hoi.io/'+this.get('_id') + '?hoist-auth-key=' + Hoist.apiKey());
+            }, this);
         },
 
         relations: [{

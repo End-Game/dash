@@ -65,9 +65,6 @@ define(['dash', 'backbone', 'Hoist', 'models', 'views'], function(Dash, Backbone
                 if (product) {
                     Dash.menuProduct.set('product', product);
                     $('#theme').html(Dash.getThemeStyleText(product.get('themeColour')));
-                    product.on('change:logoURL', function() {
-                        $('#logo').attr('src', product.get('logoURL'));
-                    });
                     $('#logo').attr('src', product.get('logoURL'));
                     pathSplit.shift();
                     if (Dash.admin) {
@@ -84,9 +81,6 @@ define(['dash', 'backbone', 'Hoist', 'models', 'views'], function(Dash, Backbone
                 if (Dash.products.length === 1) {
                     product = Dash.products.at(0);
                     $('#theme').html(Dash.getThemeStyleText(product.get('themeColour')));
-                    product.on('change:logoURL', function() {
-                        $('#logo').attr('src', product.get('logoURL'));
-                    });
                     $('#logo').attr('src', product.get('logoURL'));
                     view = Dash.admin ? new Dash.View.Admin.Home() : new Dash.View.HelpDesk({
                         model: product

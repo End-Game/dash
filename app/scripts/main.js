@@ -12,7 +12,8 @@ require.config({
         showdown: '../bower_components/showdown/compressed/showdown',
         rangyInputs: './other/rangyinputs/rangyinputs-jquery-1.1.2.min',
         video: './other/showdown-extensions/video',
-        colorPicker: './other/jquery.wheelcolorpicker/jquery.wheelcolorpicker'
+        colorPicker: './other/jquery.wheelcolorpicker/jquery.wheelcolorpicker',
+        superagent: '../bower_components/superagent/superagent'
     },
     shim: {
         underscore: {
@@ -42,7 +43,7 @@ require.config({
         }
     }
 });
-require(['hoist','app', 'jquery', 'backbone', 'rangyInputs', 'colorPicker'], function(hoist, app, $, Backbone) {
+require(['superagent', 'hoist', 'app', 'jquery', 'backbone', 'rangyInputs', 'colorPicker'], function(superagent, hoist, app, $, Backbone) {
     'use strict';
     $('section').hide();
     $('header').hide();

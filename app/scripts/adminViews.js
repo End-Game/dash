@@ -575,8 +575,7 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
         },
 
         renderLogo: function() {
-            Dash.products.on("add", this.render, this);
-            $('#logo').attr('src', this.model.get('logoURL'));
+            $('#logo').attr('src', this.model.get('logoURL')+'#'+new Date().getTime());
         }
     });
 
@@ -1708,8 +1707,7 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
             Dash.postModel("product", product, function(res) {
                 if (file) {
                     Hoist.file(product.get("_id"), file, function(res) {
-                        console.log('filepost');
-                        product.set("logoURL", URL.createObjectURL(file));
+                        this.model.trigger('change:logoURL');
                     }, function(res) {
                         console.log("file post unsuccessful: " + res);
                     });
@@ -1805,7 +1803,6 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
 
             console.log(themeColour);
             if (Dash.validHex(themeColour)) {
-                console.log(themeColour);
                 this.model.set('themeColour', themeColour);
                 $('#theme').html(Dash.getThemeStyleText(themeColour));
             } else {
@@ -1821,13 +1818,11 @@ define(['dash', 'backbone', 'Hoist', 'views', 'templates'], function(Dash, Backb
             Dash.postModel('product', this.model, function() {
                 if (file) {
                     Hoist.file(this.model.get("_id"), file, function(res) {
-                        console.log('filepost');
-                        this.model.set("logoURL", URL.createObjectURL(file));
+                        this.model.trigger('change:logoURL');
                     }, function(res) {
                         console.log("file post unsuccessful: " + res);
                     }, this);
                 }
-
                 this.trash();
             }, function(res) {
                 this.$('button.save').prop("disabled", false);
