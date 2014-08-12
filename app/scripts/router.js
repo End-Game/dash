@@ -1,4 +1,4 @@
-define(['dash', 'backbone', 'Hoist', 'models', 'views'], function(Dash, Backbone, Hoist) {
+define(['dash', 'backbone', 'Hoist', 'models', 'views', 'specialViews'], function(Dash, Backbone, Hoist) {
     'use strict';
     var defaultColour = '#3080C8';
     var adminMenu;

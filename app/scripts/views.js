@@ -165,17 +165,6 @@ define(['dash', 'backbone', 'Hoist', 'templates'], function(Dash, Backbone, Hois
             this.$('h1, h2, h3, h4, h5, h6').css('color', this.model.get('themeColour'));
             return this;
         },
-
-        // handled by router
-        // events: {
-        //           "click .product": "helpDesk"
-        // },
-
-        helpDesk: function() {
-            new Dash.View.HelpDesk({
-                model: this.model
-            });
-        }
     });
 
     Dash.KeySectionsView = Backbone.View.extend({
@@ -379,10 +368,8 @@ define(['dash', 'backbone', 'Hoist', 'templates'], function(Dash, Backbone, Hois
                     $this.find('.leftCover, .rightCover').height(height);
                 });
             });
-            this.$('.leftCover .rightCover').hide();
-            // if (Dash.products.length > 3) {
+            // this.$('.leftCover .rightCover').hide();
             this.renderArrows();
-            // }
         },
 
         windowResize: function() {
@@ -399,26 +386,17 @@ define(['dash', 'backbone', 'Hoist', 'templates'], function(Dash, Backbone, Hois
         },
 
         renderArrows: function() {
-            this.$('.leftCover .rightCover').hide();
             if (Dash.products.length > 3) {
                 var productsWidth = Dash.products.length * 320;
                 var marginLeft = parseFloat(this.$('#products').css('margin-left'));
                 var offset = marginLeft / -320;
                 if (marginLeft < 0) {
                     this.$('.leftCover').show();
-                    // this.$('.leftCover').append(this.arrowTemplate({
-                    //     // this.$('.homeProduct:eq(' + offset + ')').before(this.arrowTemplate({
-                    //     left: true
-                    // }));
                 } else {
                     this.$('.leftCover').hide();
                 }
                 if ((productsWidth + marginLeft) > 960) {
                     this.$('.rightCover').show();
-                    // this.$('.rightCover').append(this.arrowTemplate({
-                    //     // this.$('.homeProduct:eq(' + (2 + offset) + ')').after(this.arrowTemplate({
-                    //     left: false
-                    // }));
                 } else {
                     this.$('.rightCover').hide();
                 }
@@ -430,6 +408,8 @@ define(['dash', 'backbone', 'Hoist', 'templates'], function(Dash, Backbone, Hois
                     $this.parent().css('padding-top', (height - arrowHeight) / 2);
                     $this.parent().css('padding-bottom', (height - arrowHeight) / 2);
                 });
+            } else {
+                this.$('.leftCover .rightCover').hide();
             }
         },
 
@@ -832,8 +812,9 @@ define(['dash', 'backbone', 'Hoist', 'templates'], function(Dash, Backbone, Hois
             }
             this.model.set('query', query);
             // get results;
+            var siteSearch = window.location.hostname === 'localhost' ? Dash.settings.subDomain + '.app.hoi.io' : window.location.hostname;
             $.ajax({
-                url: 'https://www.googleapis.com/customsearch/v1?key=' + Dash.settings.googleApiKey + '&cx=' + Dash.settings.searchEngineId + '&q=' + this.model.get('query') + '&siteSearch=' + Dash.settings.subDomain + '.app.hoi.io',
+                url: 'https://www.googleapis.com/customsearch/v1?key=' + Dash.settings.googleApiKey + '&cx=' + Dash.settings.searchEngineId + '&q=' + this.model.get('query') + '&siteSearch=' + siteSearch,
                 context: this,
                 success: function(res) {
                     this.model.set('response', res);

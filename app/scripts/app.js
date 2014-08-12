@@ -1,5 +1,5 @@
 /*global define */
-define(['backbone', 'dash', 'Hoist', 'models', 'views', 'adminViews', 'router'], function(backbone, dash, Hoist) {
+define(['backbone', 'dash', 'Hoist', 'models', 'views', 'adminViews', 'router', 'specialViews'], function(backbone, dash, Hoist) {
     'use strict';
     var App = function() {
         this.dash = dash;

@@ -92,8 +92,8 @@ define(['dash', 'underscore', 'showdown', 'video'], function(Dash, _, Showdown) 
                     "<h4>Other Relevant Articles</h4>" +
                     "<ul id='relevantArticleList'>" +
                     "</ul>" +
+                    "<hr>" +
                 "</div>" +
-                "<hr>" +
                 "<div class='discussionContainer'></div>" +
             "</div>" +
         "</div>"

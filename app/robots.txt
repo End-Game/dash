@@ -3,5 +3,3 @@
 User-agent: *
 
 Disallow:
-
-Sitemap: https://fragile-zebra.app.hoi.io/sitemap.xml

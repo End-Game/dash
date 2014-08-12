@@ -1,0 +1,17 @@
+.homeProduct {
+    width: 225px;
+}
+
+.imageContainer{
+    width: 225px;
+}
+
+.keySections{
+    width: 225px;
+    margin-left: 10px;
+}
+
+.keySections div {
+    padding-left: 15px;
+    margin-left: -13px;
+}
