@@ -109,7 +109,7 @@ define(['dash', 'underscore', 'showdown', 'video'], function(Dash, _, Showdown) 
         "</div>" +
         "<div class='results'></div>" +
         "<hr>" +
-        "<!--insert page number links-->" //insert page number links
+        "<div class='searchNumbers'></div>"
     );
     
     Dash.Template.searchResult = _.template(
@@ -120,6 +120,10 @@ define(['dash', 'underscore', 'showdown', 'video'], function(Dash, _, Showdown) 
     Dash.Template.searchbox = _.template(
         "<input type='text' class='search' placeholder='What are you looking for...' />" +
         "<div class='themeBorder search themeButton'><p>Search</p></div>"
+    );
+    
+    Dash.Template.searchNumber = _.template(
+        "<a href='#!search?q=<%-query%>&start=<%-start%>'><div class='button <%-theme? 'themeButton':''%>'><p><%-Math.ceil(start/10)%></p></div></a>"
     );
     
     Dash.Template.tag = _.template(

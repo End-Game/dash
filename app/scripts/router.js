@@ -6,34 +6,16 @@ define(['dash', 'backbone', 'Hoist', 'models', 'views', 'specialViews'], functio
     Dash.menuProduct = new Dash.MenuProduct();
     Dash.Router = Backbone.Router.extend({
         routes: {
-            "*path": "find"
+            '!search(?q=:query&start=:start)': 'search',
+            '!search(?q=:query)': 'search',
+            '*path': 'find',
         },
-        
+
         find: function(path) {
-            $('#theme').html(Dash.getThemeStyleText(defaultColour));
-            $('#logo').attr('src', 'images/logo.png');
+            this.setup();
             var loadHome = false;
             var pathSplit;
             var product;
-                if(!searchbox){
-                    searchbox = new Dash.Searchbox();
-                    $('#logoDiv').append(searchbox.render().el);
-                }
-            if (Dash.admin) {
-                $('#logoDiv .searchbox').hide();
-                if(Dash.user){
-                    Dash.menuProduct.set('user', Dash.user.name);
-                }
-                if (!adminMenu) {
-                    adminMenu = new Dash.AdminMenu({
-                        model: Dash.menuProduct
-                    });
-                }
-                $('header').show();
-            } else {
-                $('#logoDiv .searchbox').show();
-                $('header').hide();
-            }
             if (path) {
                 if (path.charAt(0) === "/" || path.charAt(0) === "#") {
                     path = path.substring(1, path.length);
@@ -174,6 +156,43 @@ define(['dash', 'backbone', 'Hoist', 'models', 'views', 'specialViews'], functio
                 }
             }
             return loadHome;
+        },
+
+        search: function(query, start) {
+            this.setup();
+            start = parseInt(start);
+            start = !start || isNaN(start)? 1 : start;
+            new Dash.View.Search({
+                model: new Dash.SearchQuery({
+                    query: query,
+                    start: start
+                })
+            });
+            $('#logoDiv .searchbox').hide();
+        },
+        
+        setup: function(){
+            $('#theme').html(Dash.getThemeStyleText(defaultColour));
+            $('#logo').attr('src', 'images/logo.png');
+            if (!searchbox) {
+                searchbox = new Dash.Searchbox();
+                $('#logoDiv').append(searchbox.render().el);
+            }
+            if (Dash.admin) {
+                $('#logoDiv .searchbox').hide();
+                if (Dash.user) {
+                    Dash.menuProduct.set('user', Dash.user.name);
+                }
+                if (!adminMenu) {
+                    adminMenu = new Dash.AdminMenu({
+                        model: Dash.menuProduct
+                    });
+                }
+                $('header').show();
+            } else {
+                $('#logoDiv .searchbox').show();
+                $('header').hide();
+            }
         }
 
     });

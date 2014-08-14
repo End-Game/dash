@@ -771,6 +771,7 @@ define(['dash', 'backbone', 'Hoist', 'templates'], function(Dash, Backbone, Hois
     Dash.View.Search = Dash.View.extend({
         el: "#Search",
         template: Dash.Template.search,
+        numberTemplate: Dash.Template.searchNumber,
 
         events: {
             "click div.search": "getResults",
@@ -778,7 +779,7 @@ define(['dash', 'backbone', 'Hoist', 'templates'], function(Dash, Backbone, Hois
         },
 
         afterRender: function() {
-            if (this.model) {
+            if (this.model && this.model.get('query')) {
                 this.$('input.search').val(this.model.get('query'));
                 this.getResults();
             }
@@ -793,12 +794,21 @@ define(['dash', 'backbone', 'Hoist', 'templates'], function(Dash, Backbone, Hois
         },
 
         renderResults: function() {
-            this.$('.results').empty();
+            this.$('.results, .searchNumbers').empty();
             var results = this.model.get('results');
             if (results && results.length) {
                 results.each(function(res) {
                     this.renderItem(res);
                 }, this);
+                // render numbers
+                for (var i = 1; i <= this.model.get('response').searchInformation.totalResults; i += 10) {
+                    this.$('.searchNumbers').append(this.numberTemplate({
+                        query: this.model.get('query'),
+                        start: i,
+                        theme: (this.model.get('start') - i) < 10 && (this.model.get('start') - i) >=0
+                    }));
+                }
+                this.$('.searchNumbers').width(Math.ceil(this.model.get('response').searchInformation.totalResults/10) * 37);
             } else {
                 this.$('.results').append('<p>Sorry, there are no results.</p>');
             }
@@ -814,7 +824,7 @@ define(['dash', 'backbone', 'Hoist', 'templates'], function(Dash, Backbone, Hois
             // get results;
             var siteSearch = window.location.hostname === 'localhost' ? Dash.settings.subDomain + '.app.hoi.io' : window.location.hostname;
             $.ajax({
-                url: 'https://www.googleapis.com/customsearch/v1?key=' + Dash.settings.googleApiKey + '&cx=' + Dash.settings.searchEngineId + '&q=' + this.model.get('query') + '&siteSearch=' + siteSearch,
+                url: 'https://www.googleapis.com/customsearch/v1?key=' + Dash.settings.googleApiKey + '&cx=' + Dash.settings.searchEngineId + '&q=' + this.model.get('query') + '&siteSearch=' + siteSearch + '&start=' + this.model.get('start'),
                 context: this,
                 success: function(res) {
                     this.model.set('response', res);
@@ -835,6 +845,7 @@ define(['dash', 'backbone', 'Hoist', 'templates'], function(Dash, Backbone, Hois
         keydown: function(e) {
             if (e.which === 13) {
                 e.preventDefault();
+                this.model.set('start', 1);
                 this.getResults();
             }
         },
