@@ -704,6 +704,7 @@ define(['dash', 'backbone', 'Hoist', 'templates'], function(Dash, Backbone, Hois
         },
 
         renderBreadCrumb: function() {
+            console.log(this.model.get('URL'));
             var pathSplit = this.model.get('URL').split('/');
             var urlItems = this.model.getUrlItems(pathSplit.slice(0, pathSplit.length - 1));
             var crumbText = this.breadCrumbTemplate(urlItems[0].toJSON());

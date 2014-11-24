@@ -7,15 +7,15 @@ define(['dash', 'backbone', 'Hoist', "jquery", 'relational'], function(Dash, Bac
         initialize: function() {
             this.set("URL", Dash.urlEscape(this.get('name')));
             if (this.has('_id')) {
-                this.set('logoURL', 'https://file.hoi.io/'+this.get('_id') + '?hoist-auth-key=' + Hoist.apiKey());
+                this.set('logoURL', 'https://file.hoi.io/' + this.get('_id') + '?hoist-auth-key=' + Hoist.apiKey());
                 // Hoist.file(this.get("_id"), function(res, xhr) {
                 //     this.set("logoURL", URL.createObjectURL(res));
                 // }, function() {
                 //     this.set("logoURL", "");
                 // }, this);
             }
-            this.on('change:_id', function(){
-                this.set('logoURL', 'https://file.hoi.io/'+this.get('_id') + '?hoist-auth-key=' + Hoist.apiKey());
+            this.on('change:_id', function() {
+                this.set('logoURL', 'https://file.hoi.io/' + this.get('_id') + '?hoist-auth-key=' + Hoist.apiKey());
             }, this);
         },
 
@@ -44,6 +44,7 @@ define(['dash', 'backbone', 'Hoist', "jquery", 'relational'], function(Dash, Bac
 
         defaults: {
             shortDescription: "",
+            description: "",
             themeColour: "#3080C8",
             discussion: false,
             logoURL: "",
@@ -144,6 +145,7 @@ define(['dash', 'backbone', 'Hoist', "jquery", 'relational'], function(Dash, Bac
         },
 
         addChild: function(child, index) {
+            console.log(6);
             var sectionJoins = this.get('sectionJoins');
             for (var i = 0; i < sectionJoins.length; i++) {
                 if (child === sectionJoins.at(i).get('section')) {
@@ -211,7 +213,11 @@ define(['dash', 'backbone', 'Hoist', "jquery", 'relational'], function(Dash, Bac
         }],
 
         changeSection: function() {
-            this.get('product').trigger("newSection");
+            console.log('ProductSectionJoin changesection');
+            console.log(this);
+            if (this.get('product')) {
+                this.get('product').trigger("newSection");
+            }
         },
 
         toJSON: function() {
@@ -528,8 +534,8 @@ define(['dash', 'backbone', 'Hoist', "jquery", 'relational'], function(Dash, Bac
         addTag: function(tag) {
             var tagJoins = this.get('tagJoins');
             if (tagJoins.findWhere({
-                tag: tag
-            })) {
+                    tag: tag
+                })) {
                 return; // tag is already attached to article
             }
             // for(var i=0; i<tagJoins.length; i++){
@@ -725,7 +731,8 @@ define(['dash', 'backbone', 'Hoist', "jquery", 'relational'], function(Dash, Bac
         }],
 
         changeSection: function() {
-            // console.log('sectionsectionJoin changesection');
+            console.log('sectionsectionJoin changesection');
+            console.log(this);
             this.get('parent').trigger("newSection");
         },
 
